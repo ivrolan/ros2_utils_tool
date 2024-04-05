@@ -1,0 +1,8 @@
+<RCC>
+    <qresource>
+        <file>icons/bag_to_video_black.svg</file>
+        <file>icons/bag_to_video_white.svg</file>
+        <file>icons/video_to_bag_black.svg</file>
+        <file>icons/video_to_bag_white.svg</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<svg width="77mm" height="34mm" version="1.1" viewBox="0 0 77 34" xmlns="http://www.w3.org/2000/svg">
+ <g stroke="#000" stroke-linecap="round">
+  <g stroke-linejoin="round">
+   <path transform="matrix(.70175 0 0 .70175 -20.512 -14.331)" d="m51.011 31.181h-12.952c-3.1644 2e-3 -11.317 21.586-3.8145 32.241 0.88052 1.2504 2.0052 3.1858 3.3218 3.2471h13.446m0.0013-35.488h12.952c3.1644 2e-3 11.317 21.586 3.8145 32.241-0.88052 1.2504-2.0052 3.1858-3.3218 3.2471h-13.446" fill="none" stroke-width="3.5625"/>
+   <path d="m9.495 7.1978a5.7906 5.7906 0 0 1 5.7906-5.7906 5.7906 5.7906 0 0 1 5.7906 5.7906" fill-opacity="0" stroke-width="2.5"/>
+   <rect x="48.519" y="7.5488" width="27.197" height="24.904" ry="5.315" fill-opacity="0" stroke-width="2.5"/>
+  </g>
+  <g fill="none" stroke-linejoin="round" stroke-width="2.5">
+   <path d="m49.043 14.605h26.24"/>
+   <path d="m60.159 14.386 3.9159-6.7825"/>
+   <path d="m52.679 14.386 3.9159-6.7825"/>
+   <path d="m67.639 14.386 3.9159-6.7825"/>
+  </g>
+  <path transform="matrix(.187 0 0 .187 9.4927 9.1443)" d="m262.37 103.44v-26.612-26.612l46.094 26.612-23.047 13.306z" fill-opacity="0" stroke-linejoin="round" stroke-width="13.369"/>
+  <g fill="none" stroke-width="2.5">
+   <path d="m33.156 20.42h10.968"/>
+   <path d="m39.746 17.222 4.3782 3.1974"/>
+   <path d="m39.746 23.617 4.3782-3.1974"/>
+  </g>
+ </g>
+</svg>
