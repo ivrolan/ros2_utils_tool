@@ -10,14 +10,24 @@
 #include <filesystem>
 #include <iostream>
 
+void
+showHelp()
+{
+    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_bag_to_video path/to/ROSBag topic_name path/of/stored/video use_hardware_acceleration" << std::endl;
+    std::cout << "The video must have an ending of .mp4 or .mkv." << std::endl;
+    std::cout << "use_hardware_acceleration is either 'true' or 'false'.\n" << std::endl;
+    std::cout << "-h or --help: Show this help." << std::endl;
+}
+
+
 int
 main(int argc, char* argv[])
 {
     // Create application
     QCoreApplication app(argc, argv);
     const auto arguments = app.arguments();
-    if (arguments.size() != 5) {
-        std::cout << "Usage: ros2 run mediassist4_ros_tools tool_bag_to_video path/To/ROSBag topic_name path/To/Video.mp4*mkv true*false" << std::endl;
+    if (arguments.size() != 5 || arguments.contains("--help") || arguments.contains("-h")) {
+        showHelp();
         return 0;
     }
 
