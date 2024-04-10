@@ -102,6 +102,7 @@ BagToVideoWidget::searchButtonPressed()
 
     m_topicNameComboBox->clear();
     const auto videoTopics = Utils::getBagVideoTopics(m_fileNameLineEdit->text().toStdString());
+    // Only enable if both line edits contain text
     m_okButton->setEnabled(!videoTopics.empty() && !m_videoNameLineEdit->text().isEmpty());
 
     if (videoTopics.empty()) {
@@ -124,6 +125,7 @@ BagToVideoWidget::videoLocationButtonPressed()
     const auto fileName = QFileDialog::getSaveFileName(this, "Save Video", "",
                                                        m_formatComboBox->currentText() + " files (*." + m_formatComboBox->currentText() + ")");
     m_videoNameLineEdit->setText(fileName);
+    // Only enable if both line edits contain text
     m_okButton->setEnabled(!m_topicNameComboBox->currentText().isEmpty() && !m_videoNameLineEdit->text().isEmpty());
 }
 
@@ -131,6 +133,7 @@ BagToVideoWidget::videoLocationButtonPressed()
 void
 BagToVideoWidget::formatComboBoxTextChanged(const QString& text)
 {
+    // If the combo box item changes, we apply a different appendix to the text in the video line edit
     if (m_videoNameLineEdit->text().isEmpty()) {
         return;
     }
@@ -152,6 +155,7 @@ BagToVideoWidget::okButtonPressed()
 QHBoxLayout*
 BagToVideoWidget::createLineEditButtonLayout(QPointer<QLineEdit> lineEdit, QPointer<QToolButton> toolButton)
 {
+    // Do not let the user add anything, stick to specific dialogs with file directories
     lineEdit->setReadOnly(true);
     toolButton->setText("...");
 

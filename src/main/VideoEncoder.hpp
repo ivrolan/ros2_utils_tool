@@ -3,7 +3,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/videoio.hpp>
 
-// Encoding thread, encoding a video separately
+// OpenCV video encoder used to write videos
 class VideoEncoder {
 public:
     explicit

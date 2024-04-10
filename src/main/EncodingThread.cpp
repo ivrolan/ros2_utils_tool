@@ -30,6 +30,7 @@ EncodingThread::run()
     const auto messageCount = Utils::getTopicMessageCount(m_bagDirectory.toStdString(), m_topicName.toStdString());
     emit calculatedTopicMessageCount(messageCount);
 
+    // Read a very first message to get its width and height value, which is needed for the video encoder
     auto firstMsg = reader.read_next();
     auto rosMsg = std::make_shared<sensor_msgs::msg::Image>();
 
@@ -45,6 +46,7 @@ EncodingThread::run()
         return;
     }
 
+    // Now the main encoding
     auto iterationCount = 0;
     reader.open(m_bagDirectory.toStdString());
 
@@ -56,15 +58,16 @@ EncodingThread::run()
             return;
         }
 
+        // Read and deserialize the message
         auto msg = reader.read_next();
         rclcpp::SerializedMessage serializedMessage(*msg->serialized_data);
         serialization.deserialize_message(&serializedMessage, rosMsg.get());
-
+        // Convert message to cv and encode
         cvPointer = cv_bridge::toCvCopy(*rosMsg, sensor_msgs::image_encodings::BGR8);
         videoEncoder->writeImageToVideo(cvPointer->image);
 
         iterationCount++;
-        // Inform ui progressbar
+        // Inform of progress update
         emit encodingProgressChanged(iterationCount, ((float) iterationCount / (float) messageCount) * 100);
     }
 

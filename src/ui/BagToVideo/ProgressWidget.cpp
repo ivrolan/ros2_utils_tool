@@ -56,7 +56,6 @@ ProgressWidget::ProgressWidget(const QString& bagDirectory, const QString& topic
 
     setLayout(mainLayout);
 
-    // Start encoding right away
     m_encodingThread = new EncodingThread(bagDirectory, topicName, vidDirectory, useHardwareAcceleration, this);
     connect(m_encodingThread, &EncodingThread::calculatedTopicMessageCount, this, [this](int messageCount) {
         m_messageCount = messageCount;
@@ -85,6 +84,7 @@ ProgressWidget::ProgressWidget(const QString& bagDirectory, const QString& topic
         emit finished();
     });
 
+    // Start encoding right away
     m_encodingThread->start();
 }
 

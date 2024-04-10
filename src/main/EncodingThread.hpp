@@ -2,7 +2,7 @@
 
 #include <QThread>
 
-// Encoding thread, encoding a video separately
+// Encoding thread, encoding a video out of a ROSBag
 class EncodingThread : public QThread {
     Q_OBJECT
 public:

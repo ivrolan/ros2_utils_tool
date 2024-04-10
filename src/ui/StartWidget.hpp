@@ -5,7 +5,7 @@
 
 class QToolButton;
 
-// The starting widget showing the two basic options
+// The starting widget showing all possible ui tools
 class StartWidget : public QWidget
 {
     Q_OBJECT

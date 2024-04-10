@@ -13,6 +13,7 @@
 int
 main(int argc, char* argv[])
 {
+    // Create application
     QCoreApplication app(argc, argv);
     const auto arguments = app.arguments();
     if (arguments.size() != 5) {
@@ -20,12 +21,14 @@ main(int argc, char* argv[])
         return 0;
     }
 
+    // Handle bag directory
     const auto bagDirectory = arguments.at(1);
     if (!std::filesystem::exists(bagDirectory.toStdString())) {
         std::cerr << "Bag file not found. Make sure that the bag file exists!" << std::endl;
         return 0;
     }
 
+    // Topic name
     const auto topicName = arguments.at(2);
     if (!Utils::doesBagContainTopicName(bagDirectory.toStdString(), topicName.toStdString())) {
         std::cerr << "Topic has not been found in the bag file!" << std::endl;
@@ -36,6 +39,7 @@ main(int argc, char* argv[])
         return 0;
     }
 
+    // Video directory
     const auto vidDirectory = arguments.at(3);
     auto dirPath = vidDirectory;
     dirPath.truncate(dirPath.lastIndexOf(QChar('/')));
@@ -49,6 +53,7 @@ main(int argc, char* argv[])
         return 0;
     }
 
+    // Hardware acceleration
     const auto useHardwareAccelerationString = arguments.at(4);
     if (useHardwareAccelerationString != "true" && useHardwareAccelerationString != "false") {
         std::cerr << "Please enter either 'true' or 'false' for the hardware acceleration parameter!" << std::endl;
@@ -58,6 +63,7 @@ main(int argc, char* argv[])
 
     const auto this_messageCount = Utils::getTopicMessageCount(bagDirectory.toStdString(), topicName.toStdString());;
 
+    // Create encoding thread and connect to its informations
     auto* const encodingThread = new EncodingThread(bagDirectory, topicName, vidDirectory, useHardwareAcceleration);
     QObject::connect(encodingThread, &EncodingThread::openingVideoWriterFailed, [] {
         std::cerr << "The video writing failed. Please make sure that all parameters are set correctly and disable the hardware acceleration, if necessary." << std::endl;
@@ -65,6 +71,7 @@ main(int argc, char* argv[])
     });
     QObject::connect(encodingThread, &EncodingThread::encodingProgressChanged, [this_messageCount] (int iteration, int progress) {
         const auto progressString = Utils::drawProgressString(progress);
+        // Always clear the last line for a nice "progress bar" feeling in the terminal
         std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << this_messageCount << ")\r";
     });
     QObject::connect(encodingThread, &EncodingThread::finished, [] {
