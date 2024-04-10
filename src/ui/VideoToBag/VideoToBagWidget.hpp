@@ -4,30 +4,29 @@
 #include <QWidget>
 
 class QCheckBox;
-class QComboBox;
 class QHBoxLayout;
 class QLineEdit;
 class QPushButton;
-class QToolButton;
 
 /**
- * @brief The widget used to manage a video encoding out of a ros bag
+ * @brief The widget used to write a video file into a ROSBag
  */
-class BagToVideoWidget : public QWidget
+class VideoToBagWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    BagToVideoWidget(QWidget* parent = 0);
+    explicit
+    VideoToBagWidget(QWidget* parent = 0);
 
 signals:
     void
     back();
 
     void
-    parametersSet(const QString& bagDirectory,
+    parametersSet(const QString& vidDirectory,
+                  const QString& bagDirectory,
                   const QString& topicName,
-                  const QString& vidDirectory,
                   bool           useHardwareAcceleration);
 
 private slots:
@@ -35,16 +34,19 @@ private slots:
     searchButtonPressed();
 
     void
-    videoLocationButtonPressed();
+    bagLocationButtonPressed();
 
     void
-    formatComboBoxTextChanged(const QString& text);
+    okButtonPressed();
 
 private:
-    QPointer<QLineEdit> m_fileNameLineEdit;
-    QPointer<QComboBox> m_topicNameComboBox;
+    void
+    enableOkButton();
+
+private:
     QPointer<QLineEdit> m_videoNameLineEdit;
-    QPointer<QComboBox> m_formatComboBox;
+    QPointer<QLineEdit> m_rosBagNameLineEdit;
+    QPointer<QLineEdit> m_topicNameLineEdit;
     QPointer<QCheckBox> m_useHardwareAccCheckBox;
 
     QPointer<QPushButton> m_okButton;

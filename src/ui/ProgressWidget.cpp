@@ -2,6 +2,7 @@
 
 #include "EncodingThread.hpp"
 #include "Utils.hpp"
+#include "WriteToBagThread.hpp"
 
 #include <QLabel>
 #include <QMessageBox>
@@ -10,12 +11,16 @@
 #include <QVBoxLayout>
 
 ProgressWidget::ProgressWidget(const QString& bagDirectory, const QString& topicName, const QString& vidDirectory,
-                               bool useHardwareAcceleration, QWidget *parent) :
+                               bool useHardwareAcceleration, bool useEncode, QWidget *parent) :
     QWidget(parent)
 {
     const auto isDarkMode = Utils::isDarkMode();
     auto* const headerPixmapLabel = new QLabel;
-    headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/bag_to_video_white.svg" : ":/icons/bag_to_video_black.svg").pixmap(QSize(100, 45)));
+    if (useEncode) {
+        headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/bag_to_video_white.svg" : ":/icons/bag_to_video_black.svg").pixmap(QSize(100, 45)));
+    } else {
+        headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/video_to_bag_white.svg" : ":/icons/video_to_bag_black.svg").pixmap(QSize(100, 45)));
+    }
     headerPixmapLabel->setAlignment(Qt::AlignHCenter);
 
     auto* const headerLabel = new QLabel("Encoding Video...");
@@ -56,27 +61,32 @@ ProgressWidget::ProgressWidget(const QString& bagDirectory, const QString& topic
 
     setLayout(mainLayout);
 
-    m_encodingThread = new EncodingThread(bagDirectory, topicName, vidDirectory, useHardwareAcceleration, this);
-    connect(m_encodingThread, &EncodingThread::calculatedTopicMessageCount, this, [this](int messageCount) {
-        m_messageCount = messageCount;
+    if (useEncode) {
+        m_thread = new EncodingThread(bagDirectory, topicName, vidDirectory, useHardwareAcceleration, this);
+    } else {
+        m_thread = new WriteToBagThread(bagDirectory, topicName, vidDirectory, useHardwareAcceleration, this);
+    }
+    connect(m_thread, &BasicThread::calculatedMaximumInstances, this, [this](int count) {
+        m_maximumCount = count;
     });
-    connect(m_encodingThread, &EncodingThread::openingVideoWriterFailed, this, [this] {
+    connect(m_thread, &BasicThread::openingCVInstanceFailed, this, [this] {
         auto* const messageBox = new QMessageBox(QMessageBox::Warning, "Failed writing file!",
                                                  "The video writing failed. Please make sure that all parameters are set correctly "
                                                  "and disable the hardware acceleration, if necessary.");
         messageBox->exec();
         emit encodingStopped();
     });
-    connect(m_encodingThread, &EncodingThread::encodingProgressChanged, this, [this, progressLabel, progressBar] (int iteration, int progress) {
-        progressLabel->setText("Encoding frame " + QString::number(iteration) + " of " + QString::number(m_messageCount) + "...");
+    connect(m_thread, &BasicThread::progressChanged, this, [this, progressLabel, progressBar, useEncode] (int iteration, int progress) {
+        progressLabel->setText(useEncode ? "Encoding frame " + QString::number(iteration) + " of " + QString::number(m_maximumCount) + "..."
+                                         : "Writing frame " + QString::number(iteration) + " of " + QString::number(m_maximumCount) + "...");
         progressBar->setValue(progress);
     });
-    connect(m_encodingThread, &EncodingThread::finished, this, [finishedButton] {
+    connect(m_thread, &BasicThread::finished, this, [finishedButton] {
         finishedButton->setVisible(true);
     });
     connect(cancelButton, &QPushButton::clicked, this, [this] {
-        if (m_encodingThread->isRunning()) {
-            m_encodingThread->requestInterruption();
+        if (m_thread->isRunning()) {
+            m_thread->requestInterruption();
         }
         emit encodingStopped();
     });
@@ -85,12 +95,12 @@ ProgressWidget::ProgressWidget(const QString& bagDirectory, const QString& topic
     });
 
     // Start encoding right away
-    m_encodingThread->start();
+    m_thread->start();
 }
 
 
 ProgressWidget::~ProgressWidget()
 {
-    m_encodingThread->quit();
-    m_encodingThread->wait();
+    m_thread->quit();
+    m_thread->wait();
 }

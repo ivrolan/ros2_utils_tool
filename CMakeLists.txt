@@ -32,14 +32,21 @@ add_executable(tool_app
 add_executable(tool_bag_to_video
     ${CMAKE_CURRENT_LIST_DIR}/src/BagToVideo.cpp
 )
+add_executable(tool_video_to_bag
+    ${CMAKE_CURRENT_LIST_DIR}/src/VideoToBag.cpp
+)
 
 ament_target_dependencies(tool_app cv_bridge rclcpp rosbag2_cpp sensor_msgs std_msgs)
 ament_target_dependencies(tool_bag_to_video cv_bridge rclcpp rosbag2_cpp sensor_msgs)
+ament_target_dependencies(tool_video_to_bag cv_bridge rclcpp rosbag2_cpp sensor_msgs)
 
 target_link_libraries(tool_app
     Qt::Widgets ros_tools_ros ros_tools_ui
 )
 target_link_libraries(tool_bag_to_video
+    Qt::Widgets ros_tools_main ros_tools_utils
+)
+target_link_libraries(tool_video_to_bag
     Qt::Widgets ros_tools_main ros_tools_utils
 )
 
@@ -49,6 +56,10 @@ install(TARGETS
 )
 install(TARGETS
     tool_bag_to_video
+    DESTINATION lib/${PROJECT_NAME}/
+)
+install(TARGETS
+    tool_video_to_bag
     DESTINATION lib/${PROJECT_NAME}/
 )
 

@@ -7,8 +7,6 @@ target_include_directories (ros_tools_bag_to_video
 target_sources(ros_tools_bag_to_video INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/BagToVideoWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/BagToVideoWidget.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/ProgressWidget.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ProgressWidget.hpp
 )
 
 target_link_libraries(ros_tools_bag_to_video

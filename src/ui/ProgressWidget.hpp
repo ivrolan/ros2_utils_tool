@@ -3,7 +3,7 @@
 #include <QPointer>
 #include <QWidget>
 
-class EncodingThread;
+class BasicThread;
 
 /**
  * @brief The widget showing the progress of videos encoded out of a ROSBag
@@ -17,6 +17,7 @@ public:
                    const QString& topicName,
                    const QString& vidDirectory,
                    bool           useHardwareAcceleration,
+                   bool           useEncode,
                    QWidget*       parent = 0);
 
     ~ProgressWidget();
@@ -29,7 +30,7 @@ signals:
     finished();
 
 private:
-    QPointer<EncodingThread> m_encodingThread;
+    QPointer<BasicThread> m_thread;
 
-    int m_messageCount;
+    int m_maximumCount;
 };

@@ -15,8 +15,7 @@ EncodingThread::EncodingThread(const QString& bagDirectory,
                                const QString& vidDirectory,
                                bool           useHardwareAcceleration,
                                QObject*       parent) :
-    QThread(parent), m_bagDirectory(bagDirectory), m_topicName(topicName), m_vidDirectory(vidDirectory),
-    m_useHardwareAcceleration(useHardwareAcceleration)
+    BasicThread(bagDirectory, topicName, vidDirectory, useHardwareAcceleration, parent)
 {
 }
 
@@ -28,7 +27,7 @@ EncodingThread::run()
     reader.open(m_bagDirectory.toStdString());
 
     const auto messageCount = Utils::getTopicMessageCount(m_bagDirectory.toStdString(), m_topicName.toStdString());
-    emit calculatedTopicMessageCount(messageCount);
+    emit calculatedMaximumInstances(messageCount);
 
     // Read a very first message to get its width and height value, which is needed for the video encoder
     auto firstMsg = reader.read_next();
@@ -42,7 +41,7 @@ EncodingThread::run()
 
     const auto videoEncoder = std::make_shared<VideoEncoder>(m_vidDirectory.right(3) == "mp4");
     if (!videoEncoder->setVideoWriter(m_vidDirectory.toStdString(), width, height, m_useHardwareAcceleration)) {
-        emit openingVideoWriterFailed();
+        emit openingCVInstanceFailed();
         return;
     }
 
@@ -68,7 +67,7 @@ EncodingThread::run()
 
         iterationCount++;
         // Inform of progress update
-        emit encodingProgressChanged(iterationCount, ((float) iterationCount / (float) messageCount) * 100);
+        emit progressChanged(iterationCount, ((float) iterationCount / (float) messageCount) * 100);
     }
 
     reader.close();

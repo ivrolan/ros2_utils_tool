@@ -3,6 +3,7 @@
 #include "BagToVideoWidget.hpp"
 #include "ProgressWidget.hpp"
 #include "StartWidget.hpp"
+#include "VideoToBagWidget.hpp"
 
 #include <QCloseEvent>
 
@@ -23,6 +24,7 @@ MainWindow::setStartWidget()
 {
     auto* const startWidget = new StartWidget;
     connect(startWidget, &StartWidget::bagToVideoRequested, this, &MainWindow::setBagToVideoWidget);
+    connect(startWidget, &StartWidget::videoToBagRequested, this, &MainWindow::setVideoToBagWidget);
 
     setCentralWidget(startWidget);
 }
@@ -35,20 +37,35 @@ MainWindow::setBagToVideoWidget()
     setCentralWidget(bagToVideoWidget);
 
     connect(bagToVideoWidget, &BagToVideoWidget::back, this, &MainWindow::setStartWidget);
-    connect(bagToVideoWidget, &BagToVideoWidget::parametersSet, this, [this] (const QString& bagDirectory, const QString& topicName,
-                                                                              const QString& vidDirectory, bool useHardwareAcceleration) {
-        setProgressWidget(bagDirectory, topicName, vidDirectory, useHardwareAcceleration);
+    connect(bagToVideoWidget, &BagToVideoWidget::parametersSet, this, [this] (const QString& vidDirectory, const QString& bagDirectory,
+                                                                              const QString& topicName, bool useHardwareAcceleration) {
+        setProgressWidget(vidDirectory, bagDirectory, topicName, useHardwareAcceleration, true);
     });
 }
 
 
 void
-MainWindow::setProgressWidget(const QString bagDirectory, const QString topicName, const QString vidDirectory, bool useHardwareAcceleration)
+MainWindow::setVideoToBagWidget()
 {
-    auto* const progressWidget = new ProgressWidget(bagDirectory, topicName, vidDirectory, useHardwareAcceleration);
+    auto* const videoToBagWidget = new VideoToBagWidget;
+    setCentralWidget(videoToBagWidget);
+
+    connect(videoToBagWidget, &VideoToBagWidget::back, this, &MainWindow::setStartWidget);
+    connect(videoToBagWidget, &VideoToBagWidget::parametersSet, this, [this] (const QString& vidDirectory, const QString& bagDirectory,
+                                                                              const QString& topicName, bool useHardwareAcceleration) {
+        setProgressWidget(bagDirectory, topicName, vidDirectory, useHardwareAcceleration, false);
+    });
+}
+
+
+void
+MainWindow::setProgressWidget(const QString bagDirectory, const QString topicName, const QString vidDirectory,
+                              bool useHardwareAcceleration, bool useEncode)
+{
+    auto* const progressWidget = new ProgressWidget(bagDirectory, topicName, vidDirectory, useHardwareAcceleration, useEncode);
     setCentralWidget(progressWidget);
 
-    connect(progressWidget, &ProgressWidget::encodingStopped, this, &MainWindow::setBagToVideoWidget);
+    connect(progressWidget, &ProgressWidget::encodingStopped, this, useEncode ? &MainWindow::setBagToVideoWidget : &MainWindow::setVideoToBagWidget);
     connect(progressWidget, &ProgressWidget::finished, this, &MainWindow::setStartWidget);
 }
 

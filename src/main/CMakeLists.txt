@@ -5,10 +5,14 @@ target_include_directories (ros_tools_main
 ) 
 
 target_sources(ros_tools_main INTERFACE
+    ${CMAKE_CURRENT_LIST_DIR}/BasicThread.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BasicThread.hpp
     ${CMAKE_CURRENT_LIST_DIR}/EncodingThread.hpp
     ${CMAKE_CURRENT_LIST_DIR}/EncodingThread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/VideoEncoder.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VideoEncoder.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/WriteToBagThread.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/WriteToBagThread.hpp
 )
 
 target_link_libraries(ros_tools_main

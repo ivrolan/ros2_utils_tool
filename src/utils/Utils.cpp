@@ -1,9 +1,10 @@
 #include "Utils.hpp"
 
+#include <QDebug>
+#include <QRegularExpression>
+
 #include "rclcpp/rclcpp.hpp"
 #include "rosbag2_cpp/reader.hpp"
-
-#include <QWidget>
 
 #include <cmath>
 
@@ -78,6 +79,20 @@ getBagVideoTopics(const std::string& bagDirectory)
 }
 
 
+bool
+doesTopicNameFollowROS2Convention(const QString& topicName)
+{
+    auto doesFollow = true;
+    doesFollow &= !topicName.endsWith('/') && !topicName.contains("//") && !topicName.contains("__");
+
+    const auto firstCharacter = QString(topicName.front());
+    QRegularExpression regularExpression("[0-9]");
+    doesFollow &= !firstCharacter.contains(regularExpression);
+
+    return doesFollow;
+}
+
+
 std::string
 drawProgressString(int progress)
 {
@@ -95,6 +110,21 @@ setWidgetHeaderFont(QWidget* widget)
     auto font = widget->font();
     font.setPointSize(16);
     widget->setFont(font);
+}
+
+
+QHBoxLayout*
+createLineEditButtonLayout(QPointer<QLineEdit> lineEdit, QPointer<QToolButton> toolButton)
+{
+    // Do not let the user add anything, stick to specific dialogs with file directories
+    lineEdit->setReadOnly(true);
+    toolButton->setText("...");
+
+    auto* const layout = new QHBoxLayout;
+    layout->addWidget(lineEdit);
+    layout->addWidget(toolButton);
+
+    return layout;
 }
 
 

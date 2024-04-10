@@ -22,10 +22,14 @@ private slots:
     setBagToVideoWidget();
 
     void
+    setVideoToBagWidget();
+
+    void
     setProgressWidget(const QString bagDirectory,
                       const QString topicName,
                       const QString vidDirectory,
-                      bool          useHardwareAcceleration);
+                      bool          useHardwareAcceleration,
+                      bool          useEncode);
 
 private:
     void

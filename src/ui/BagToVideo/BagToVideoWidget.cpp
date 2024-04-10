@@ -29,14 +29,14 @@ BagToVideoWidget::BagToVideoWidget(QWidget *parent) :
 
     m_fileNameLineEdit = new QLineEdit;
     auto* const searchBagButton = new QToolButton;
-    auto* const searchBagFileLayout = createLineEditButtonLayout(m_fileNameLineEdit, searchBagButton);
+    auto* const searchBagFileLayout = Utils::createLineEditButtonLayout(m_fileNameLineEdit, searchBagButton);
 
     m_topicNameComboBox = new QComboBox;
     m_topicNameComboBox->setMinimumWidth(200);
 
     m_videoNameLineEdit = new QLineEdit;
     auto* const videoLocationButton = new QToolButton;
-    auto* const searchVideoPathLayout = createLineEditButtonLayout(m_videoNameLineEdit, videoLocationButton);
+    auto* const searchVideoPathLayout = Utils::createLineEditButtonLayout(m_videoNameLineEdit, videoLocationButton);
 
     m_formatComboBox = new QComboBox;
     m_formatComboBox->addItem("mp4", 0);
@@ -87,7 +87,10 @@ BagToVideoWidget::BagToVideoWidget(QWidget *parent) :
     connect(backButton, &QPushButton::clicked, this, [this] {
         emit back();
     });
-    connect(buttonBox, &QDialogButtonBox::accepted, this, &BagToVideoWidget::okButtonPressed);
+    connect(buttonBox, &QDialogButtonBox::accepted, this, [this] {
+        emit parametersSet(m_fileNameLineEdit->text(), m_topicNameComboBox->currentText(), m_videoNameLineEdit->text(),
+                           m_useHardwareAccCheckBox->checkState() == Qt::Checked);
+    });
 }
 
 
@@ -141,27 +144,4 @@ BagToVideoWidget::formatComboBoxTextChanged(const QString& text)
     newLineEditText.truncate(newLineEditText.lastIndexOf(QChar('.')));
     newLineEditText += "." + text;
     m_videoNameLineEdit->setText(newLineEditText);
-}
-
-
-void
-BagToVideoWidget::okButtonPressed()
-{
-    emit parametersSet(m_fileNameLineEdit->text(), m_topicNameComboBox->currentText(), m_videoNameLineEdit->text(),
-                       m_useHardwareAccCheckBox->checkState() == Qt::Checked);
-}
-
-
-QHBoxLayout*
-BagToVideoWidget::createLineEditButtonLayout(QPointer<QLineEdit> lineEdit, QPointer<QToolButton> toolButton)
-{
-    // Do not let the user add anything, stick to specific dialogs with file directories
-    lineEdit->setReadOnly(true);
-    toolButton->setText("...");
-
-    auto* const layout = new QHBoxLayout;
-    layout->addWidget(lineEdit);
-    layout->addWidget(toolButton);
-
-    return layout;
 }
