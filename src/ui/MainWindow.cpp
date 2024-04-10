@@ -4,6 +4,10 @@
 #include "ProgressWidget.hpp"
 #include "StartWidget.hpp"
 
+#include <QCloseEvent>
+
+#include "rclcpp/rclcpp.hpp"
+
 MainWindow::MainWindow()
 {
     setWindowTitle("ROS Tools");
@@ -46,4 +50,12 @@ MainWindow::setProgressWidget(const QString bagDirectory, const QString topicNam
 
     connect(progressWidget, &ProgressWidget::encodingStopped, this, &MainWindow::setBagToVideoWidget);
     connect(progressWidget, &ProgressWidget::finished, this, &MainWindow::setStartWidget);
+}
+
+
+void
+MainWindow::closeEvent(QCloseEvent *event)
+{
+    rclcpp::shutdown();
+    event->accept();
 }

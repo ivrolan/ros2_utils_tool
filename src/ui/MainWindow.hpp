@@ -26,4 +26,8 @@ private slots:
                       const QString topicName,
                       const QString vidDirectory,
                       bool          useHardwareAcceleration);
+
+private:
+    void
+    closeEvent(QCloseEvent *event) override;
 };

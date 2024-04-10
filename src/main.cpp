@@ -28,7 +28,5 @@ main(int argc, char* argv[])
     // Allow keyboard interrupts
     signal(SIGINT, SIG_DFL);
 
-    rclcpp::shutdown();
-
     return EXIT_SUCCESS;
 }
