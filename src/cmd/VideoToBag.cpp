@@ -1,6 +1,7 @@
 #include "WriteToBagThread.hpp"
 
-#include "Utils.hpp"
+#include "UtilsGeneral.hpp"
+#include "UtilsROS.hpp"
 
 #include <QCoreApplication>
 #include <QObject>
@@ -46,7 +47,7 @@ main(int argc, char* argv[])
 
     // Topic name
     const auto topicName = arguments.at(2);
-    if (!Utils::doesTopicNameFollowROS2Convention(topicName)) {
+    if (!UtilsROS::doesTopicNameFollowROS2Convention(topicName)) {
         std::cerr << "The topic name does not follow the ROS2 naming convention!" << std::endl;
         return 0;
     }
@@ -82,7 +83,7 @@ main(int argc, char* argv[])
         return 0;
     });
     QObject::connect(writeToBagThread, &WriteToBagThread::progressChanged, [&] (int iteration, int progress) {
-        const auto progressString = Utils::drawProgressString(progress);
+        const auto progressString = UtilsGeneral::drawProgressString(progress);
         // Always clear the last line for a nice "progress bar" feeling in the terminal
         std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << this_messageCount << ")\r";
     });

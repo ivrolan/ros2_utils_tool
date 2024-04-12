@@ -1,6 +1,7 @@
 #include "EncodingThread.hpp"
 
-#include "Utils.hpp"
+#include "UtilsGeneral.hpp"
+#include "UtilsROS.hpp"
 
 #include <QCoreApplication>
 #include <QObject>
@@ -40,11 +41,11 @@ main(int argc, char* argv[])
 
     // Topic name
     const auto topicName = arguments.at(2);
-    if (!Utils::doesBagContainTopicName(bagDirectory.toStdString(), topicName.toStdString())) {
+    if (!UtilsROS::doesBagContainTopicName(bagDirectory.toStdString(), topicName.toStdString())) {
         std::cerr << "Topic has not been found in the bag file!" << std::endl;
         return 0;
     }
-    if (Utils::getTopicType(bagDirectory.toStdString(), topicName.toStdString()) != "sensor_msgs/msg/Image") {
+    if (UtilsROS::getTopicType(bagDirectory.toStdString(), topicName.toStdString()) != "sensor_msgs/msg/Image") {
         std::cerr << "The entered topic is not in sensor message format!" << std::endl;
         return 0;
     }
@@ -71,7 +72,7 @@ main(int argc, char* argv[])
     }
     const auto useHardwareAcceleration = useHardwareAccelerationString == "true";
 
-    const auto this_messageCount = Utils::getTopicMessageCount(bagDirectory.toStdString(), topicName.toStdString());;
+    const auto this_messageCount = UtilsROS::getTopicMessageCount(bagDirectory.toStdString(), topicName.toStdString());;
 
     // Create encoding thread and connect to its informations
     auto* const encodingThread = new EncodingThread(bagDirectory, topicName, vidDirectory, useHardwareAcceleration);
@@ -80,7 +81,7 @@ main(int argc, char* argv[])
         return 0;
     });
     QObject::connect(encodingThread, &EncodingThread::progressChanged, [this_messageCount] (int iteration, int progress) {
-        const auto progressString = Utils::drawProgressString(progress);
+        const auto progressString = UtilsGeneral::drawProgressString(progress);
         // Always clear the last line for a nice "progress bar" feeling in the terminal
         std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << this_messageCount << ")\r";
     });

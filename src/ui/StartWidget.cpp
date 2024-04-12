@@ -1,6 +1,6 @@
 #include "StartWidget.hpp"
 
-#include "Utils.hpp"
+#include "UtilsUI.hpp"
 
 #include <QHBoxLayout>
 #include <QPushButton>
@@ -40,7 +40,7 @@ StartWidget::createToolButton(const QString& buttonText)
     toolButton->setIconSize(QSize(100, 45));
     toolButton->setFixedSize(QSize(150, 150));
 
-    Utils::setWidgetHeaderFont(toolButton);
+    UtilsUI::setWidgetHeaderFont(toolButton);
 
     return toolButton;
 }
@@ -49,7 +49,7 @@ StartWidget::createToolButton(const QString& buttonText)
 void
 StartWidget::setButtonIcons()
 {
-    const auto isDarkMode = Utils::isDarkMode();
+    const auto isDarkMode = UtilsUI::isDarkMode();
     m_bagToVideoPushButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_to_video_white.svg" : ":/icons/bag_to_video_black.svg"));
     m_videoToBagPushButton->setIcon(QIcon(isDarkMode ? ":/icons/video_to_bag_white.svg" : ":/icons/video_to_bag_black.svg"));
 }

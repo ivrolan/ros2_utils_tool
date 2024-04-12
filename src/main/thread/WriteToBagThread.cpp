@@ -10,8 +10,6 @@
 
 #include "sensor_msgs/msg/image.hpp"
 
-#include "Utils.hpp"
-
 WriteToBagThread::WriteToBagThread(const QString& bagDirectory,
                                    const QString& topicName,
                                    const QString& vidDirectory,

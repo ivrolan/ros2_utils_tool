@@ -7,7 +7,7 @@
 
 #include "sensor_msgs/msg/image.hpp"
 
-#include "Utils.hpp"
+#include "UtilsROS.hpp"
 #include "VideoEncoder.hpp"
 
 EncodingThread::EncodingThread(const QString& bagDirectory,
@@ -26,7 +26,7 @@ EncodingThread::run()
     rosbag2_cpp::Reader reader;
     reader.open(m_bagDirectory.toStdString());
 
-    const auto messageCount = Utils::getTopicMessageCount(m_bagDirectory.toStdString(), m_topicName.toStdString());
+    const auto messageCount = UtilsROS::getTopicMessageCount(m_bagDirectory.toStdString(), m_topicName.toStdString());
     emit calculatedMaximumInstances(messageCount);
 
     // Read a very first message to get its width and height value, which is needed for the video encoder

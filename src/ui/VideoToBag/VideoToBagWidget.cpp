@@ -1,6 +1,7 @@
 #include "VideoToBagWidget.hpp"
 
-#include "Utils.hpp"
+#include "UtilsROS.hpp"
+#include "UtilsUI.hpp"
 
 #include <QCheckBox>
 #include <QDialogButtonBox>
@@ -18,22 +19,22 @@
 VideoToBagWidget::VideoToBagWidget(QWidget *parent) :
     QWidget(parent)
 {
-    const auto isDarkMode = Utils::isDarkMode();
+    const auto isDarkMode = UtilsUI::isDarkMode();
     auto* const headerPixmapLabel = new QLabel;
     headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/video_to_bag_white.svg" : ":/icons/video_to_bag_black.svg").pixmap(QSize(100, 45)));
     headerPixmapLabel->setAlignment(Qt::AlignHCenter);
 
     auto* const headerTextLabel = new QLabel("Write Video to a ROSBag");
-    Utils::setWidgetHeaderFont(headerTextLabel);
+    UtilsUI::setWidgetHeaderFont(headerTextLabel);
     headerTextLabel->setAlignment(Qt::AlignHCenter);
 
     m_videoNameLineEdit = new QLineEdit;
     auto* const searchVideoFileButton = new QToolButton;
-    auto* const searchVideoFileLayout = Utils::createLineEditButtonLayout(m_videoNameLineEdit, searchVideoFileButton);
+    auto* const searchVideoFileLayout = UtilsUI::createLineEditButtonLayout(m_videoNameLineEdit, searchVideoFileButton);
 
     m_rosBagNameLineEdit = new QLineEdit;
     auto* const bagLocationButton = new QToolButton;
-    auto* const storeBagLayout = Utils::createLineEditButtonLayout(m_rosBagNameLineEdit, bagLocationButton);
+    auto* const storeBagLayout = UtilsUI::createLineEditButtonLayout(m_rosBagNameLineEdit, bagLocationButton);
 
     m_topicNameLineEdit = new QLineEdit;
 
@@ -133,7 +134,7 @@ VideoToBagWidget::enableOkButton()
 void
 VideoToBagWidget::okButtonPressed()
 {
-    if (!Utils::doesTopicNameFollowROS2Convention(m_topicNameLineEdit->text())) {
+    if (!UtilsROS::doesTopicNameFollowROS2Convention(m_topicNameLineEdit->text())) {
         auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Wrong topic name format!",
                                              "The topic name does not follow the ROS2 naming convention!", QMessageBox::Ok);
         msgBox->exec();

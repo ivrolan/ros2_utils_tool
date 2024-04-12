@@ -1,6 +1,7 @@
 #include "BagToVideoWidget.hpp"
 
-#include "Utils.hpp"
+#include "UtilsROS.hpp"
+#include "UtilsUI.hpp"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -18,25 +19,25 @@
 BagToVideoWidget::BagToVideoWidget(QWidget *parent) :
     QWidget(parent)
 {
-    const auto isDarkMode = Utils::isDarkMode();
+    const auto isDarkMode = UtilsUI::isDarkMode();
     auto* const headerPixmapLabel = new QLabel;
     headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/bag_to_video_white.svg" : ":/icons/bag_to_video_black.svg").pixmap(QSize(100, 45)));
     headerPixmapLabel->setAlignment(Qt::AlignHCenter);
 
     auto* const headerTextLabel = new QLabel("Encode Video from ROSBag");
-    Utils::setWidgetHeaderFont(headerTextLabel);
+    UtilsUI::setWidgetHeaderFont(headerTextLabel);
     headerTextLabel->setAlignment(Qt::AlignHCenter);
 
     m_fileNameLineEdit = new QLineEdit;
     auto* const searchBagButton = new QToolButton;
-    auto* const searchBagFileLayout = Utils::createLineEditButtonLayout(m_fileNameLineEdit, searchBagButton);
+    auto* const searchBagFileLayout = UtilsUI::createLineEditButtonLayout(m_fileNameLineEdit, searchBagButton);
 
     m_topicNameComboBox = new QComboBox;
     m_topicNameComboBox->setMinimumWidth(200);
 
     m_videoNameLineEdit = new QLineEdit;
     auto* const videoLocationButton = new QToolButton;
-    auto* const searchVideoPathLayout = Utils::createLineEditButtonLayout(m_videoNameLineEdit, videoLocationButton);
+    auto* const searchVideoPathLayout = UtilsUI::createLineEditButtonLayout(m_videoNameLineEdit, videoLocationButton);
 
     m_formatComboBox = new QComboBox;
     m_formatComboBox->addItem("mp4", 0);
@@ -104,7 +105,7 @@ BagToVideoWidget::searchButtonPressed()
     }
 
     m_topicNameComboBox->clear();
-    const auto videoTopics = Utils::getBagVideoTopics(m_fileNameLineEdit->text().toStdString());
+    const auto videoTopics = UtilsROS::getBagVideoTopics(m_fileNameLineEdit->text().toStdString());
     // Only enable if both line edits contain text
     m_okButton->setEnabled(!videoTopics.empty() && !m_videoNameLineEdit->text().isEmpty());
 
