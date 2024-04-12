@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QProgressBar>
 #include <QPushButton>
+#include <QShortcut>
 #include <QVBoxLayout>
 
 ProgressWidget::ProgressWidget(const QString& bagDirectory, const QString& topicName, const QString& vidDirectory,
@@ -58,8 +59,9 @@ ProgressWidget::ProgressWidget(const QString& bagDirectory, const QString& topic
     auto* const mainLayout = new QVBoxLayout;
     mainLayout->addLayout(uiLayoutStretched);
     mainLayout->addLayout(buttonLayout);
-
     setLayout(mainLayout);
+
+    auto* const doneShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
 
     if (useEncode) {
         m_thread = new EncodingThread(bagDirectory, topicName, vidDirectory, useHardwareAcceleration, this);
@@ -91,6 +93,12 @@ ProgressWidget::ProgressWidget(const QString& bagDirectory, const QString& topic
         emit encodingStopped();
     });
     connect(finishedButton, &QPushButton::clicked, this, [this] {
+        emit finished();
+    });
+    connect(doneShortCut, &QShortcut::activated, this, [this, finishedButton] {
+        if (!finishedButton->isVisible()) {
+            return;
+        }
         emit finished();
     });
 

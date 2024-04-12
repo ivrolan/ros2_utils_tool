@@ -13,6 +13,7 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QShortcut>
 #include <QToolButton>
 #include <QVBoxLayout>
 
@@ -76,6 +77,8 @@ VideoToBagWidget::VideoToBagWidget(QWidget *parent) :
     mainLayout->addLayout(buttonLayout);
     setLayout(mainLayout);
 
+    auto* const okShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
+
     connect(searchVideoFileButton, &QPushButton::clicked, this, &VideoToBagWidget::searchButtonPressed);
     connect(bagLocationButton, &QPushButton::clicked, this, &VideoToBagWidget::bagLocationButtonPressed);
     connect(m_topicNameLineEdit, &QLineEdit::textChanged, this, [this] {
@@ -85,6 +88,7 @@ VideoToBagWidget::VideoToBagWidget(QWidget *parent) :
         emit back();
     });
     connect(buttonBox, &QDialogButtonBox::accepted, this, &VideoToBagWidget::okButtonPressed);
+    connect(okShortCut, &QShortcut::activated, this, &VideoToBagWidget::okButtonPressed);
 }
 
 
@@ -134,6 +138,10 @@ VideoToBagWidget::enableOkButton()
 void
 VideoToBagWidget::okButtonPressed()
 {
+    if (!m_okButton->isEnabled()) {
+        return;
+    }
+
     if (!UtilsROS::doesTopicNameFollowROS2Convention(m_topicNameLineEdit->text())) {
         auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Wrong topic name format!",
                                              "The topic name does not follow the ROS2 naming convention!", QMessageBox::Ok);

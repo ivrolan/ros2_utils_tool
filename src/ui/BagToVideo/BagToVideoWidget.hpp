@@ -40,6 +40,9 @@ private slots:
     void
     formatComboBoxTextChanged(const QString& text);
 
+    void
+    okButtonPressed();
+
 private:
     QPointer<QLineEdit> m_fileNameLineEdit;
     QPointer<QComboBox> m_topicNameComboBox;

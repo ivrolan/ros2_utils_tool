@@ -13,6 +13,7 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QShortcut>
 #include <QToolButton>
 #include <QVBoxLayout>
 
@@ -82,16 +83,16 @@ BagToVideoWidget::BagToVideoWidget(QWidget *parent) :
     mainLayout->addLayout(buttonLayout);
     setLayout(mainLayout);
 
+    auto* const okShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
+
     connect(searchBagButton, &QPushButton::clicked, this, &BagToVideoWidget::searchButtonPressed);
     connect(videoLocationButton, &QPushButton::clicked, this, &BagToVideoWidget::videoLocationButtonPressed);
     connect(m_formatComboBox, &QComboBox::currentTextChanged, this, &BagToVideoWidget::formatComboBoxTextChanged);
     connect(backButton, &QPushButton::clicked, this, [this] {
         emit back();
     });
-    connect(buttonBox, &QDialogButtonBox::accepted, this, [this] {
-        emit parametersSet(m_fileNameLineEdit->text(), m_topicNameComboBox->currentText(), m_videoNameLineEdit->text(),
-                           m_useHardwareAccCheckBox->checkState() == Qt::Checked);
-    });
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &BagToVideoWidget::okButtonPressed);
+    connect(okShortCut, &QShortcut::activated, this, &BagToVideoWidget::okButtonPressed);
 }
 
 
@@ -145,4 +146,16 @@ BagToVideoWidget::formatComboBoxTextChanged(const QString& text)
     newLineEditText.truncate(newLineEditText.lastIndexOf(QChar('.')));
     newLineEditText += "." + text;
     m_videoNameLineEdit->setText(newLineEditText);
+}
+
+
+void
+BagToVideoWidget::okButtonPressed()
+{
+    if (!m_okButton->isEnabled()) {
+        return;
+    }
+
+    emit parametersSet(m_fileNameLineEdit->text(), m_topicNameComboBox->currentText(), m_videoNameLineEdit->text(),
+                       m_useHardwareAccCheckBox->checkState() == Qt::Checked);
 }
