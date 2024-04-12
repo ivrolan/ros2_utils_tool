@@ -30,16 +30,20 @@ VideoToBagWidget::VideoToBagWidget(QWidget *parent) :
     headerTextLabel->setAlignment(Qt::AlignHCenter);
 
     m_videoNameLineEdit = new QLineEdit;
+    m_videoNameLineEdit->setToolTip("The directory of the source video file.");
     auto* const searchVideoFileButton = new QToolButton;
     auto* const searchVideoFileLayout = UtilsUI::createLineEditButtonLayout(m_videoNameLineEdit, searchVideoFileButton);
 
     m_rosBagNameLineEdit = new QLineEdit;
+    m_rosBagNameLineEdit->setToolTip("The directory where the ROSBag should be stored.");
     auto* const bagLocationButton = new QToolButton;
     auto* const storeBagLayout = UtilsUI::createLineEditButtonLayout(m_rosBagNameLineEdit, bagLocationButton);
 
     m_topicNameLineEdit = new QLineEdit;
+    m_topicNameLineEdit->setToolTip("The video's topic name inside the ROSBag.");
 
     m_useHardwareAccCheckBox = new QCheckBox;
+    m_useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster video decoding and writing.");
 
     auto* const formLayout = new QFormLayout;
     formLayout->addRow("Video File:", searchVideoFileLayout);

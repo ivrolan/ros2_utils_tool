@@ -30,21 +30,29 @@ BagToVideoWidget::BagToVideoWidget(QWidget *parent) :
     headerTextLabel->setAlignment(Qt::AlignHCenter);
 
     m_fileNameLineEdit = new QLineEdit;
+    m_fileNameLineEdit->setToolTip("The directory of the ROSBag source file.");
+
     auto* const searchBagButton = new QToolButton;
     auto* const searchBagFileLayout = UtilsUI::createLineEditButtonLayout(m_fileNameLineEdit, searchBagButton);
 
     m_topicNameComboBox = new QComboBox;
     m_topicNameComboBox->setMinimumWidth(200);
+    m_topicNameComboBox->setToolTip("The ROSBag topic of the video file.\n"
+                                    "If the Bag contains multiple video topics, you can choose one of them.");
 
     m_videoNameLineEdit = new QLineEdit;
+    m_videoNameLineEdit->setToolTip("The directory where the video file should be stored.");
+
     auto* const videoLocationButton = new QToolButton;
     auto* const searchVideoPathLayout = UtilsUI::createLineEditButtonLayout(m_videoNameLineEdit, videoLocationButton);
 
     m_formatComboBox = new QComboBox;
     m_formatComboBox->addItem("mp4", 0);
     m_formatComboBox->addItem("mkv", 1);
+    m_formatComboBox->setToolTip("The video format file.");
 
     m_useHardwareAccCheckBox = new QCheckBox;
+    m_useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster encoding.");
 
     auto* const formLayout = new QFormLayout;
     formLayout->addRow("Bag File:", searchBagFileLayout);
