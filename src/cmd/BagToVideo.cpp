@@ -72,15 +72,18 @@ main(int argc, char* argv[])
     }
     const auto useHardwareAcceleration = useHardwareAccelerationString == "true";
 
-    const auto this_messageCount = UtilsROS::getTopicMessageCount(bagDirectory.toStdString(), topicName.toStdString());;
+    auto this_messageCount = 0;
 
     // Create encoding thread and connect to its informations
     auto* const encodingThread = new EncodingThread(bagDirectory, topicName, vidDirectory, useHardwareAcceleration);
+    QObject::connect(encodingThread, &EncodingThread::calculatedMaximumInstances, [&this_messageCount](int count) {
+        this_messageCount = count;
+    });
     QObject::connect(encodingThread, &EncodingThread::openingCVInstanceFailed, [] {
         std::cerr << "The video writing failed. Please make sure that all parameters are set correctly and disable the hardware acceleration, if necessary." << std::endl;
         return 0;
     });
-    QObject::connect(encodingThread, &EncodingThread::progressChanged, [this_messageCount] (int iteration, int progress) {
+    QObject::connect(encodingThread, &EncodingThread::progressChanged, [&this_messageCount] (int iteration, int progress) {
         const auto progressString = UtilsGeneral::drawProgressString(progress);
         // Always clear the last line for a nice "progress bar" feeling in the terminal
         std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << this_messageCount << ")\r";

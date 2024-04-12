@@ -110,7 +110,7 @@ BagToVideoWidget::searchButtonPressed()
     m_okButton->setEnabled(!videoTopics.empty() && !m_videoNameLineEdit->text().isEmpty());
 
     if (videoTopics.empty()) {
-        auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Topic not found!",
+        auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Topic not found!",
                                              "The bag file does not contain any image/video topics!",
                                              QMessageBox::Ok);
         msgBox->exec();

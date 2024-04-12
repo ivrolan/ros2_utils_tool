@@ -69,12 +69,11 @@ main(int argc, char* argv[])
     }
     const auto useHardwareAcceleration = useHardwareAccelerationString == "true";
 
-    int this_messageCount;
+    auto this_messageCount = 0;
 
     // Create thread and connect to its informations
     auto* const writeToBagThread = new WriteToBagThread(bagDirectory, topicName, vidDirectory, useHardwareAcceleration);
     QObject::connect(writeToBagThread, &WriteToBagThread::calculatedMaximumInstances, [&this_messageCount](int count) {
-        std::cout << "I WAS CALLED! " << count << std::endl;
         this_messageCount = count;
     });
     QObject::connect(writeToBagThread, &WriteToBagThread::openingCVInstanceFailed, [] {
@@ -82,7 +81,7 @@ main(int argc, char* argv[])
             "and disable the hardware acceleration, if necessary." << std::endl;
         return 0;
     });
-    QObject::connect(writeToBagThread, &WriteToBagThread::progressChanged, [&] (int iteration, int progress) {
+    QObject::connect(writeToBagThread, &WriteToBagThread::progressChanged, [&this_messageCount] (int iteration, int progress) {
         const auto progressString = UtilsGeneral::drawProgressString(progress);
         // Always clear the last line for a nice "progress bar" feeling in the terminal
         std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << this_messageCount << ")\r";
