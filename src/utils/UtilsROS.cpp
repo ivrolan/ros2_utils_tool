@@ -5,6 +5,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rosbag2_cpp/reader.hpp"
 
+#include <QDebug>
+
 namespace UtilsROS
 {
 bool
@@ -79,13 +81,28 @@ getBagVideoTopics(const std::string& bagDirectory)
 bool
 doesTopicNameFollowROS2Convention(const QString& topicName)
 {
-    auto doesFollow = true;
-    doesFollow &= !topicName.endsWith('/') && !topicName.contains("//") && !topicName.contains("__");
-
+    // Only may contain A-z, a-z, 0-9, _ and /
+    QRegularExpression regularExpression("[^A-Za-z0-9/_{}]");
+    if (topicName.contains(regularExpression)) {
+        return false;
+    }
+    // Must not end with /, must not contain __ and //
+    if (topicName.endsWith('/') || topicName.contains("//") || topicName.contains("__")) {
+        return false;
+    }
+    // First character must not contain a number
     const auto firstCharacter = QString(topicName.front());
-    QRegularExpression regularExpression("[0-9]");
-    doesFollow &= !firstCharacter.contains(regularExpression);
-
-    return doesFollow;
+    regularExpression.setPattern("[0-9]");
+    if (firstCharacter.contains(regularExpression)) {
+        return false;
+    }
+    // If a ~ is contained, the next character must be a /
+    for (auto i = 0; i < topicName.length() - 1; i++) {
+        if (topicName.at(i) == '~' && topicName.at(i + 1) != '/') {
+            return false;
+        }
+    }
+    // Must have balanced curly braces
+    return topicName.count(QLatin1Char('{')) == topicName.count(QLatin1Char('}'));
 }
 }
