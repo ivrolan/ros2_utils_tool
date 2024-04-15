@@ -30,10 +30,10 @@ add_executable(tool_ui
     ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp resources/resources.qrc
 )
 add_executable(tool_bag_to_video
-    ${CMAKE_CURRENT_LIST_DIR}/src/cmd/BagToVideo.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/cli/BagToVideo.cpp
 )
 add_executable(tool_video_to_bag
-    ${CMAKE_CURRENT_LIST_DIR}/src/cmd/VideoToBag.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/cli/VideoToBag.cpp
 )
 
 ament_target_dependencies(tool_ui cv_bridge rclcpp rosbag2_cpp sensor_msgs std_msgs)

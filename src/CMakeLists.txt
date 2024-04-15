@@ -1,4 +1,4 @@
-add_subdirectory(cmd)
+add_subdirectory(cli)
 add_subdirectory(main)
 add_subdirectory(ros)
 add_subdirectory(ui)
