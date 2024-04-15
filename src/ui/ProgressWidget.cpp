@@ -68,6 +68,7 @@ ProgressWidget::ProgressWidget(const QString& bagDirectory, const QString& topic
     } else {
         m_thread = new WriteToBagThread(bagDirectory, topicName, vidDirectory, useHardwareAcceleration, this);
     }
+
     connect(m_thread, &BasicThread::calculatedMaximumInstances, this, [this](int count) {
         m_maximumCount = count;
     });
@@ -83,9 +84,11 @@ ProgressWidget::ProgressWidget(const QString& bagDirectory, const QString& topic
                                          : "Writing frame " + QString::number(iteration) + " of " + QString::number(m_maximumCount) + "...");
         progressBar->setValue(progress);
     });
-    connect(m_thread, &BasicThread::finished, this, [finishedButton] {
+    connect(m_thread, &BasicThread::finished, this, [cancelButton, finishedButton] {
+        cancelButton->setVisible(false);
         finishedButton->setVisible(true);
     });
+
     connect(cancelButton, &QPushButton::clicked, this, [this] {
         if (m_thread->isRunning()) {
             m_thread->requestInterruption();
