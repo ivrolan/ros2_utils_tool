@@ -6,6 +6,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDialogButtonBox>
+#include <QEvent>
 #include <QFileDialog>
 #include <QFormLayout>
 #include <QHBoxLayout>
@@ -20,10 +21,9 @@
 BagToVideoWidget::BagToVideoWidget(QWidget *parent) :
     QWidget(parent)
 {
-    const auto isDarkMode = UtilsUI::isDarkMode();
-    auto* const headerPixmapLabel = new QLabel;
-    headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/bag_to_video_white.svg" : ":/icons/bag_to_video_black.svg").pixmap(QSize(100, 45)));
-    headerPixmapLabel->setAlignment(Qt::AlignHCenter);
+    m_headerPixmapLabel = new QLabel;
+    m_headerPixmapLabel->setAlignment(Qt::AlignHCenter);
+    setPixmapLabelIcon();
 
     auto* const headerTextLabel = new QLabel("Encode Video from ROSBag");
     UtilsUI::setWidgetHeaderFont(headerTextLabel);
@@ -63,7 +63,7 @@ BagToVideoWidget::BagToVideoWidget(QWidget *parent) :
 
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
-    controlsLayout->addWidget(headerPixmapLabel);
+    controlsLayout->addWidget(m_headerPixmapLabel);
     controlsLayout->addWidget(headerTextLabel);
     controlsLayout->addSpacing(40);
     controlsLayout->addLayout(formLayout);
@@ -166,4 +166,22 @@ BagToVideoWidget::okButtonPressed()
 
     emit parametersSet(m_fileNameLineEdit->text(), m_topicNameComboBox->currentText(), m_videoNameLineEdit->text(),
                        m_useHardwareAccCheckBox->checkState() == Qt::Checked);
+}
+
+
+void
+BagToVideoWidget::setPixmapLabelIcon()
+{
+    const auto isDarkMode = UtilsUI::isDarkMode();
+    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/bag_to_video_white.svg" : ":/icons/bag_to_video_black.svg").pixmap(QSize(100, 45)));
+}
+
+
+bool
+BagToVideoWidget::event(QEvent *event)
+{
+    if (event->type() == QEvent::ApplicationPaletteChange || event->type() == QEvent::PaletteChange) {
+        setPixmapLabelIcon();
+    }
+    return QWidget::event(event);
 }

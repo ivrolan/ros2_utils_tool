@@ -5,6 +5,7 @@
 
 class QCheckBox;
 class QHBoxLayout;
+class QLabel;
 class QLineEdit;
 class QPushButton;
 
@@ -43,7 +44,14 @@ private:
     void
     enableOkButton();
 
+    void
+    setPixmapLabelIcon();
+
+    bool
+    event(QEvent *event) override;
+
 private:
+    QPointer<QLabel> m_headerPixmapLabel;
     QPointer<QLineEdit> m_videoNameLineEdit;
     QPointer<QLineEdit> m_rosBagNameLineEdit;
     QPointer<QLineEdit> m_topicNameLineEdit;

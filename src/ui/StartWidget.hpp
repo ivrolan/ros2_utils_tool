@@ -27,6 +27,9 @@ private:
     void
     setButtonIcons();
 
+    bool
+    event(QEvent *event) override;
+
 private:
     QPointer<QToolButton> m_bagToVideoPushButton;
     QPointer<QToolButton> m_videoToBagPushButton;

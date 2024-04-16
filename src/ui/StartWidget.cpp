@@ -2,6 +2,7 @@
 
 #include "UtilsUI.hpp"
 
+#include <QEvent>
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QToolButton>
@@ -52,4 +53,14 @@ StartWidget::setButtonIcons()
     const auto isDarkMode = UtilsUI::isDarkMode();
     m_bagToVideoPushButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_to_video_white.svg" : ":/icons/bag_to_video_black.svg"));
     m_videoToBagPushButton->setIcon(QIcon(isDarkMode ? ":/icons/video_to_bag_white.svg" : ":/icons/video_to_bag_black.svg"));
+}
+
+
+bool
+StartWidget::event(QEvent *event)
+{
+    if (event->type() == QEvent::ApplicationPaletteChange || event->type() == QEvent::PaletteChange) {
+        setButtonIcons();
+    }
+    return QWidget::event(event);
 }

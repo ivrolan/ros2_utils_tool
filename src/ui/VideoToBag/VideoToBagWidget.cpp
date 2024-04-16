@@ -5,6 +5,7 @@
 
 #include <QCheckBox>
 #include <QDialogButtonBox>
+#include <QEvent>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFormLayout>
@@ -20,10 +21,9 @@
 VideoToBagWidget::VideoToBagWidget(QWidget *parent) :
     QWidget(parent)
 {
-    const auto isDarkMode = UtilsUI::isDarkMode();
-    auto* const headerPixmapLabel = new QLabel;
-    headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/video_to_bag_white.svg" : ":/icons/video_to_bag_black.svg").pixmap(QSize(100, 45)));
-    headerPixmapLabel->setAlignment(Qt::AlignHCenter);
+    m_headerPixmapLabel = new QLabel;
+    m_headerPixmapLabel->setAlignment(Qt::AlignHCenter);
+    setPixmapLabelIcon();
 
     auto* const headerTextLabel = new QLabel("Write Video to a ROSBag");
     UtilsUI::setWidgetHeaderFont(headerTextLabel);
@@ -53,7 +53,7 @@ VideoToBagWidget::VideoToBagWidget(QWidget *parent) :
 
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
-    controlsLayout->addWidget(headerPixmapLabel);
+    controlsLayout->addWidget(m_headerPixmapLabel);
     controlsLayout->addWidget(headerTextLabel);
     controlsLayout->addSpacing(40);
     controlsLayout->addLayout(formLayout);
@@ -131,15 +131,6 @@ VideoToBagWidget::bagLocationButtonPressed()
 
 
 void
-VideoToBagWidget::enableOkButton()
-{
-    m_okButton->setEnabled(!m_videoNameLineEdit->text().isEmpty() &&
-                           !m_rosBagNameLineEdit->text().isEmpty() &&
-                           !m_topicNameLineEdit->text().isEmpty());
-}
-
-
-void
 VideoToBagWidget::okButtonPressed()
 {
     if (!m_okButton->isEnabled()) {
@@ -154,4 +145,31 @@ VideoToBagWidget::okButtonPressed()
     }
     emit parametersSet(m_videoNameLineEdit->text(), m_rosBagNameLineEdit->text(), m_topicNameLineEdit->text(),
                        m_useHardwareAccCheckBox->checkState() == Qt::Checked);
+}
+
+
+void
+VideoToBagWidget::enableOkButton()
+{
+    m_okButton->setEnabled(!m_videoNameLineEdit->text().isEmpty() &&
+                           !m_rosBagNameLineEdit->text().isEmpty() &&
+                           !m_topicNameLineEdit->text().isEmpty());
+}
+
+
+void
+VideoToBagWidget::setPixmapLabelIcon()
+{
+    const auto isDarkMode = UtilsUI::isDarkMode();
+    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/video_to_bag_white.svg" : ":/icons/video_to_bag_black.svg").pixmap(QSize(100, 45)));
+}
+
+
+bool
+VideoToBagWidget::event(QEvent *event)
+{
+    if (event->type() == QEvent::ApplicationPaletteChange || event->type() == QEvent::PaletteChange) {
+        setPixmapLabelIcon();
+    }
+    return QWidget::event(event);
 }

@@ -6,6 +6,7 @@
 class QCheckBox;
 class QComboBox;
 class QHBoxLayout;
+class QLabel;
 class QLineEdit;
 class QPushButton;
 class QToolButton;
@@ -44,6 +45,14 @@ private slots:
     okButtonPressed();
 
 private:
+    void
+    setPixmapLabelIcon();
+
+    bool
+    event(QEvent *event) override;
+
+private:
+    QPointer<QLabel> m_headerPixmapLabel;
     QPointer<QLineEdit> m_fileNameLineEdit;
     QPointer<QComboBox> m_topicNameComboBox;
     QPointer<QLineEdit> m_videoNameLineEdit;
