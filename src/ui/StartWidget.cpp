@@ -4,8 +4,10 @@
 
 #include <QEvent>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QPushButton>
 #include <QToolButton>
+#include <QVBoxLayout>
 
 StartWidget::StartWidget(QWidget *parent) :
     QWidget(parent)
@@ -21,7 +23,20 @@ StartWidget::StartWidget(QWidget *parent) :
     buttonLayout->addWidget(m_videoToBagPushButton);
     buttonLayout->addStretch();
 
-    setLayout(buttonLayout);
+    auto* const versionLabel = new QLabel("v0.1.0");
+    versionLabel->setToolTip("Initial version.");
+
+    auto* const versionLayout = new QHBoxLayout;
+    versionLayout->addStretch();
+    versionLayout->addWidget(versionLabel);
+
+    auto* const mainLayout = new QVBoxLayout;
+    mainLayout->addStretch();
+    mainLayout->addLayout(buttonLayout);
+    mainLayout->addStretch();
+    mainLayout->addLayout(versionLayout);
+
+    setLayout(mainLayout);
 
     connect(m_bagToVideoPushButton, &QPushButton::clicked, this, [this] {
         emit bagToVideoRequested();
