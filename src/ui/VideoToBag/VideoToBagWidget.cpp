@@ -108,7 +108,7 @@ VideoToBagWidget::searchButtonPressed()
     }
 
     QFileInfo fileInfo(fileName);
-    if (fileInfo.suffix() != "mp4" && fileInfo.suffix() != "mkv") {
+    if (fileInfo.suffix().toLower() != "mp4" && fileInfo.suffix().toLower() != "mkv") {
         auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Wrong format!", "The video must be in mp4 or mkv format!", QMessageBox::Ok);
         msgBox->exec();
         return;
