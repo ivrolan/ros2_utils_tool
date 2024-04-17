@@ -12,16 +12,23 @@ The following packages are required:
 - ROS2 for all ROS-related functionalities. The tools run on version _humble_.
 - OpenCV for writing video files.
 - Qt5/Qt6 for all UI as well as some convenience functionalities.
+- (Optional) Catch2-ROS for Catch2-based unit tests with ROS2.
 
 Take a look at [1] for the installation of ROS2 Humble on Ubuntu 22.04.\
-To install OpenCV on Ubuntu 22.04, use the following command:
+
+OpenCV:
 ```
 sudo apt install libopencv-dev
 ```
 
-For Qt5 and/or Qt6:
+Qt5/Qt6:
 ```
 sudo apt install qtbase5-dev qt6-base-dev
+```
+
+Catch2 for ROS2:
+```
+sudo apt install ros-humble-catch-ros2
 ```
 
 ### Build the tool

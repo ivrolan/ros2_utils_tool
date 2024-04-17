@@ -25,6 +25,7 @@ else()
 endif()
 
 add_subdirectory(src)
+add_subdirectory(test)
 
 add_executable(tool_ui
     ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp resources/resources.qrc
@@ -52,14 +53,9 @@ target_link_libraries(tool_video_to_bag
 
 install(TARGETS
     tool_ui
-    DESTINATION lib/${PROJECT_NAME}/
-)
-install(TARGETS
     tool_bag_to_video
-    DESTINATION lib/${PROJECT_NAME}/
-)
-install(TARGETS
     tool_video_to_bag
+    tool_tests
     DESTINATION lib/${PROJECT_NAME}/
 )
 

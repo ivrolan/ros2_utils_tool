@@ -5,8 +5,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rosbag2_cpp/reader.hpp"
 
-#include <QDebug>
-
 namespace UtilsROS
 {
 bool
@@ -82,7 +80,7 @@ bool
 doesTopicNameFollowROS2Convention(const QString& topicName)
 {
     // Only may contain A-z, a-z, 0-9, _ and /
-    QRegularExpression regularExpression("[^A-Za-z0-9/_{}]");
+    QRegularExpression regularExpression("[^A-Za-z0-9/_{}~]");
     if (topicName.contains(regularExpression)) {
         return false;
     }
