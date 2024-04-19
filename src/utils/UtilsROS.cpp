@@ -5,7 +5,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rosbag2_cpp/reader.hpp"
 
-namespace UtilsROS
+namespace Utils::ROS
 {
 bool
 doesBagContainTopicName(const std::string& bagDirectory,

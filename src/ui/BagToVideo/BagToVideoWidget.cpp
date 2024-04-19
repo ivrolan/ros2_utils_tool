@@ -26,14 +26,14 @@ BagToVideoWidget::BagToVideoWidget(QWidget *parent) :
     setPixmapLabelIcon();
 
     auto* const headerTextLabel = new QLabel("Encode Video from ROSBag");
-    UtilsUI::setWidgetHeaderFont(headerTextLabel);
+    Utils::UI::setWidgetHeaderFont(headerTextLabel);
     headerTextLabel->setAlignment(Qt::AlignHCenter);
 
     m_fileNameLineEdit = new QLineEdit;
     m_fileNameLineEdit->setToolTip("The directory of the ROSBag source file.");
 
     auto* const searchBagButton = new QToolButton;
-    auto* const searchBagFileLayout = UtilsUI::createLineEditButtonLayout(m_fileNameLineEdit, searchBagButton);
+    auto* const searchBagFileLayout = Utils::UI::createLineEditButtonLayout(m_fileNameLineEdit, searchBagButton);
 
     m_topicNameComboBox = new QComboBox;
     m_topicNameComboBox->setMinimumWidth(200);
@@ -44,7 +44,7 @@ BagToVideoWidget::BagToVideoWidget(QWidget *parent) :
     m_videoNameLineEdit->setToolTip("The directory where the video file should be stored.");
 
     auto* const videoLocationButton = new QToolButton;
-    auto* const searchVideoPathLayout = UtilsUI::createLineEditButtonLayout(m_videoNameLineEdit, videoLocationButton);
+    auto* const searchVideoPathLayout = Utils::UI::createLineEditButtonLayout(m_videoNameLineEdit, videoLocationButton);
 
     m_formatComboBox = new QComboBox;
     m_formatComboBox->addItem("mp4", 0);
@@ -114,7 +114,7 @@ BagToVideoWidget::searchButtonPressed()
     }
 
     m_topicNameComboBox->clear();
-    const auto videoTopics = UtilsROS::getBagVideoTopics(m_fileNameLineEdit->text().toStdString());
+    const auto videoTopics = Utils::ROS::getBagVideoTopics(m_fileNameLineEdit->text().toStdString());
     // Only enable if both line edits contain text
     m_okButton->setEnabled(!videoTopics.empty() && !m_videoNameLineEdit->text().isEmpty());
 
@@ -172,7 +172,7 @@ BagToVideoWidget::okButtonPressed()
 void
 BagToVideoWidget::setPixmapLabelIcon()
 {
-    const auto isDarkMode = UtilsUI::isDarkMode();
+    const auto isDarkMode = Utils::UI::isDarkMode();
     m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/bag_to_video_white.svg" : ":/icons/bag_to_video_black.svg").pixmap(QSize(100, 45)));
 }
 

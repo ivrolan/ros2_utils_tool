@@ -7,7 +7,7 @@
 TEST_CASE("Utils UI Testing", "[utils]") {
     SECTION("Font size test") {
         auto* const widget = new QWidget;
-        UtilsUI::setWidgetHeaderFont(widget);
+        Utils::UI::setWidgetHeaderFont(widget);
 
         const auto font = widget->font();
         REQUIRE(font.pointSize() == 16);

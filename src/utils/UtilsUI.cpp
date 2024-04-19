@@ -4,7 +4,7 @@
 
 #include <cmath>
 
-namespace UtilsUI
+namespace Utils::UI
 {
 void
 setWidgetHeaderFont(QWidget* widget)

@@ -9,7 +9,7 @@
 #include <string>
 
 // Util functions for user interface related things
-namespace UtilsUI
+namespace Utils::UI
 {
 // Create a larger font for a certain widget
 void

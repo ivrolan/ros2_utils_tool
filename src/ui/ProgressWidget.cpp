@@ -15,7 +15,7 @@ ProgressWidget::ProgressWidget(const QString& bagDirectory, const QString& topic
                                bool useHardwareAcceleration, bool useEncode, QWidget *parent) :
     QWidget(parent)
 {
-    const auto isDarkMode = UtilsUI::isDarkMode();
+    const auto isDarkMode = Utils::UI::isDarkMode();
     auto* const headerPixmapLabel = new QLabel;
     if (useEncode) {
         headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/bag_to_video_white.svg" : ":/icons/bag_to_video_black.svg").pixmap(QSize(100, 45)));
@@ -25,7 +25,7 @@ ProgressWidget::ProgressWidget(const QString& bagDirectory, const QString& topic
     headerPixmapLabel->setAlignment(Qt::AlignHCenter);
 
     auto* const headerLabel = new QLabel("Encoding Video...");
-    UtilsUI::setWidgetHeaderFont(headerLabel);
+    Utils::UI::setWidgetHeaderFont(headerLabel);
     headerLabel->setAlignment(Qt::AlignHCenter);
 
     auto* const progressBar = new QProgressBar;

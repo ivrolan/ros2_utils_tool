@@ -41,11 +41,11 @@ main(int argc, char* argv[])
 
     // Topic name
     const auto topicName = arguments.at(2);
-    if (!UtilsROS::doesBagContainTopicName(bagDirectory.toStdString(), topicName.toStdString())) {
+    if (!Utils::ROS::doesBagContainTopicName(bagDirectory.toStdString(), topicName.toStdString())) {
         std::cerr << "Topic has not been found in the bag file!" << std::endl;
         return 0;
     }
-    if (UtilsROS::getTopicType(bagDirectory.toStdString(), topicName.toStdString()) != "sensor_msgs/msg/Image") {
+    if (Utils::ROS::getTopicType(bagDirectory.toStdString(), topicName.toStdString()) != "sensor_msgs/msg/Image") {
         std::cerr << "The entered topic is not in sensor message format!" << std::endl;
         return 0;
     }
@@ -84,7 +84,7 @@ main(int argc, char* argv[])
         return 0;
     });
     QObject::connect(encodingThread, &EncodingThread::progressChanged, [&this_messageCount] (int iteration, int progress) {
-        const auto progressString = UtilsGeneral::drawProgressString(progress);
+        const auto progressString = Utils::General::drawProgressString(progress);
         // Always clear the last line for a nice "progress bar" feeling in the terminal
         std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << this_messageCount << ")\r";
     });

@@ -47,7 +47,7 @@ main(int argc, char* argv[])
 
     // Topic name
     const auto topicName = arguments.at(2);
-    if (!UtilsROS::doesTopicNameFollowROS2Convention(topicName)) {
+    if (!Utils::ROS::doesTopicNameFollowROS2Convention(topicName)) {
         std::cerr << "The topic name does not follow the ROS2 naming convention!" << std::endl;
         return 0;
     }
@@ -82,7 +82,7 @@ main(int argc, char* argv[])
         return 0;
     });
     QObject::connect(writeToBagThread, &WriteToBagThread::progressChanged, [&this_messageCount] (int iteration, int progress) {
-        const auto progressString = UtilsGeneral::drawProgressString(progress);
+        const auto progressString = Utils::General::drawProgressString(progress);
         // Always clear the last line for a nice "progress bar" feeling in the terminal
         std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << this_messageCount << ")\r";
     });

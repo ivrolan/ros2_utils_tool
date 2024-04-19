@@ -26,18 +26,18 @@ VideoToBagWidget::VideoToBagWidget(QWidget *parent) :
     setPixmapLabelIcon();
 
     auto* const headerTextLabel = new QLabel("Write Video to a ROSBag");
-    UtilsUI::setWidgetHeaderFont(headerTextLabel);
+    Utils::UI::setWidgetHeaderFont(headerTextLabel);
     headerTextLabel->setAlignment(Qt::AlignHCenter);
 
     m_videoNameLineEdit = new QLineEdit;
     m_videoNameLineEdit->setToolTip("The directory of the source video file.");
     auto* const searchVideoFileButton = new QToolButton;
-    auto* const searchVideoFileLayout = UtilsUI::createLineEditButtonLayout(m_videoNameLineEdit, searchVideoFileButton);
+    auto* const searchVideoFileLayout = Utils::UI::createLineEditButtonLayout(m_videoNameLineEdit, searchVideoFileButton);
 
     m_rosBagNameLineEdit = new QLineEdit;
     m_rosBagNameLineEdit->setToolTip("The directory where the ROSBag should be stored.");
     auto* const bagLocationButton = new QToolButton;
-    auto* const storeBagLayout = UtilsUI::createLineEditButtonLayout(m_rosBagNameLineEdit, bagLocationButton);
+    auto* const storeBagLayout = Utils::UI::createLineEditButtonLayout(m_rosBagNameLineEdit, bagLocationButton);
 
     m_topicNameLineEdit = new QLineEdit;
     m_topicNameLineEdit->setToolTip("The video's topic name inside the ROSBag.");
@@ -137,7 +137,7 @@ VideoToBagWidget::okButtonPressed()
         return;
     }
 
-    if (!UtilsROS::doesTopicNameFollowROS2Convention(m_topicNameLineEdit->text())) {
+    if (!Utils::ROS::doesTopicNameFollowROS2Convention(m_topicNameLineEdit->text())) {
         auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Wrong topic name format!",
                                              "The topic name does not follow the ROS2 naming convention!", QMessageBox::Ok);
         msgBox->exec();
@@ -160,7 +160,7 @@ VideoToBagWidget::enableOkButton()
 void
 VideoToBagWidget::setPixmapLabelIcon()
 {
-    const auto isDarkMode = UtilsUI::isDarkMode();
+    const auto isDarkMode = Utils::UI::isDarkMode();
     m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/video_to_bag_white.svg" : ":/icons/video_to_bag_black.svg").pixmap(QSize(100, 45)));
 }
 

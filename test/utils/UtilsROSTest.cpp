@@ -32,67 +32,67 @@ TEST_CASE("Utils ROS Testing", "[utils]") {
     writer.close();
 
     SECTION("Contains topic name test") {
-        auto contains = UtilsROS::doesBagContainTopicName(bagDirectory, "/topic_image");
+        auto contains = Utils::ROS::doesBagContainTopicName(bagDirectory, "/topic_image");
         REQUIRE(contains == true);
-        contains = UtilsROS::doesBagContainTopicName(bagDirectory, "/topic_string");
+        contains = Utils::ROS::doesBagContainTopicName(bagDirectory, "/topic_string");
         REQUIRE(contains == true);
-        contains = UtilsROS::doesBagContainTopicName(bagDirectory, "/topic_should_not_be_included");
+        contains = Utils::ROS::doesBagContainTopicName(bagDirectory, "/topic_should_not_be_included");
         REQUIRE(contains == false);
     }
     SECTION("Topic message count test") {
-        auto messageCount = UtilsROS::getTopicMessageCount(bagDirectory, "/topic_image");
+        auto messageCount = Utils::ROS::getTopicMessageCount(bagDirectory, "/topic_image");
         REQUIRE(messageCount == 5);
-        messageCount = UtilsROS::getTopicMessageCount(bagDirectory, "/topic_string");
+        messageCount = Utils::ROS::getTopicMessageCount(bagDirectory, "/topic_string");
         REQUIRE(messageCount == 3);
-        messageCount = UtilsROS::getTopicMessageCount(bagDirectory, "/topic_should_not_be_included");
+        messageCount = Utils::ROS::getTopicMessageCount(bagDirectory, "/topic_should_not_be_included");
         REQUIRE(messageCount == 0);
     }
     SECTION("Topic type test") {
-        auto topicType = UtilsROS::getTopicType(bagDirectory, "/topic_image");
+        auto topicType = Utils::ROS::getTopicType(bagDirectory, "/topic_image");
         REQUIRE(topicType == "sensor_msgs/msg/Image");
-        topicType = UtilsROS::getTopicType(bagDirectory, "/topic_string");
+        topicType = Utils::ROS::getTopicType(bagDirectory, "/topic_string");
         REQUIRE(topicType == "std_msgs/msg/String");
-        topicType = UtilsROS::getTopicType(bagDirectory, "/topic_should_not_be_included");
+        topicType = Utils::ROS::getTopicType(bagDirectory, "/topic_should_not_be_included");
         REQUIRE(topicType == "");
     }
     SECTION("Video topics test") {
-        const auto videoTopics = UtilsROS::getBagVideoTopics(bagDirectory);
+        const auto videoTopics = Utils::ROS::getBagVideoTopics(bagDirectory);
         REQUIRE(videoTopics.size() == 1);
         REQUIRE(videoTopics.at(0) == "/topic_image");
     }
     SECTION("Name ROS2 convention tests") {
         SECTION("Fails for special characters") {
-            const auto followsConvention = UtilsROS::doesTopicNameFollowROS2Convention("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}");
+            const auto followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}");
             REQUIRE(followsConvention == false);
         }
         SECTION("Slash and underbrackets") {
-            auto followsConvention = UtilsROS::doesTopicNameFollowROS2Convention("test_topic/");
+            auto followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test_topic/");
             REQUIRE(followsConvention == false);
-            followsConvention = UtilsROS::doesTopicNameFollowROS2Convention("test__topic");
+            followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test__topic");
             REQUIRE(followsConvention == false);
-            followsConvention = UtilsROS::doesTopicNameFollowROS2Convention("//test_topic");
+            followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("//test_topic");
             REQUIRE(followsConvention == false);
         }
         SECTION("First char number") {
-            auto followsConvention = UtilsROS::doesTopicNameFollowROS2Convention("0test_topic");
+            auto followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("0test_topic");
             REQUIRE(followsConvention == false);
-            followsConvention = UtilsROS::doesTopicNameFollowROS2Convention("test_topic");
+            followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test_topic");
             REQUIRE(followsConvention == true);
         }
         SECTION("Tilde and slash") {
-            auto followsConvention = UtilsROS::doesTopicNameFollowROS2Convention("test~topic");
+            auto followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test~topic");
             REQUIRE(followsConvention == false);
-            followsConvention = UtilsROS::doesTopicNameFollowROS2Convention("test~/topic");
+            followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test~/topic");
             REQUIRE(followsConvention == true);
         }
         SECTION("Balanced curly braces") {
-            auto followsConvention = UtilsROS::doesTopicNameFollowROS2Convention("test{topic}");
+            auto followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test{topic}");
             REQUIRE(followsConvention == true);
-            followsConvention = UtilsROS::doesTopicNameFollowROS2Convention("test_{topic");
+            followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test_{topic");
             REQUIRE(followsConvention == false);
-            followsConvention = UtilsROS::doesTopicNameFollowROS2Convention("test_topic}");
+            followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test_topic}");
             REQUIRE(followsConvention == false);
-            followsConvention = UtilsROS::doesTopicNameFollowROS2Convention("test_{t{opic}");
+            followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test_{t{opic}");
             REQUIRE(followsConvention == false);
         }
     }

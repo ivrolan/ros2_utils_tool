@@ -6,7 +6,7 @@
 #include <vector>
 
 // ROS related util functions
-namespace UtilsROS
+namespace Utils::ROS
 {
 // Returns if a ROSBag contains a certain topic
 [[nodiscard]] bool

@@ -3,7 +3,7 @@
 #include <string>
 
 // Util functions for general, non-specific contents
-namespace UtilsGeneral
+namespace Utils::General
 {
 // Draws a small progress string in the following format:
 // ############################--------------------

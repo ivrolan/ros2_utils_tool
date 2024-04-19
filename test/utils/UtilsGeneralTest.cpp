@@ -4,13 +4,13 @@
 
 TEST_CASE("Utils General Testing", "[utils]") {
     SECTION("Progress string test") {
-        auto progressString = UtilsGeneral::drawProgressString(0);
+        auto progressString = Utils::General::drawProgressString(0);
         REQUIRE(progressString == "--------------------------------------------------");
-        progressString = UtilsGeneral::drawProgressString(10);
+        progressString = Utils::General::drawProgressString(10);
         REQUIRE(progressString == "#####---------------------------------------------");
-        progressString = UtilsGeneral::drawProgressString(25);
+        progressString = Utils::General::drawProgressString(25);
         REQUIRE(progressString == "############--------------------------------------");
-        progressString = UtilsGeneral::drawProgressString(100);
+        progressString = Utils::General::drawProgressString(100);
         REQUIRE(progressString == "##################################################");
     }
 }

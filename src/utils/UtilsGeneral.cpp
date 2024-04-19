@@ -1,6 +1,6 @@
 #include "UtilsGeneral.hpp"
 
-namespace UtilsGeneral
+namespace Utils::General
 {
 std::string
 drawProgressString(int progress)
