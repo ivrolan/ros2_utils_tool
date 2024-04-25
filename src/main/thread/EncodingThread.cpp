@@ -34,8 +34,8 @@ EncodingThread::run()
     auto rosMsg = std::make_shared<sensor_msgs::msg::Image>();
 
     rclcpp::Serialization<sensor_msgs::msg::Image> serialization;
-    rclcpp::SerializedMessage firstSerializedMessage(*firstMsg->serialized_data);
-    serialization.deserialize_message(&firstSerializedMessage, rosMsg.get());
+    auto serializedMessage = rclcpp::SerializedMessage(*firstMsg->serialized_data);
+    serialization.deserialize_message(&serializedMessage, rosMsg.get());
     const auto width = rosMsg->width;
     const auto height = rosMsg->height;
 
@@ -59,7 +59,7 @@ EncodingThread::run()
 
         // Read and deserialize the message
         auto msg = reader.read_next();
-        rclcpp::SerializedMessage serializedMessage(*msg->serialized_data);
+        serializedMessage = *msg->serialized_data;
         serialization.deserialize_message(&serializedMessage, rosMsg.get());
         // Convert message to cv and encode
         cvPointer = cv_bridge::toCvCopy(*rosMsg, sensor_msgs::image_encodings::BGR8);

@@ -80,8 +80,8 @@ ProgressWidget::ProgressWidget(const QString& bagDirectory, const QString& topic
         emit encodingStopped();
     });
     connect(m_thread, &BasicThread::progressChanged, this, [this, progressLabel, progressBar, useEncode] (int iteration, int progress) {
-        progressLabel->setText(useEncode ? "Encoding frame " + QString::number(iteration) + " of " + QString::number(m_maximumCount) + "..."
-                                         : "Writing frame " + QString::number(iteration) + " of " + QString::number(m_maximumCount) + "...");
+        const auto frontString = useEncode ? QString("Encoding") : QString("Writing");
+        progressLabel->setText(frontString + " frame " + QString::number(iteration) + " of " + QString::number(m_maximumCount) + "...");
         progressBar->setValue(progress);
     });
     connect(m_thread, &BasicThread::finished, this, [cancelButton, finishedButton] {

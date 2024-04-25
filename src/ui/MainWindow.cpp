@@ -15,7 +15,7 @@ MainWindow::MainWindow()
 
     setStartWidget();
 
-    resize(500, 500);
+    resize(450, 450);
 }
 
 

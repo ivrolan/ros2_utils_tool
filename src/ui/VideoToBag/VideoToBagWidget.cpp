@@ -151,9 +151,7 @@ VideoToBagWidget::okButtonPressed()
 void
 VideoToBagWidget::enableOkButton()
 {
-    m_okButton->setEnabled(!m_videoNameLineEdit->text().isEmpty() &&
-                           !m_rosBagNameLineEdit->text().isEmpty() &&
-                           !m_topicNameLineEdit->text().isEmpty());
+    m_okButton->setEnabled(!m_videoNameLineEdit->text().isEmpty() && !m_rosBagNameLineEdit->text().isEmpty() && !m_topicNameLineEdit->text().isEmpty());
 }
 
 

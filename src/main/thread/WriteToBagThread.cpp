@@ -24,7 +24,7 @@ void
 WriteToBagThread::run()
 {
     auto videoCapture = cv::VideoCapture(m_vidDirectory.toStdString(), cv::CAP_ANY, {
-        cv::CAP_PROP_HW_ACCELERATION, m_useHardwareAcceleration ? cv::VIDEO_ACCELERATION_VAAPI : cv::VIDEO_ACCELERATION_NONE
+        cv::CAP_PROP_HW_ACCELERATION, m_useHardwareAcceleration ? cv::VIDEO_ACCELERATION_ANY : cv::VIDEO_ACCELERATION_NONE
     });
     if (!videoCapture.isOpened()) {
         emit openingCVInstanceFailed();
@@ -38,23 +38,24 @@ WriteToBagThread::run()
     writer.open(m_bagDirectory.toStdString());
     auto iterationCount = 0;
 
-    while (1) {
+    while (true) {
         if (isInterruptionRequested()) {
             return;
         }
 
+        // Create image
         cv::Mat frame;
         videoCapture >> frame;
         if (frame.empty()) {
             break;
         }
-
+        // Create empty sensor message
         sensor_msgs::msg::Image message;
         std_msgs::msg::Header header;
         const auto time = rclcpp::Clock(RCL_ROS_TIME).now();
         header.stamp = time;
 
-        // Convert back to sensor_msgs and write
+        // Convert image and write
         const auto cvBridge = cv_bridge::CvImage(header, sensor_msgs::image_encodings::BGR8, frame);
         cvBridge.toImageMsg(message);
         writer.write(message, m_topicName.toStdString(), time);

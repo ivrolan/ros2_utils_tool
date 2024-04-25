@@ -2,8 +2,6 @@
 
 #include <QMainWindow>
 
-class QToolButton;
-
 /**
  * @brief Main window displaying the main user interface
  */

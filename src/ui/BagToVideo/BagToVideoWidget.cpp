@@ -120,8 +120,7 @@ BagToVideoWidget::searchButtonPressed()
 
     if (videoTopics.empty()) {
         auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Topic not found!",
-                                             "The bag file does not contain any image/video topics!",
-                                             QMessageBox::Ok);
+                                             "The bag file does not contain any image/video topics!", QMessageBox::Ok);
         msgBox->exec();
         return;
     }
@@ -146,7 +145,7 @@ BagToVideoWidget::videoLocationButtonPressed()
 void
 BagToVideoWidget::formatComboBoxTextChanged(const QString& text)
 {
-    // If the combo box item changes, we apply a different appendix to the text in the video line edit
+    // If the combo box item changes, apply a different appendix to the text in the video line edit
     if (m_videoNameLineEdit->text().isEmpty()) {
         return;
     }

@@ -1,7 +1,5 @@
 #include "UtilsUI.hpp"
 
-#include <QRegularExpression>
-
 #include <cmath>
 
 namespace Utils::UI
