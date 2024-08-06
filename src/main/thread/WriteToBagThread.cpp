@@ -38,6 +38,11 @@ WriteToBagThread::run()
     writer.open(m_bagDirectory.toStdString());
     auto iterationCount = 0;
 
+    auto fps = videoCapture.get(cv::CAP_PROP_FPS);
+    if (fps <= 2) {
+        fps = 30;
+    }
+
     while (true) {
         if (isInterruptionRequested()) {
             return;
@@ -49,10 +54,14 @@ WriteToBagThread::run()
         if (frame.empty()) {
             break;
         }
+
+        iterationCount++;
+
         // Create empty sensor message
         sensor_msgs::msg::Image message;
         std_msgs::msg::Header header;
-        const auto time = rclcpp::Clock(RCL_ROS_TIME).now();
+        const auto seconds = (float) iterationCount / fps;
+        const auto time = rclcpp::Time(seconds, seconds * 1000000000);
         header.stamp = time;
 
         // Convert image and write
@@ -60,7 +69,6 @@ WriteToBagThread::run()
         cvBridge.toImageMsg(message);
         writer.write(message, m_topicName.toStdString(), time);
 
-        iterationCount++;
         emit progressChanged(iterationCount, ((float) iterationCount / (float) frameCount) * 100);
     }
 

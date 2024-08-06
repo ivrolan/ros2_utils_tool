@@ -62,7 +62,7 @@ EncodingThread::run()
         serializedMessage = *msg->serialized_data;
         serialization.deserialize_message(&serializedMessage, rosMsg.get());
         // Convert message to cv and encode
-        cvPointer = cv_bridge::toCvCopy(*rosMsg, sensor_msgs::image_encodings::BGR8);
+        cvPointer = cv_bridge::toCvCopy(*rosMsg, rosMsg->encoding);
         videoEncoder->writeImageToVideo(cvPointer->image);
 
         iterationCount++;

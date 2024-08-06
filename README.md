@@ -67,7 +67,7 @@ source install/setup.bash
 
 **Full UI**:
 ```
-ros2 run mediassist4_ros_tools tool_app
+ros2 run mediassist4_ros_tools tool_ui
 ```
 
 **Bag-to-video-tool**:
