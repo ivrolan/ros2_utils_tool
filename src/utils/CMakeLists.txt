@@ -11,8 +11,10 @@ target_sources(ros_tools_utils INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/UtilsROS.hpp
     ${CMAKE_CURRENT_LIST_DIR}/UtilsUI.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UtilsUI.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/VideoEncoder.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/VideoEncoder.hpp
 )
 
 target_link_libraries(ros_tools_utils
-    INTERFACE Qt::Widgets
+    INTERFACE ${OpenCV_LIBS} Qt::Widgets
 )

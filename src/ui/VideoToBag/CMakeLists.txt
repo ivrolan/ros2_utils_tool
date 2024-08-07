@@ -10,5 +10,5 @@ target_sources(ros_tools_video_to_bag INTERFACE
 )
 
 target_link_libraries(ros_tools_video_to_bag
-    INTERFACE Qt::Widgets ros_tools_main ros_tools_utils
+    INTERFACE Qt::Widgets ros_tools_utils
 ) 

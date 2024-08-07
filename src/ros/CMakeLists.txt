@@ -1,3 +1,5 @@
+add_subdirectory(thread)
+
 add_library (ros_tools_ros INTERFACE)
 
 target_include_directories (ros_tools_ros

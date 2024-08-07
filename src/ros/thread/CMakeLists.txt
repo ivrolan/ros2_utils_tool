@@ -14,5 +14,5 @@ target_sources(ros_tools_thread INTERFACE
 )
 
 target_link_libraries(ros_tools_thread
-    INTERFACE ${OpenCV_LIBS} Qt::Widgets ros_tools_main ros_tools_utils
+    INTERFACE ${OpenCV_LIBS} Qt::Widgets ros_tools_utils
 )
