@@ -12,6 +12,10 @@
 StartWidget::StartWidget(QWidget *parent) :
     QWidget(parent)
 {
+    auto* const headerLabel = new QLabel("ROS TOOLS");
+    Utils::UI::setWidgetHeaderFont(headerLabel);
+    headerLabel->setAlignment(Qt::AlignHCenter);
+
     m_bagToVideoPushButton = createToolButton("Encode Video\nfrom ROSBag");
     m_videoToBagPushButton = createToolButton("Write Video\nto ROSBag");
 
@@ -31,6 +35,8 @@ StartWidget::StartWidget(QWidget *parent) :
     versionLayout->addWidget(versionLabel);
 
     auto* const mainLayout = new QVBoxLayout;
+    mainLayout->addSpacing(40);
+    mainLayout->addWidget(headerLabel);
     mainLayout->addStretch();
     mainLayout->addLayout(buttonLayout);
     mainLayout->addStretch();
