@@ -18,6 +18,8 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 
+#include <filesystem>
+
 VideoToBagWidget::VideoToBagWidget(const Utils::UI::WidgetParameters& widgetParameters, QWidget *parent) :
     QWidget(parent)
 {
@@ -145,6 +147,16 @@ VideoToBagWidget::okButtonPressed()
         msgBox->exec();
         return;
     }
+    if (std::filesystem::exists(m_bagNameLineEdit->text().toStdString())) {
+        auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Bag file already exists!",
+                                             "A bag file already exists under the specified directory! Are you sure you want to continue? This will overwrite the existing file.",
+                                             QMessageBox::Yes | QMessageBox::No);
+        const auto ret = msgBox->exec();
+        if (ret == QMessageBox::No) {
+            return;
+        }
+    }
+
     emit parametersSet(m_videoNameLineEdit->text(), m_bagNameLineEdit->text(), m_topicNameLineEdit->text(),
                        m_useHardwareAccCheckBox->checkState() == Qt::Checked);
 }

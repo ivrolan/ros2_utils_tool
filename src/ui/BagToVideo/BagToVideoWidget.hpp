@@ -63,4 +63,6 @@ private:
     QPointer<QCheckBox> m_useHardwareAccCheckBox;
 
     QPointer<QPushButton> m_okButton;
+
+    bool m_fileDialogOpened = false;
 };

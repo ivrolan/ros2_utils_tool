@@ -10,6 +10,8 @@
 
 #include "sensor_msgs/msg/image.hpp"
 
+#include <filesystem>
+
 WriteToBagThread::WriteToBagThread(const QString& bagDirectory,
                                    const QString& topicName,
                                    const QString& vidDirectory,
@@ -29,6 +31,10 @@ WriteToBagThread::run()
     if (!videoCapture.isOpened()) {
         emit openingCVInstanceFailed();
         return;
+    }
+
+    if (std::filesystem::exists(m_bagDirectory.toStdString())) {
+        std::filesystem::remove_all(m_bagDirectory.toStdString());
     }
 
     const auto frameCount = videoCapture.get(cv::CAP_PROP_FRAME_COUNT);

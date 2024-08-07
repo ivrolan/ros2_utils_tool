@@ -18,6 +18,8 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 
+#include <filesystem>
+
 BagToVideoWidget::BagToVideoWidget(const Utils::UI::WidgetParameters& widgetParameters, QWidget *parent) :
     QWidget(parent)
 {
@@ -152,6 +154,7 @@ BagToVideoWidget::videoLocationButtonPressed()
     m_videoNameLineEdit->setText(fileName);
     // Only enable if both line edits contain text
     m_okButton->setEnabled(!m_topicNameComboBox->currentText().isEmpty() && !m_videoNameLineEdit->text().isEmpty());
+    m_fileDialogOpened = true;
 }
 
 
@@ -174,6 +177,17 @@ BagToVideoWidget::okButtonPressed()
 {
     if (!m_okButton->isEnabled()) {
         return;
+    }
+
+    // Only ask if exists and the file dialog has not been called
+    if (std::filesystem::exists(m_videoNameLineEdit->text().toStdString()) && !m_fileDialogOpened) {
+        auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Video already exists!",
+                                             "A video already exists under the specified directory! Are you sure you want to continue? This will overwrite the existing file.",
+                                             QMessageBox::Yes | QMessageBox::No);
+        const auto ret = msgBox->exec();
+        if (ret == QMessageBox::No) {
+            return;
+        }
     }
 
     emit parametersSet(m_bagNameLineEdit->text(), m_topicNameComboBox->currentText(), m_videoNameLineEdit->text(),
