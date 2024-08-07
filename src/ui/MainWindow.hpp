@@ -1,5 +1,7 @@
 #pragma once
 
+#include "UtilsUI.hpp"
+
 #include <QMainWindow>
 
 /**
@@ -32,4 +34,8 @@ private slots:
 private:
     void
     closeEvent(QCloseEvent *event) override;
+
+private:
+    Utils::UI::WidgetParameters m_parametersBagToVideo;
+    Utils::UI::WidgetParameters m_parametersVideoToBag;
 };

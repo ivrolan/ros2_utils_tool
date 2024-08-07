@@ -33,13 +33,17 @@ MainWindow::setStartWidget()
 void
 MainWindow::setBagToVideoWidget()
 {
-    auto* const bagToVideoWidget = new BagToVideoWidget;
+    auto* const bagToVideoWidget = new BagToVideoWidget(m_parametersBagToVideo);
     setCentralWidget(bagToVideoWidget);
 
     connect(bagToVideoWidget, &BagToVideoWidget::back, this, &MainWindow::setStartWidget);
-    connect(bagToVideoWidget, &BagToVideoWidget::parametersSet, this, [this] (const QString& vidDirectory, const QString& bagDirectory,
-                                                                              const QString& topicName, bool useHardwareAcceleration) {
-        setProgressWidget(vidDirectory, bagDirectory, topicName, useHardwareAcceleration, true);
+    connect(bagToVideoWidget, &BagToVideoWidget::parametersSet, this, [this] (const QString& bagDirectory, const QString& topicName,
+                                                                              const QString& vidDirectory, bool useHardwareAcceleration) {
+        m_parametersBagToVideo.bagDirectory = bagDirectory;
+        m_parametersBagToVideo.vidDirectory = vidDirectory;
+        m_parametersBagToVideo.topicName = topicName;
+        m_parametersBagToVideo.useHardwareAcceleration = useHardwareAcceleration;
+        setProgressWidget(bagDirectory, topicName, vidDirectory, useHardwareAcceleration, true);
     });
 }
 
@@ -47,12 +51,16 @@ MainWindow::setBagToVideoWidget()
 void
 MainWindow::setVideoToBagWidget()
 {
-    auto* const videoToBagWidget = new VideoToBagWidget;
+    auto* const videoToBagWidget = new VideoToBagWidget(m_parametersVideoToBag);
     setCentralWidget(videoToBagWidget);
 
     connect(videoToBagWidget, &VideoToBagWidget::back, this, &MainWindow::setStartWidget);
     connect(videoToBagWidget, &VideoToBagWidget::parametersSet, this, [this] (const QString& vidDirectory, const QString& bagDirectory,
                                                                               const QString& topicName, bool useHardwareAcceleration) {
+        m_parametersVideoToBag.bagDirectory = bagDirectory;
+        m_parametersVideoToBag.vidDirectory = vidDirectory;
+        m_parametersVideoToBag.topicName = topicName;
+        m_parametersVideoToBag.useHardwareAcceleration = useHardwareAcceleration;
         setProgressWidget(bagDirectory, topicName, vidDirectory, useHardwareAcceleration, false);
     });
 }

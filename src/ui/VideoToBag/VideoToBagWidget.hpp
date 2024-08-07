@@ -1,5 +1,7 @@
 #pragma once
 
+#include "UtilsUI.hpp"
+
 #include <QPointer>
 #include <QWidget>
 
@@ -17,8 +19,8 @@ class VideoToBagWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit
-    VideoToBagWidget(QWidget* parent = 0);
+    VideoToBagWidget(const Utils::UI::WidgetParameters& widgetParameters,
+                     QWidget*                           parent = 0);
 
 signals:
     void
@@ -53,7 +55,7 @@ private:
 private:
     QPointer<QLabel> m_headerPixmapLabel;
     QPointer<QLineEdit> m_videoNameLineEdit;
-    QPointer<QLineEdit> m_rosBagNameLineEdit;
+    QPointer<QLineEdit> m_bagNameLineEdit;
     QPointer<QLineEdit> m_topicNameLineEdit;
     QPointer<QCheckBox> m_useHardwareAccCheckBox;
 

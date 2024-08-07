@@ -18,7 +18,7 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 
-VideoToBagWidget::VideoToBagWidget(QWidget *parent) :
+VideoToBagWidget::VideoToBagWidget(const Utils::UI::WidgetParameters& widgetParameters, QWidget *parent) :
     QWidget(parent)
 {
     m_headerPixmapLabel = new QLabel;
@@ -29,21 +29,22 @@ VideoToBagWidget::VideoToBagWidget(QWidget *parent) :
     Utils::UI::setWidgetHeaderFont(headerTextLabel);
     headerTextLabel->setAlignment(Qt::AlignHCenter);
 
-    m_videoNameLineEdit = new QLineEdit;
+    m_videoNameLineEdit = new QLineEdit(widgetParameters.vidDirectory);
     m_videoNameLineEdit->setToolTip("The directory of the source video file.");
     auto* const searchVideoFileButton = new QToolButton;
     auto* const searchVideoFileLayout = Utils::UI::createLineEditButtonLayout(m_videoNameLineEdit, searchVideoFileButton);
 
-    m_rosBagNameLineEdit = new QLineEdit;
-    m_rosBagNameLineEdit->setToolTip("The directory where the ROSBag should be stored.");
+    m_bagNameLineEdit = new QLineEdit(widgetParameters.bagDirectory);
+    m_bagNameLineEdit->setToolTip("The directory where the ROSBag should be stored.");
     auto* const bagLocationButton = new QToolButton;
-    auto* const storeBagLayout = Utils::UI::createLineEditButtonLayout(m_rosBagNameLineEdit, bagLocationButton);
+    auto* const storeBagLayout = Utils::UI::createLineEditButtonLayout(m_bagNameLineEdit, bagLocationButton);
 
-    m_topicNameLineEdit = new QLineEdit;
+    m_topicNameLineEdit = new QLineEdit(widgetParameters.topicName);
     m_topicNameLineEdit->setToolTip("The video's topic name inside the ROSBag.");
 
     m_useHardwareAccCheckBox = new QCheckBox;
     m_useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster video decoding and writing.");
+    m_useHardwareAccCheckBox->setCheckState(widgetParameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
 
     auto* const formLayout = new QFormLayout;
     formLayout->addRow("Video File:", searchVideoFileLayout);
@@ -82,6 +83,7 @@ VideoToBagWidget::VideoToBagWidget(QWidget *parent) :
     setLayout(mainLayout);
 
     auto* const okShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
+    enableOkButton();
 
     connect(searchVideoFileButton, &QPushButton::clicked, this, &VideoToBagWidget::searchButtonPressed);
     connect(bagLocationButton, &QPushButton::clicked, this, &VideoToBagWidget::bagLocationButtonPressed);
@@ -124,7 +126,7 @@ VideoToBagWidget::bagLocationButtonPressed()
 {
     const auto fileName = QFileDialog::getSaveFileName(this, "Save Video");
 
-    m_rosBagNameLineEdit->setText(fileName);
+    m_bagNameLineEdit->setText(fileName);
 
     enableOkButton();
 }
@@ -143,7 +145,7 @@ VideoToBagWidget::okButtonPressed()
         msgBox->exec();
         return;
     }
-    emit parametersSet(m_videoNameLineEdit->text(), m_rosBagNameLineEdit->text(), m_topicNameLineEdit->text(),
+    emit parametersSet(m_videoNameLineEdit->text(), m_bagNameLineEdit->text(), m_topicNameLineEdit->text(),
                        m_useHardwareAccCheckBox->checkState() == Qt::Checked);
 }
 
@@ -151,7 +153,7 @@ VideoToBagWidget::okButtonPressed()
 void
 VideoToBagWidget::enableOkButton()
 {
-    m_okButton->setEnabled(!m_videoNameLineEdit->text().isEmpty() && !m_rosBagNameLineEdit->text().isEmpty() && !m_topicNameLineEdit->text().isEmpty());
+    m_okButton->setEnabled(!m_videoNameLineEdit->text().isEmpty() && !m_bagNameLineEdit->text().isEmpty() && !m_topicNameLineEdit->text().isEmpty());
 }
 
 

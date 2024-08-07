@@ -6,11 +6,16 @@
 #include <QToolButton>
 #include <QWidget>
 
-#include <string>
-
 // Util functions for user interface related things
 namespace Utils::UI
 {
+struct WidgetParameters {
+    QString bagDirectory = "";
+    QString vidDirectory = "";
+    QString topicName = "";
+    bool    useHardwareAcceleration = false;
+};
+
 // Create a larger font for a certain widget
 void
 setWidgetHeaderFont(QWidget* widget);

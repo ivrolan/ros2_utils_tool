@@ -18,7 +18,7 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 
-BagToVideoWidget::BagToVideoWidget(QWidget *parent) :
+BagToVideoWidget::BagToVideoWidget(const Utils::UI::WidgetParameters& widgetParameters, QWidget *parent) :
     QWidget(parent)
 {
     m_headerPixmapLabel = new QLabel;
@@ -29,18 +29,21 @@ BagToVideoWidget::BagToVideoWidget(QWidget *parent) :
     Utils::UI::setWidgetHeaderFont(headerTextLabel);
     headerTextLabel->setAlignment(Qt::AlignHCenter);
 
-    m_fileNameLineEdit = new QLineEdit;
-    m_fileNameLineEdit->setToolTip("The directory of the ROSBag source file.");
+    m_bagNameLineEdit = new QLineEdit(widgetParameters.bagDirectory);
+    m_bagNameLineEdit->setToolTip("The directory of the ROSBag source file.");
 
     auto* const searchBagButton = new QToolButton;
-    auto* const searchBagFileLayout = Utils::UI::createLineEditButtonLayout(m_fileNameLineEdit, searchBagButton);
+    auto* const searchBagFileLayout = Utils::UI::createLineEditButtonLayout(m_bagNameLineEdit, searchBagButton);
 
     m_topicNameComboBox = new QComboBox;
     m_topicNameComboBox->setMinimumWidth(200);
     m_topicNameComboBox->setToolTip("The ROSBag topic of the video file.\n"
                                     "If the Bag contains multiple video topics, you can choose one of them.");
+    if (!widgetParameters.topicName.isEmpty()) {
+        m_topicNameComboBox->addItem(widgetParameters.topicName);
+    }
 
-    m_videoNameLineEdit = new QLineEdit;
+    m_videoNameLineEdit = new QLineEdit(widgetParameters.vidDirectory);
     m_videoNameLineEdit->setToolTip("The directory where the video file should be stored.");
 
     auto* const videoLocationButton = new QToolButton;
@@ -50,9 +53,16 @@ BagToVideoWidget::BagToVideoWidget(QWidget *parent) :
     m_formatComboBox->addItem("mp4", 0);
     m_formatComboBox->addItem("mkv", 1);
     m_formatComboBox->setToolTip("The video format file.");
+    if (!widgetParameters.vidDirectory.isEmpty()) {
+        auto formatString = widgetParameters.vidDirectory;
+        formatString.truncate(widgetParameters.vidDirectory.lastIndexOf(QChar('.')));
+
+        m_formatComboBox->setCurrentIndex(formatString == "mkv");
+    }
 
     m_useHardwareAccCheckBox = new QCheckBox;
     m_useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster encoding.");
+    m_useHardwareAccCheckBox->setCheckState(widgetParameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
 
     auto* const formLayout = new QFormLayout;
     formLayout->addRow("Bag File:", searchBagFileLayout);
@@ -92,6 +102,9 @@ BagToVideoWidget::BagToVideoWidget(QWidget *parent) :
     setLayout(mainLayout);
 
     auto* const okShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
+    m_okButton->setEnabled(!m_bagNameLineEdit->text().isEmpty() &&
+                           !m_topicNameComboBox->currentText().isEmpty() &&
+                           !m_videoNameLineEdit->text().isEmpty());
 
     connect(searchBagButton, &QPushButton::clicked, this, &BagToVideoWidget::searchButtonPressed);
     connect(videoLocationButton, &QPushButton::clicked, this, &BagToVideoWidget::videoLocationButtonPressed);
@@ -107,14 +120,14 @@ BagToVideoWidget::BagToVideoWidget(QWidget *parent) :
 void
 BagToVideoWidget::searchButtonPressed()
 {
-    m_fileNameLineEdit->setText(QFileDialog::getExistingDirectory(this, "Open Directory", "",
-                                                                  QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks));
-    if (m_fileNameLineEdit->text().isEmpty()) {
+    m_bagNameLineEdit->setText(QFileDialog::getExistingDirectory(this, "Open Directory", "",
+                                                                 QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks));
+    if (m_bagNameLineEdit->text().isEmpty()) {
         return;
     }
 
     m_topicNameComboBox->clear();
-    const auto videoTopics = Utils::ROS::getBagVideoTopics(m_fileNameLineEdit->text().toStdString());
+    const auto videoTopics = Utils::ROS::getBagVideoTopics(m_bagNameLineEdit->text().toStdString());
     // Only enable if both line edits contain text
     m_okButton->setEnabled(!videoTopics.empty() && !m_videoNameLineEdit->text().isEmpty());
 
@@ -163,7 +176,7 @@ BagToVideoWidget::okButtonPressed()
         return;
     }
 
-    emit parametersSet(m_fileNameLineEdit->text(), m_topicNameComboBox->currentText(), m_videoNameLineEdit->text(),
+    emit parametersSet(m_bagNameLineEdit->text(), m_topicNameComboBox->currentText(), m_videoNameLineEdit->text(),
                        m_useHardwareAccCheckBox->checkState() == Qt::Checked);
 }
 
