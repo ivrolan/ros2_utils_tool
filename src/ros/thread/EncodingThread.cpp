@@ -29,28 +29,14 @@ EncodingThread::run()
     const auto messageCount = Utils::ROS::getTopicMessageCount(m_bagDirectory.toStdString(), m_topicName.toStdString());
     emit calculatedMaximumInstances(messageCount);
 
-    // Read a very first message to get its width and height value, which is needed for the video encoder
-    auto firstMsg = reader.read_next();
-    auto rosMsg = std::make_shared<sensor_msgs::msg::Image>();
-
+    // Prepare parameters
     rclcpp::Serialization<sensor_msgs::msg::Image> serialization;
-    auto serializedMessage = rclcpp::SerializedMessage(*firstMsg->serialized_data);
-    serialization.deserialize_message(&serializedMessage, rosMsg.get());
-    const auto width = rosMsg->width;
-    const auto height = rosMsg->height;
-
+    cv_bridge::CvImagePtr cvPointer;
     const auto videoEncoder = std::make_shared<VideoEncoder>(m_vidDirectory.right(3) == "mp4");
-    if (!videoEncoder->setVideoWriter(m_vidDirectory.toStdString(), width, height, m_useHardwareAcceleration)) {
-        emit openingCVInstanceFailed();
-        return;
-    }
-
-    // Now the main encoding
     auto iterationCount = 0;
     reader.open(m_bagDirectory.toStdString());
 
-    cv_bridge::CvImagePtr cvPointer;
-
+    // Now the main encoding
     while (reader.has_next()) {
         if (isInterruptionRequested()) {
             reader.close();
@@ -58,9 +44,22 @@ EncodingThread::run()
         }
 
         // Read and deserialize the message
-        auto msg = reader.read_next();
-        serializedMessage = *msg->serialized_data;
+        rosbag2_storage::SerializedBagMessageSharedPtr msg = reader.read_next();
+        rclcpp::SerializedMessage serializedMessage(*msg->serialized_data);
+        auto rosMsg = std::make_shared<sensor_msgs::msg::Image>();
         serialization.deserialize_message(&serializedMessage, rosMsg.get());
+
+        // Setup the video encoder on the first iteration
+        if (iterationCount == 0) {
+            const auto width = rosMsg->width;
+            const auto height = rosMsg->height;
+
+            if (!videoEncoder->setVideoWriter(m_vidDirectory.toStdString(), width, height, m_useHardwareAcceleration)) {
+                emit openingCVInstanceFailed();
+                return;
+            }
+        }
+
         // Convert message to cv and encode
         cvPointer = cv_bridge::toCvCopy(*rosMsg, rosMsg->encoding);
         videoEncoder->writeImageToVideo(cvPointer->image);
