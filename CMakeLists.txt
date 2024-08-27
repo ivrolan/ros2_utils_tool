@@ -30,6 +30,9 @@ add_subdirectory(test)
 add_executable(tool_ui
     ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp resources/resources.qrc
 )
+add_executable(tool_bag_to_images
+    ${CMAKE_CURRENT_LIST_DIR}/src/cli/BagToImages.cpp
+)
 add_executable(tool_bag_to_video
     ${CMAKE_CURRENT_LIST_DIR}/src/cli/BagToVideo.cpp
 )
@@ -38,11 +41,15 @@ add_executable(tool_video_to_bag
 )
 
 ament_target_dependencies(tool_ui cv_bridge rclcpp rosbag2_cpp sensor_msgs std_msgs)
+ament_target_dependencies(tool_bag_to_images cv_bridge rclcpp rosbag2_cpp sensor_msgs)
 ament_target_dependencies(tool_bag_to_video cv_bridge rclcpp rosbag2_cpp sensor_msgs)
 ament_target_dependencies(tool_video_to_bag cv_bridge rclcpp rosbag2_cpp sensor_msgs)
 
 target_link_libraries(tool_ui
     Qt::Widgets ros_tools_ros ros_tools_ui
+)
+target_link_libraries(tool_bag_to_images
+    Qt::Widgets ros_tools_thread ros_tools_utils
 )
 target_link_libraries(tool_bag_to_video
     Qt::Widgets ros_tools_thread ros_tools_utils
@@ -53,6 +60,7 @@ target_link_libraries(tool_video_to_bag
 
 install(TARGETS
     tool_ui
+    tool_bag_to_images
     tool_bag_to_video
     tool_video_to_bag
     tool_tests

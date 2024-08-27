@@ -20,6 +20,9 @@ signals:
     void
     videoToBagRequested();
 
+    void
+    bagToImagesRequested();
+
 private:
     QPointer<QToolButton>
     createToolButton(const QString& buttonText);
@@ -32,5 +35,6 @@ private:
 
 private:
     QPointer<QToolButton> m_bagToVideoPushButton;
+    QPointer<QToolButton> m_bagToImagesPushButton;
     QPointer<QToolButton> m_videoToBagPushButton;
 };

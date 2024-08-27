@@ -9,8 +9,6 @@ public:
     explicit
     BasicThread(const QString& bagDirectory,
                 const QString& topicName,
-                const QString& vidDirectory,
-                bool           useHardwareAcceleration,
                 QObject*       parent = nullptr);
 
 signals:
@@ -33,6 +31,4 @@ signals:
 protected:
     const QString m_bagDirectory;
     const QString m_topicName;
-    const QString m_vidDirectory;
-    const bool m_useHardwareAcceleration;
 };

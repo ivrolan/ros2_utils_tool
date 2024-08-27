@@ -14,10 +14,10 @@
 
 WriteToBagThread::WriteToBagThread(const QString& bagDirectory,
                                    const QString& topicName,
-                                   const QString& vidDirectory,
+                                   const QString& videoDirectory,
                                    bool           useHardwareAcceleration,
                                    QObject*       parent) :
-    BasicThread(bagDirectory, topicName, vidDirectory, useHardwareAcceleration, parent)
+    BasicThread(bagDirectory, topicName, parent), m_videoDirectory(videoDirectory), m_useHardwareAcceleration(useHardwareAcceleration)
 {
 }
 
@@ -25,7 +25,7 @@ WriteToBagThread::WriteToBagThread(const QString& bagDirectory,
 void
 WriteToBagThread::run()
 {
-    auto videoCapture = cv::VideoCapture(m_vidDirectory.toStdString(), cv::CAP_ANY, {
+    auto videoCapture = cv::VideoCapture(m_videoDirectory.toStdString(), cv::CAP_ANY, {
         cv::CAP_PROP_HW_ACCELERATION, m_useHardwareAcceleration ? cv::VIDEO_ACCELERATION_ANY : cv::VIDEO_ACCELERATION_NONE
     });
     if (!videoCapture.isOpened()) {

@@ -5,23 +5,23 @@
 #include <QPointer>
 #include <QWidget>
 
-class QCheckBox;
 class QComboBox;
 class QHBoxLayout;
 class QLabel;
 class QLineEdit;
 class QPushButton;
+class QSlider;
 
 /**
- * @brief The widget used to manage a video encoding out of a ros bag
+ * @brief The widget used to manage writing images out of a ROS bag
  */
-class BagToVideoWidget : public QWidget
+class BagToImagesWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    BagToVideoWidget(const Utils::UI::VideoParameters& videoParameters,
-                     QWidget*                          parent = 0);
+    BagToImagesWidget(const Utils::UI::ImageParameters& imageParameters,
+                      QWidget*                          parent = 0);
 
 signals:
     void
@@ -30,15 +30,19 @@ signals:
     void
     parametersSet(const QString& bagDirectory,
                   const QString& topicName,
-                  const QString& vidDirectory,
-                  bool           useHardwareAcceleration);
+                  const QString& imagesDirectory,
+                  const QString& format,
+                  const int      quality);
 
 private slots:
     void
     searchButtonPressed();
 
     void
-    videoLocationButtonPressed();
+    imagesLocationButtonPressed();
+
+    void
+    adjustSliderToChangedFormat(const QString& text);
 
     void
     formatComboBoxTextChanged(const QString& text);
@@ -57,9 +61,10 @@ private:
     QPointer<QLabel> m_headerPixmapLabel;
     QPointer<QLineEdit> m_bagNameLineEdit;
     QPointer<QComboBox> m_topicNameComboBox;
-    QPointer<QLineEdit> m_videoNameLineEdit;
+    QPointer<QLineEdit> m_imagesNameLineEdit;
     QPointer<QComboBox> m_formatComboBox;
-    QPointer<QCheckBox> m_useHardwareAccCheckBox;
+    QPointer<QSlider> m_slider;
+    QPointer<QLabel> m_formLayoutSliderLabel;
 
     QPointer<QPushButton> m_okButton;
 

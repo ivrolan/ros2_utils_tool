@@ -1,30 +1,40 @@
-#include "EncodingThread.hpp"
+#include "WriteToImageThread.hpp"
 
 #include "UtilsROS.hpp"
-#include "VideoEncoder.hpp"
 
 #include <cv_bridge/cv_bridge.h>
+#include <opencv2/opencv.hpp>
 
 #include "rclcpp/rclcpp.hpp"
 #include "rosbag2_cpp/reader.hpp"
 
 #include "sensor_msgs/msg/image.hpp"
 
-EncodingThread::EncodingThread(const QString& bagDirectory,
-                               const QString& topicName,
-                               const QString& videoDirectory,
-                               bool           useHardwareAcceleration,
-                               QObject*       parent) :
-    BasicThread(bagDirectory, topicName, parent), m_videoDirectory(videoDirectory), m_useHardwareAcceleration(useHardwareAcceleration)
+#include <filesystem>
+
+WriteToImageThread::WriteToImageThread(const QString& bagDirectory,
+                                       const QString& topicName,
+                                       const QString& imagesDirectory,
+                                       const QString& format,
+                                       const int      quality,
+                                       QObject*       parent) :
+    BasicThread(bagDirectory, topicName, parent), m_imagesDirectory(imagesDirectory), m_format(format), m_quality(quality)
 {
 }
 
 
 void
-EncodingThread::run()
+WriteToImageThread::run()
 {
     rosbag2_cpp::Reader reader;
     reader.open(m_bagDirectory.toStdString());
+
+    if (!std::filesystem::is_empty(m_imagesDirectory.toStdString())) {
+        // Remove all images currently present
+        for (const auto& entry : std::filesystem::directory_iterator(m_imagesDirectory.toStdString())) {
+            std::filesystem::remove_all(entry.path());
+        }
+    }
 
     const auto messageCount = Utils::ROS::getTopicMessageCount(m_bagDirectory.toStdString(), m_topicName.toStdString());
     emit calculatedMaximumInstances(messageCount);
@@ -32,9 +42,11 @@ EncodingThread::run()
     // Prepare parameters
     rclcpp::Serialization<sensor_msgs::msg::Image> serialization;
     cv_bridge::CvImagePtr cvPointer;
-    const auto videoEncoder = std::make_shared<VideoEncoder>(m_videoDirectory.right(3) == "mp4");
     auto iterationCount = 0;
-    reader.open(m_bagDirectory.toStdString());
+    // Adjust the quality value to fit OpenCV param range
+    if (m_format == "jpg") {
+        m_quality = (m_quality * 10) + 10;
+    }
 
     // Now the main encoding
     while (reader.has_next()) {
@@ -49,20 +61,11 @@ EncodingThread::run()
         auto rosMsg = std::make_shared<sensor_msgs::msg::Image>();
         serialization.deserialize_message(&serializedMessage, rosMsg.get());
 
-        // Setup the video encoder on the first iteration
-        if (iterationCount == 0) {
-            const auto width = rosMsg->width;
-            const auto height = rosMsg->height;
-
-            if (!videoEncoder->setVideoWriter(m_videoDirectory.toStdString(), width, height, m_useHardwareAcceleration)) {
-                emit openingCVInstanceFailed();
-                return;
-            }
-        }
-
         // Convert message to cv and encode
         cvPointer = cv_bridge::toCvCopy(*rosMsg, rosMsg->encoding);
-        videoEncoder->writeImageToVideo(cvPointer->image);
+
+        cv::imwrite(m_imagesDirectory.toStdString() + "/" + std::to_string(iterationCount) + "." + m_format.toStdString(), cvPointer->image,
+                    { m_format == "jpg" ? cv::IMWRITE_JPEG_QUALITY : cv::IMWRITE_PNG_COMPRESSION, m_quality });
 
         iterationCount++;
         // Inform of progress update

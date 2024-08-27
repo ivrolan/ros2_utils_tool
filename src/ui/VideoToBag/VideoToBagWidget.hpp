@@ -19,8 +19,8 @@ class VideoToBagWidget : public QWidget
     Q_OBJECT
 
 public:
-    VideoToBagWidget(const Utils::UI::WidgetParameters& widgetParameters,
-                     QWidget*                           parent = 0);
+    VideoToBagWidget(const Utils::UI::VideoParameters& videoParameters,
+                     QWidget*                          parent = 0);
 
 signals:
     void

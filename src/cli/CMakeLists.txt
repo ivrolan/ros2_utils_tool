@@ -5,6 +5,7 @@ target_include_directories (ros_tools_cli
 ) 
 
 target_sources(ros_tools_cli INTERFACE
+    ${CMAKE_CURRENT_LIST_DIR}/BagToImages.cpp
     ${CMAKE_CURRENT_LIST_DIR}/BagToVideo.cpp
     ${CMAKE_CURRENT_LIST_DIR}/VideoToBag.cpp
 )

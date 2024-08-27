@@ -10,10 +10,14 @@ public:
     explicit
     WriteToBagThread(const QString& bagDirectory,
                      const QString& topicName,
-                     const QString& vidDirectory,
+                     const QString& videoDirectory,
                      bool           useHardwareAcceleration,
                      QObject*       parent = nullptr);
 
     void
     run() override;
+
+private:
+    const QString m_videoDirectory;
+    const bool m_useHardwareAcceleration;
 };

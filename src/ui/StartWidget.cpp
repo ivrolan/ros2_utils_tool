@@ -17,15 +17,21 @@ StartWidget::StartWidget(QWidget *parent) :
     headerLabel->setAlignment(Qt::AlignHCenter);
 
     m_bagToVideoPushButton = createToolButton("Encode Video\nfrom ROSBag");
+    m_bagToImagesPushButton = createToolButton("Write Images\nfrom ROSBag");
     m_videoToBagPushButton = createToolButton("Write Video\nto ROSBag");
 
     setButtonIcons();
 
-    auto* const buttonLayout = new QHBoxLayout;
-    buttonLayout->addStretch();
-    buttonLayout->addWidget(m_bagToVideoPushButton);
-    buttonLayout->addWidget(m_videoToBagPushButton);
-    buttonLayout->addStretch();
+    auto* const upperButtonLayout = new QHBoxLayout;
+    upperButtonLayout->addStretch();
+    upperButtonLayout->addWidget(m_bagToVideoPushButton);
+    upperButtonLayout->addWidget(m_bagToImagesPushButton);
+    upperButtonLayout->addStretch();
+
+    auto* const lowerButtonLayout = new QHBoxLayout;
+    lowerButtonLayout->addStretch();
+    lowerButtonLayout->addWidget(m_videoToBagPushButton);
+    lowerButtonLayout->addStretch();
 
     auto* const versionLabel = new QLabel("v0.1.0");
     versionLabel->setToolTip("Initial version.");
@@ -38,7 +44,8 @@ StartWidget::StartWidget(QWidget *parent) :
     mainLayout->addSpacing(40);
     mainLayout->addWidget(headerLabel);
     mainLayout->addStretch();
-    mainLayout->addLayout(buttonLayout);
+    mainLayout->addLayout(upperButtonLayout);
+    mainLayout->addLayout(lowerButtonLayout);
     mainLayout->addStretch();
     mainLayout->addLayout(versionLayout);
 
@@ -46,6 +53,9 @@ StartWidget::StartWidget(QWidget *parent) :
 
     connect(m_bagToVideoPushButton, &QPushButton::clicked, this, [this] {
         emit bagToVideoRequested();
+    });
+    connect(m_bagToImagesPushButton, &QPushButton::clicked, this, [this] {
+        emit bagToImagesRequested();
     });
     connect(m_videoToBagPushButton, &QPushButton::clicked, this, [this] {
         emit videoToBagRequested();
@@ -73,6 +83,7 @@ StartWidget::setButtonIcons()
 {
     const auto isDarkMode = Utils::UI::isDarkMode();
     m_bagToVideoPushButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_to_video_white.svg" : ":/icons/bag_to_video_black.svg"));
+    m_bagToImagesPushButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_to_images_white.svg" : ":/icons/bag_to_images_black.svg"));
     m_videoToBagPushButton->setIcon(QIcon(isDarkMode ? ":/icons/video_to_bag_white.svg" : ":/icons/video_to_bag_black.svg"));
 }
 

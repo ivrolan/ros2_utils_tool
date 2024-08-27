@@ -9,11 +9,18 @@
 // Util functions for user interface related things
 namespace Utils::UI
 {
-struct WidgetParameters {
+struct BasicParameters {
     QString bagDirectory = "";
-    QString vidDirectory = "";
     QString topicName = "";
+};
+struct VideoParameters : BasicParameters {
+    QString videoDirectory = "";
     bool    useHardwareAcceleration = false;
+};
+struct ImageParameters : BasicParameters {
+    QString imagesDirectory = "";
+    QString format = "jpg";
+    int     quality = 8;
 };
 
 // Create a larger font for a certain widget

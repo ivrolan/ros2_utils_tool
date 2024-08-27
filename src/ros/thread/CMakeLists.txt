@@ -11,6 +11,8 @@ target_sources(ros_tools_thread INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/EncodingThread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/WriteToBagThread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/WriteToBagThread.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/WriteToImageThread.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/WriteToImageThread.hpp
 )
 
 target_link_libraries(ros_tools_thread
