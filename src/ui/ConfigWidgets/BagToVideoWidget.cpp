@@ -56,10 +56,9 @@ BagToVideoWidget::BagToVideoWidget(const Utils::UI::VideoParameters& videoParame
     m_formatComboBox->addItem("mkv", 1);
     m_formatComboBox->setToolTip("The video format file.");
     if (!videoParameters.videoDirectory.isEmpty()) {
-        auto formatString = videoParameters.videoDirectory;
-        formatString.truncate(videoParameters.videoDirectory.lastIndexOf(QChar('.')));
+        QFileInfo fileInfo(videoParameters.videoDirectory);
 
-        m_formatComboBox->setCurrentIndex(formatString == "mkv");
+        m_formatComboBox->setCurrentIndex(fileInfo.suffix() == "mkv");
     }
 
     m_useHardwareAccCheckBox = new QCheckBox;
