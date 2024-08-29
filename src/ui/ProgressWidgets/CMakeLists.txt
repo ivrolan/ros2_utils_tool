@@ -1,10 +1,10 @@
-add_library (ros_tools_progress_widgets INTERFACE)
+add_library (rt_progress_widgets INTERFACE)
 
-target_include_directories (ros_tools_progress_widgets
+target_include_directories (rt_progress_widgets
     INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_sources(ros_tools_progress_widgets INTERFACE
+target_sources(rt_progress_widgets INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/BasicProgressWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/BasicProgressWidget.hpp
     ${CMAKE_CURRENT_LIST_DIR}/ImagesProgressWidget.cpp
@@ -13,6 +13,6 @@ target_sources(ros_tools_progress_widgets INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/VideoProgressWidget.hpp
 )
 
-target_link_libraries(ros_tools_progress_widgets
-    INTERFACE Qt::Widgets ros_tools_utils
+target_link_libraries(rt_progress_widgets
+    INTERFACE Qt::Widgets rt_utils
 ) 

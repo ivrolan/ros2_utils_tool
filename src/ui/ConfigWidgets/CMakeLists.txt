@@ -1,10 +1,10 @@
-add_library (ros_tools_config_widgets INTERFACE)
+add_library (rt_config_widgets INTERFACE)
 
-target_include_directories (ros_tools_config_widgets
+target_include_directories (rt_config_widgets
     INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_sources(ros_tools_config_widgets INTERFACE
+target_sources(rt_config_widgets INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/BagToImagesWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/BagToImagesWidget.hpp
     ${CMAKE_CURRENT_LIST_DIR}/BagToVideoWidget.cpp
@@ -13,6 +13,6 @@ target_sources(ros_tools_config_widgets INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/VideoToBagWidget.hpp
 )
 
-target_link_libraries(ros_tools_config_widgets
-    INTERFACE Qt::Widgets ros_tools_utils
+target_link_libraries(rt_config_widgets
+    INTERFACE Qt::Widgets rt_utils
 ) 

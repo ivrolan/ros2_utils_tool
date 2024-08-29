@@ -10,5 +10,5 @@ add_executable(tool_tests
 ament_target_dependencies(tool_tests rclcpp rosbag2_cpp sensor_msgs std_msgs)
 
 target_link_libraries(tool_tests
-    catch_ros2::catch_ros2_with_main Qt::Widgets ros_tools_utils
+    catch_ros2::catch_ros2_with_main Qt::Widgets rt_utils
 )

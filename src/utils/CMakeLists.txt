@@ -1,10 +1,10 @@
-add_library (ros_tools_utils INTERFACE)
+add_library (rt_utils INTERFACE)
 
-target_include_directories (ros_tools_utils
+target_include_directories (rt_utils
     INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
 ) 
 
-target_sources(ros_tools_utils INTERFACE
+target_sources(rt_utils INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/UtilsGeneral.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UtilsGeneral.hpp
     ${CMAKE_CURRENT_LIST_DIR}/UtilsROS.cpp
@@ -15,6 +15,6 @@ target_sources(ros_tools_utils INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/VideoEncoder.hpp
 )
 
-target_link_libraries(ros_tools_utils
+target_link_libraries(rt_utils
     INTERFACE ${OpenCV_LIBS} Qt::Widgets
 )
