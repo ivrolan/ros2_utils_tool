@@ -39,6 +39,7 @@ protected:
 protected:
     QPointer<BasicThread> m_thread;
 
+    QPointer<QLabel> m_headerLabel;
     QPointer<QLabel> m_headerPixmapLabel;
 
     int m_maximumCount;

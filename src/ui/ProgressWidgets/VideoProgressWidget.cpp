@@ -10,6 +10,7 @@ VideoProgressWidget::VideoProgressWidget(const QString& bagDirectory, const QStr
 {
     const auto isDarkMode = Utils::UI::isDarkMode();
 
+    m_headerLabel->setText(isEncoding ? "Encoding Video..." : "Writing to Bag...");
     m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/bag_to_images_white.svg" : ":/icons/bag_to_images_black.svg").pixmap(QSize(100, 45)));
 
     if (isEncoding) {

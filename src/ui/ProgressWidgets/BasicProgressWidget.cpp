@@ -16,9 +16,9 @@ BasicProgressWidget::BasicProgressWidget(QWidget *parent) :
     m_headerPixmapLabel = new QLabel;
     m_headerPixmapLabel->setAlignment(Qt::AlignHCenter);
 
-    auto* const headerLabel = new QLabel("Encoding Video...");
-    Utils::UI::setWidgetHeaderFont(headerLabel);
-    headerLabel->setAlignment(Qt::AlignHCenter);
+    m_headerLabel = new QLabel;
+    Utils::UI::setWidgetHeaderFont(m_headerLabel);
+    m_headerLabel->setAlignment(Qt::AlignHCenter);
 
     m_progressBar = new QProgressBar;
 
@@ -37,7 +37,7 @@ BasicProgressWidget::BasicProgressWidget(QWidget *parent) :
     auto* const uiLayout = new QVBoxLayout;
     uiLayout->addStretch();
     uiLayout->addWidget(m_headerPixmapLabel);
-    uiLayout->addWidget(headerLabel);
+    uiLayout->addWidget(m_headerLabel);
     uiLayout->addSpacing(30);
     uiLayout->addWidget(m_progressBar);
     uiLayout->addWidget(m_progressLabel);
