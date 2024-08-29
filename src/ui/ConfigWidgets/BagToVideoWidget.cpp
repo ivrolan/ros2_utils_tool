@@ -122,17 +122,13 @@ BagToVideoWidget::BagToVideoWidget(const Utils::UI::VideoParameters& videoParame
 void
 BagToVideoWidget::searchButtonPressed()
 {
-    m_bagNameLineEdit->setText(QFileDialog::getExistingDirectory(this, "Open Directory", "",
-                                                                 QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks));
-    if (m_bagNameLineEdit->text().isEmpty()) {
+    const auto text = QFileDialog::getExistingDirectory(this, "Open Directory", "",
+                                                        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (text.isEmpty()) {
         return;
     }
 
-    m_topicNameComboBox->clear();
-    const auto videoTopics = Utils::ROS::getBagVideoTopics(m_bagNameLineEdit->text().toStdString());
-    // Only enable if both line edits contain text
-    m_okButton->setEnabled(!videoTopics.empty() && !m_videoNameLineEdit->text().isEmpty());
-
+    const auto videoTopics = Utils::ROS::getBagVideoTopics(text.toStdString());
     if (videoTopics.empty()) {
         auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Topic not found!",
                                              "The bag file does not contain any image/video topics!", QMessageBox::Ok);
@@ -140,9 +136,15 @@ BagToVideoWidget::searchButtonPressed()
         return;
     }
 
+    m_topicNameComboBox->clear();
     for (const auto& videoTopic : videoTopics) {
         m_topicNameComboBox->addItem(QString::fromStdString(videoTopic));
     }
+
+    m_bagNameLineEdit->setText(text);
+    // Only enable if both line edits contain text
+    m_okButton->setEnabled(!m_bagNameLineEdit->text().isEmpty() &&
+                           !m_topicNameComboBox->currentText().isEmpty() && !m_videoNameLineEdit->text().isEmpty());
 }
 
 
@@ -151,10 +153,15 @@ BagToVideoWidget::videoLocationButtonPressed()
 {
     const auto fileName = QFileDialog::getSaveFileName(this, "Save Video", "",
                                                        m_formatComboBox->currentText() + " files (*." + m_formatComboBox->currentText() + ")");
-    m_videoNameLineEdit->setText(fileName);
+    if (fileName.isEmpty()) {
+        return;
+    }
+
     // Only enable if both line edits contain text
-    m_okButton->setEnabled(!m_topicNameComboBox->currentText().isEmpty() && !m_videoNameLineEdit->text().isEmpty());
     m_fileDialogOpened = true;
+    m_videoNameLineEdit->setText(fileName);
+    m_okButton->setEnabled(!m_bagNameLineEdit->text().isEmpty() &&
+                           !m_topicNameComboBox->currentText().isEmpty() && !m_videoNameLineEdit->text().isEmpty());
 }
 
 

@@ -103,7 +103,6 @@ VideoToBagWidget::VideoToBagWidget(const Utils::UI::VideoParameters& videoParame
 void
 VideoToBagWidget::searchButtonPressed()
 {
-    m_videoNameLineEdit->clear();
     m_okButton->setEnabled(false);
 
     const auto fileName = QFileDialog::getOpenFileName(this, "Open Directory");
@@ -127,6 +126,9 @@ void
 VideoToBagWidget::bagLocationButtonPressed()
 {
     const auto fileName = QFileDialog::getSaveFileName(this, "Save Video");
+    if (fileName.isEmpty()) {
+        return;
+    }
 
     m_bagNameLineEdit->setText(fileName);
 
