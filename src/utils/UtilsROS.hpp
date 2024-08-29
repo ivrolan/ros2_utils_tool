@@ -8,6 +8,10 @@
 // ROS related util functions
 namespace Utils::ROS
 {
+// Returns if a directory contains a ROSBag
+[[nodiscard]] bool
+doesDirectoryContainBagFile(const std::string& bagDirectory);
+
 // Returns if a ROSBag contains a certain topic
 [[nodiscard]] bool
 doesBagContainTopicName(const std::string& bagDirectory,

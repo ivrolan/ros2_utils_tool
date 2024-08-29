@@ -31,6 +31,12 @@ TEST_CASE("Utils ROS Testing", "[utils]") {
     }
     writer.close();
 
+    SECTION("Does dir contain bag file test") {
+        auto contains = Utils::ROS::doesDirectoryContainBagFile("path/to/random/location");
+        REQUIRE(contains == false);
+        contains = Utils::ROS::doesDirectoryContainBagFile(bagDirectory);
+        REQUIRE(contains == true);
+    }
     SECTION("Contains topic name test") {
         auto contains = Utils::ROS::doesBagContainTopicName(bagDirectory, "/topic_image");
         REQUIRE(contains == true);

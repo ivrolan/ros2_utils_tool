@@ -38,6 +38,10 @@ main(int argc, char* argv[])
         std::cerr << "Bag file not found. Make sure that the bag file exists!" << std::endl;
         return 0;
     }
+    if (const auto doesDirContainBag = Utils::ROS::doesDirectoryContainBagFile(bagDirectory.toStdString()); !doesDirContainBag) {
+        std::cerr << "The directory does not contain a bag file!" << std::endl;
+        return 0;
+    }
 
     // Topic name
     const auto topicName = arguments.at(2);

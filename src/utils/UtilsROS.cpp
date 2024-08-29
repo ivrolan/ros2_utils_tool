@@ -8,6 +8,21 @@
 namespace Utils::ROS
 {
 bool
+doesDirectoryContainBagFile(const std::string& bagDirectory)
+{
+    rosbag2_cpp::Reader reader;
+    try {
+        reader.open(bagDirectory);
+    } catch (...) {
+        return false;
+    }
+
+    reader.close();
+    return true;
+}
+
+
+bool
 doesBagContainTopicName(const std::string& bagDirectory,
                         const std::string& topicName)
 {
@@ -61,9 +76,13 @@ getTopicType(const std::string& bagDirectory,
 std::vector<std::string>
 getBagVideoTopics(const std::string& bagDirectory)
 {
+    std::vector<std::string> videoTopics;
+    if (const auto doesDirContainBag = doesDirectoryContainBagFile(bagDirectory); !doesDirContainBag) {
+        return videoTopics;
+    }
+
     rosbag2_cpp::Reader reader;
     reader.open(bagDirectory);
-    std::vector<std::string> videoTopics;
 
     const auto topicsAndTypes = reader.get_all_topics_and_types();
     for (const auto& topicAndType : topicsAndTypes) {
