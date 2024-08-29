@@ -1,7 +1,5 @@
-add_subdirectory(BagToImages)
-add_subdirectory(BagToVideo)
+add_subdirectory(ConfigWidgets)
 add_subdirectory(ProgressWidgets)
-add_subdirectory(VideoToBag)
 
 add_library (ros_tools_ui INTERFACE)
 
@@ -17,5 +15,5 @@ target_sources(ros_tools_ui INTERFACE
 )
 
 target_link_libraries(ros_tools_ui
-    INTERFACE Qt::Widgets ros_tools_bag_to_images ros_tools_bag_to_video ros_tools_progress_widgets ros_tools_thread ros_tools_utils ros_tools_video_to_bag
+    INTERFACE Qt::Widgets ros_tools_config_widgets ros_tools_progress_widgets ros_tools_thread ros_tools_utils
 ) 
