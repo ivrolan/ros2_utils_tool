@@ -36,8 +36,8 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     m_topicNameComboBox->setMinimumWidth(200);
     m_topicNameComboBox->setToolTip("The ROSBag topic of the video file.\n"
                                     "If the Bag contains multiple video topics, you can choose one of them.");
-    if (!m_imageParameters.topicName.isEmpty()) {
-        m_topicNameComboBox->addItem(m_imageParameters.topicName);
+    if (!m_imageParameters.bagDirectory.isEmpty()) {
+        Utils::UI::fillComboBoxWithTopics(m_topicNameComboBox, m_imageParameters.bagDirectory);
     }
 
     m_imagesNameLineEdit = new QLineEdit(m_imageParameters.imagesDirectory);
@@ -127,17 +127,11 @@ BagToImagesWidget::searchButtonPressed()
         return;
     }
 
-    const auto videoTopics = Utils::ROS::getBagVideoTopics(bagDirectory.toStdString());
-    if (videoTopics.empty()) {
+    if (const auto containsVideoTopics = Utils::UI::fillComboBoxWithTopics(m_topicNameComboBox, bagDirectory); !containsVideoTopics) {
         auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Topic not found!",
                                              "The bag file does not contain any image/video topics!", QMessageBox::Ok);
         msgBox->exec();
         return;
-    }
-
-    m_topicNameComboBox->clear();
-    for (const auto& videoTopic : videoTopics) {
-        m_topicNameComboBox->addItem(QString::fromStdString(videoTopic));
     }
 
     m_imageParameters.bagDirectory = bagDirectory;

@@ -1,5 +1,7 @@
 #include "UtilsUI.hpp"
 
+#include "UtilsROS.hpp"
+
 #include <cmath>
 
 namespace Utils::UI
@@ -10,6 +12,23 @@ setWidgetHeaderFont(QWidget* widget)
     auto font = widget->font();
     font.setPointSize(16);
     widget->setFont(font);
+}
+
+
+bool
+fillComboBoxWithTopics(QPointer<QComboBox> comboBox, const QString& bagDirectory)
+{
+    const auto videoTopics = Utils::ROS::getBagVideoTopics(bagDirectory.toStdString());
+    if (videoTopics.empty()) {
+        return false;
+    }
+
+    comboBox->clear();
+    for (const auto& videoTopic : videoTopics) {
+        comboBox->addItem(QString::fromStdString(videoTopic));
+    }
+
+    return true;
 }
 
 

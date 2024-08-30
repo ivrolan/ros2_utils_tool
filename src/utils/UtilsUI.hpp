@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QComboBox>
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPointer>
@@ -26,6 +27,10 @@ struct ImageParameters : BasicParameters {
 // Create a larger font for a certain widget
 void
 setWidgetHeaderFont(QWidget* widget);
+
+[[maybe_unused]] bool
+fillComboBoxWithTopics(QPointer<QComboBox> comboBox,
+                       const QString&      bagDirectory);
 
 // Creates a layout of a lineedit along with a tool button
 [[nodiscard]] QHBoxLayout*
