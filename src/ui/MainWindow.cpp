@@ -39,8 +39,8 @@ MainWindow::setBagToVideoWidget()
     auto* const bagToVideoWidget = new BagToVideoWidget(m_parametersBagToVideo, m_encodingFormat);
     setCentralWidget(bagToVideoWidget);
 
-    connect(bagToVideoWidget, &BagToVideoWidget::back, this, &MainWindow::setStartWidget);
-    connect(bagToVideoWidget, &BagToVideoWidget::okPressed, this, [this] {
+    connect(bagToVideoWidget, &BasicConfigWidget::back, this, &MainWindow::setStartWidget);
+    connect(bagToVideoWidget, &BasicConfigWidget::okPressed, this, [this] {
         setProgressWidget(m_parametersBagToVideo, true);
     });
 }
@@ -52,8 +52,8 @@ MainWindow::setVideoToBagWidget()
     auto* const videoToBagWidget = new VideoToBagWidget(m_parametersVideoToBag);
     setCentralWidget(videoToBagWidget);
 
-    connect(videoToBagWidget, &VideoToBagWidget::back, this, &MainWindow::setStartWidget);
-    connect(videoToBagWidget, &VideoToBagWidget::okPressed, this, [this] {
+    connect(videoToBagWidget, &BasicConfigWidget::back, this, &MainWindow::setStartWidget);
+    connect(videoToBagWidget, &BasicConfigWidget::okPressed, this, [this] {
         setProgressWidget(m_parametersVideoToBag, false);
     });
 }
@@ -65,8 +65,8 @@ MainWindow::setBagToImagesWidget()
     auto* const bagToImagesWidget = new BagToImagesWidget(m_parametersBagToImages);
     setCentralWidget(bagToImagesWidget);
 
-    connect(bagToImagesWidget, &BagToImagesWidget::back, this, &MainWindow::setStartWidget);
-    connect(bagToImagesWidget, &BagToImagesWidget::okPressed, this, [this] {
+    connect(bagToImagesWidget, &BasicConfigWidget::back, this, &MainWindow::setStartWidget);
+    connect(bagToImagesWidget, &BasicConfigWidget::okPressed, this, [this] {
         setProgressWidget();
     });
 }

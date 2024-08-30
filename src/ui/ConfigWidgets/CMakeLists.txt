@@ -9,6 +9,8 @@ target_sources(rt_config_widgets INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/BagToImagesWidget.hpp
     ${CMAKE_CURRENT_LIST_DIR}/BagToVideoWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/BagToVideoWidget.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/BasicConfigWidget.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BasicConfigWidget.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VideoToBagWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/VideoToBagWidget.hpp
 )

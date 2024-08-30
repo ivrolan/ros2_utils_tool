@@ -4,8 +4,6 @@
 
 #include <QComboBox>
 #include <QDialogButtonBox>
-#include <QDebug>
-#include <QEvent>
 #include <QFileDialog>
 #include <QFormLayout>
 #include <QHBoxLayout>
@@ -21,12 +19,9 @@
 #include <filesystem>
 
 BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters, QWidget *parent) :
-    QWidget(parent), m_imageParameters(imageParameters)
+    BasicConfigWidget(":/icons/bag_to_images_white.svg", ":/icons/bag_to_images_black.svg", parent),
+    m_imageParameters(imageParameters)
 {
-    m_headerPixmapLabel = new QLabel;
-    m_headerPixmapLabel->setAlignment(Qt::AlignHCenter);
-    setPixmapLabelIcon();
-
     auto* const headerTextLabel = new QLabel("Write Images from ROSBag");
     Utils::UI::setWidgetHeaderFont(headerTextLabel);
     headerTextLabel->setAlignment(Qt::AlignHCenter);
@@ -86,8 +81,6 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     controlsSqueezedLayout->addStretch();
 
     auto* const backButton = new QPushButton("Back");
-    m_okButton = new QPushButton("Ok");
-    m_okButton->setEnabled(false);
 
     auto* const buttonBox = new QDialogButtonBox;
     buttonBox->addButton(m_okButton, QDialogButtonBox::AcceptRole);
@@ -103,9 +96,8 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     setLayout(mainLayout);
 
     auto* const okShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
-    m_okButton->setEnabled(!m_bagNameLineEdit->text().isEmpty() &&
-                           !m_topicNameComboBox->currentText().isEmpty() &&
-                           !m_imagesNameLineEdit->text().isEmpty());
+    enableOkButton(!m_bagNameLineEdit->text().isEmpty() && !m_topicNameComboBox->currentText().isEmpty() &&
+                   !m_imagesNameLineEdit->text().isEmpty());
 
     adjustSliderToChangedFormat(m_imageParameters.format);
 
@@ -150,8 +142,8 @@ BagToImagesWidget::searchButtonPressed()
 
     m_imageParameters.bagDirectory = bagDirectory;
     m_bagNameLineEdit->setText(bagDirectory);
-    m_okButton->setEnabled(!m_bagNameLineEdit->text().isEmpty() &&
-                           !m_topicNameComboBox->currentText().isEmpty() && !m_imagesNameLineEdit->text().isEmpty());
+    enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
+                   !m_topicNameComboBox->currentText().isEmpty() && !m_imagesNameLineEdit->text().isEmpty());
 }
 
 
@@ -167,8 +159,8 @@ BagToImagesWidget::imagesLocationButtonPressed()
     m_fileDialogOpened = true;
     m_imageParameters.imagesDirectory = fileName;
     m_imagesNameLineEdit->setText(fileName);
-    m_okButton->setEnabled(!m_bagNameLineEdit->text().isEmpty() &&
-                           !m_topicNameComboBox->currentText().isEmpty() && !m_imagesNameLineEdit->text().isEmpty());
+    enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
+                   !m_topicNameComboBox->currentText().isEmpty() && !m_imagesNameLineEdit->text().isEmpty());
 }
 
 
@@ -192,7 +184,8 @@ BagToImagesWidget::okButtonPressed()
     // Only ask if exists and the file dialog has not been called
     if (!std::filesystem::is_empty(m_imagesNameLineEdit->text().toStdString())) {
         auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Images already exist!",
-                                             "Images already exist under the specified directory! Are you sure you want to continue? This will overwrite all existing files.",
+                                             "Images already exist under the specified directory! Are you sure you want to continue? "
+                                             "This will overwrite all existing files.",
                                              QMessageBox::Yes | QMessageBox::No);
         const auto ret = msgBox->exec();
         if (ret == QMessageBox::No) {
@@ -201,22 +194,4 @@ BagToImagesWidget::okButtonPressed()
     }
 
     emit okPressed();
-}
-
-
-void
-BagToImagesWidget::setPixmapLabelIcon()
-{
-    const auto isDarkMode = Utils::UI::isDarkMode();
-    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/bag_to_images_white.svg" : ":/icons/bag_to_images_black.svg").pixmap(QSize(100, 45)));
-}
-
-
-bool
-BagToImagesWidget::event(QEvent *event)
-{
-    if (event->type() == QEvent::ApplicationPaletteChange || event->type() == QEvent::PaletteChange) {
-        setPixmapLabelIcon();
-    }
-    return QWidget::event(event);
 }

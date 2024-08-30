@@ -20,7 +20,8 @@
 #include <filesystem>
 
 BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, QString& encodingFormat, QWidget *parent) :
-    QWidget(parent), m_videoParameters(videoParameters), m_encodingFormat(encodingFormat)
+    BasicConfigWidget(":/icons/bag_to_video_white.svg", ":/icons/bag_to_video_black.svg", parent),
+    m_videoParameters(videoParameters), m_encodingFormat(encodingFormat)
 {
     m_headerPixmapLabel = new QLabel;
     m_headerPixmapLabel->setAlignment(Qt::AlignHCenter);
@@ -86,8 +87,6 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     controlsSqueezedLayout->addStretch();
 
     auto* const backButton = new QPushButton("Back");
-    m_okButton = new QPushButton("Ok");
-    m_okButton->setEnabled(false);
 
     auto* const buttonBox = new QDialogButtonBox;
     buttonBox->addButton(m_okButton, QDialogButtonBox::AcceptRole);
@@ -103,9 +102,9 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     setLayout(mainLayout);
 
     auto* const okShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
-    m_okButton->setEnabled(!m_bagNameLineEdit->text().isEmpty() &&
-                           !m_topicNameComboBox->currentText().isEmpty() &&
-                           !m_videoNameLineEdit->text().isEmpty());
+    enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
+                   !m_topicNameComboBox->currentText().isEmpty() &&
+                   !m_videoNameLineEdit->text().isEmpty());
 
 
     connect(searchBagButton, &QPushButton::clicked, this, &BagToVideoWidget::searchButtonPressed);
@@ -150,8 +149,8 @@ BagToVideoWidget::searchButtonPressed()
     m_videoParameters.bagDirectory = bagDirectory;
     m_bagNameLineEdit->setText(bagDirectory);
     // Only enable if both line edits contain text
-    m_okButton->setEnabled(!m_bagNameLineEdit->text().isEmpty() &&
-                           !m_topicNameComboBox->currentText().isEmpty() && !m_videoNameLineEdit->text().isEmpty());
+    enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
+                   !m_topicNameComboBox->currentText().isEmpty() && !m_videoNameLineEdit->text().isEmpty());
 }
 
 
@@ -168,8 +167,8 @@ BagToVideoWidget::videoLocationButtonPressed()
     m_fileDialogOpened = true;
     m_videoParameters.videoDirectory = fileName;
     m_videoNameLineEdit->setText(fileName);
-    m_okButton->setEnabled(!m_bagNameLineEdit->text().isEmpty() &&
-                           !m_topicNameComboBox->currentText().isEmpty() && !m_videoNameLineEdit->text().isEmpty());
+    enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
+                   !m_topicNameComboBox->currentText().isEmpty() && !m_videoNameLineEdit->text().isEmpty());
 }
 
 
@@ -209,22 +208,4 @@ BagToVideoWidget::okButtonPressed()
     }
 
     emit okPressed();
-}
-
-
-void
-BagToVideoWidget::setPixmapLabelIcon()
-{
-    const auto isDarkMode = Utils::UI::isDarkMode();
-    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? ":/icons/bag_to_video_white.svg" : ":/icons/bag_to_video_black.svg").pixmap(QSize(100, 45)));
-}
-
-
-bool
-BagToVideoWidget::event(QEvent *event)
-{
-    if (event->type() == QEvent::ApplicationPaletteChange || event->type() == QEvent::PaletteChange) {
-        setPixmapLabelIcon();
-    }
-    return QWidget::event(event);
 }
