@@ -41,6 +41,7 @@ WriteToImageThread::run()
     rclcpp::Serialization<sensor_msgs::msg::Image> serialization;
     cv_bridge::CvImagePtr cvPointer;
     auto iterationCount = 0;
+    const auto topicNameStdString = m_topicName.toStdString();
     // Adjust the quality value to fit OpenCV param range
     if (m_format == "jpg") {
         m_quality = (m_quality * 10) + 10;
@@ -55,6 +56,10 @@ WriteToImageThread::run()
 
         // Read and deserialize the message
         rosbag2_storage::SerializedBagMessageSharedPtr msg = reader.read_next();
+        if (msg->topic_name != topicNameStdString) {
+            continue;
+        }
+
         rclcpp::SerializedMessage serializedMessage(*msg->serialized_data);
         auto rosMsg = std::make_shared<sensor_msgs::msg::Image>();
         serialization.deserialize_message(&serializedMessage, rosMsg.get());

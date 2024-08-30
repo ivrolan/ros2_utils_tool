@@ -33,7 +33,7 @@ EncodingThread::run()
     cv_bridge::CvImagePtr cvPointer;
     const auto videoEncoder = std::make_shared<VideoEncoder>(m_videoDirectory.right(3) == "mp4");
     auto iterationCount = 0;
-    reader.open(m_bagDirectory.toStdString());
+    const auto topicNameStdString = m_topicName.toStdString();
 
     // Now the main encoding
     while (reader.has_next()) {
@@ -44,6 +44,10 @@ EncodingThread::run()
 
         // Read and deserialize the message
         rosbag2_storage::SerializedBagMessageSharedPtr msg = reader.read_next();
+        if (msg->topic_name != topicNameStdString) {
+            continue;
+        }
+
         rclcpp::SerializedMessage serializedMessage(*msg->serialized_data);
         auto rosMsg = std::make_shared<sensor_msgs::msg::Image>();
         serialization.deserialize_message(&serializedMessage, rosMsg.get());
