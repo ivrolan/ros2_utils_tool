@@ -185,6 +185,7 @@ BagToVideoWidget::formatComboBoxTextChanged(const QString& text)
     newLineEditText.truncate(newLineEditText.lastIndexOf(QChar('.')));
     newLineEditText += "." + text;
 
+    m_videoParameters.videoDirectory = newLineEditText;
     m_videoNameLineEdit->setText(newLineEditText);
 }
 

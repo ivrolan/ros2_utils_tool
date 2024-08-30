@@ -100,7 +100,7 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::VideoParameters& videoParameters, 
 void
 VideoToBagWidget::searchButtonPressed()
 {
-    m_okButton->setEnabled(false);
+    enableOkButton(false);
 
     const auto fileName = QFileDialog::getOpenFileName(this, "Open Directory");
     if (fileName.isEmpty()) {
