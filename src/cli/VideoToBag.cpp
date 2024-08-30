@@ -2,6 +2,7 @@
 
 #include "UtilsGeneral.hpp"
 #include "UtilsROS.hpp"
+#include "UtilsUI.hpp"
 
 #include <QCoreApplication>
 #include <QObject>
@@ -72,7 +73,9 @@ main(int argc, char* argv[])
     auto this_messageCount = 0;
 
     // Create thread and connect to its informations
-    auto* const writeToBagThread = new WriteToBagThread(bagDirectory, topicName, vidDirectory, useHardwareAcceleration);
+    Utils::UI::VideoParameters videoParameters { { bagDirectory, topicName }, vidDirectory, useHardwareAcceleration };
+    auto* const writeToBagThread = new WriteToBagThread(videoParameters);
+
     QObject::connect(writeToBagThread, &WriteToBagThread::calculatedMaximumInstances, [&this_messageCount](int count) {
         this_messageCount = count;
     });

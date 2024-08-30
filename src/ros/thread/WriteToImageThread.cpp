@@ -12,13 +12,11 @@
 
 #include <filesystem>
 
-WriteToImageThread::WriteToImageThread(const QString& bagDirectory,
-                                       const QString& topicName,
-                                       const QString& imagesDirectory,
-                                       const QString& format,
-                                       const int      quality,
-                                       QObject*       parent) :
-    BasicThread(bagDirectory, topicName, parent), m_imagesDirectory(imagesDirectory), m_format(format), m_quality(quality)
+WriteToImageThread::WriteToImageThread(const Utils::UI::ImageParameters& imageParameters,
+                                       QObject*                          parent) :
+    BasicThread(imageParameters.bagDirectory, imageParameters.topicName, parent),
+    m_imagesDirectory(imageParameters.imagesDirectory),
+    m_format(imageParameters.format), m_quality(imageParameters.quality)
 {
 }
 

@@ -20,19 +20,15 @@ class BagToImagesWidget : public QWidget
     Q_OBJECT
 
 public:
-    BagToImagesWidget(const Utils::UI::ImageParameters& imageParameters,
-                      QWidget*                          parent = 0);
+    BagToImagesWidget(Utils::UI::ImageParameters& imageParameters,
+                      QWidget*                    parent = 0);
 
 signals:
     void
     back();
 
     void
-    parametersSet(const QString& bagDirectory,
-                  const QString& topicName,
-                  const QString& imagesDirectory,
-                  const QString& format,
-                  const int      quality);
+    okPressed();
 
 private slots:
     void
@@ -43,9 +39,6 @@ private slots:
 
     void
     adjustSliderToChangedFormat(const QString& text);
-
-    void
-    formatComboBoxTextChanged(const QString& text);
 
     void
     okButtonPressed();
@@ -67,6 +60,8 @@ private:
     QPointer<QLabel> m_formLayoutSliderLabel;
 
     QPointer<QPushButton> m_okButton;
+
+    Utils::UI::ImageParameters& m_imageParameters;
 
     bool m_fileDialogOpened = false;
 };

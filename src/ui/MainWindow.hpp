@@ -28,18 +28,11 @@ private slots:
     setBagToImagesWidget();
 
     void
-    setProgressWidget(const QString& bagDirectory,
-                      const QString& topicName,
-                      const QString& vidDirectory,
-                      bool           useHardwareAcceleration,
-                      bool           isEncoding);
+    setProgressWidget(const Utils::UI::VideoParameters& videoParameters,
+                      bool                              isEncoding);
 
     void
-    setProgressWidget(const QString& bagDirectory,
-                      const QString& topicName,
-                      const QString& vidDirectory,
-                      const QString& format,
-                      int            quality);
+    setProgressWidget();
 
 private:
     void
@@ -49,4 +42,7 @@ private:
     Utils::UI::VideoParameters m_parametersBagToVideo;
     Utils::UI::VideoParameters m_parametersVideoToBag;
     Utils::UI::ImageParameters m_parametersBagToImages;
+
+    // We only need this one for encoding a video, but not for writing to a bag file
+    QString m_encodingFormat = "mp4";
 };

@@ -1,10 +1,10 @@
 #include "BagToImagesWidget.hpp"
 
 #include "UtilsROS.hpp"
-#include "UtilsUI.hpp"
 
 #include <QComboBox>
 #include <QDialogButtonBox>
+#include <QDebug>
 #include <QEvent>
 #include <QFileDialog>
 #include <QFormLayout>
@@ -20,8 +20,8 @@
 
 #include <filesystem>
 
-BagToImagesWidget::BagToImagesWidget(const Utils::UI::ImageParameters& imageParameters, QWidget *parent) :
-    QWidget(parent)
+BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters, QWidget *parent) :
+    QWidget(parent), m_imageParameters(imageParameters)
 {
     m_headerPixmapLabel = new QLabel;
     m_headerPixmapLabel->setAlignment(Qt::AlignHCenter);
@@ -31,7 +31,7 @@ BagToImagesWidget::BagToImagesWidget(const Utils::UI::ImageParameters& imagePara
     Utils::UI::setWidgetHeaderFont(headerTextLabel);
     headerTextLabel->setAlignment(Qt::AlignHCenter);
 
-    m_bagNameLineEdit = new QLineEdit(imageParameters.bagDirectory);
+    m_bagNameLineEdit = new QLineEdit(m_imageParameters.bagDirectory);
     m_bagNameLineEdit->setToolTip("The directory of the ROSBag source file.");
 
     auto* const searchBagButton = new QToolButton;
@@ -41,11 +41,11 @@ BagToImagesWidget::BagToImagesWidget(const Utils::UI::ImageParameters& imagePara
     m_topicNameComboBox->setMinimumWidth(200);
     m_topicNameComboBox->setToolTip("The ROSBag topic of the video file.\n"
                                     "If the Bag contains multiple video topics, you can choose one of them.");
-    if (!imageParameters.topicName.isEmpty()) {
-        m_topicNameComboBox->addItem(imageParameters.topicName);
+    if (!m_imageParameters.topicName.isEmpty()) {
+        m_topicNameComboBox->addItem(m_imageParameters.topicName);
     }
 
-    m_imagesNameLineEdit = new QLineEdit(imageParameters.imagesDirectory);
+    m_imagesNameLineEdit = new QLineEdit(m_imageParameters.imagesDirectory);
     m_imagesNameLineEdit->setToolTip("The directory where the images should be stored.");
 
     auto* const imagesLocationButton = new QToolButton;
@@ -55,16 +55,14 @@ BagToImagesWidget::BagToImagesWidget(const Utils::UI::ImageParameters& imagePara
     m_formatComboBox->addItem("png", 0);
     m_formatComboBox->addItem("jpg", 1);
     m_formatComboBox->setToolTip("The format of the written iimages.");
-    if (!imageParameters.format.isEmpty()) {
-        m_formatComboBox->setCurrentText(imageParameters.format);
-    }
+    m_formatComboBox->setCurrentText(m_imageParameters.format);
 
     m_formLayoutSliderLabel = new QLabel;
 
     m_slider = new QSlider(Qt::Horizontal);
     m_slider->setRange(0, 9);
     m_slider->setTickInterval(1);
-    m_slider->setValue(imageParameters.quality);
+    m_slider->setValue(m_imageParameters.quality);
     m_slider->setTickPosition(QSlider::TicksBelow);
 
     auto* const formLayout = new QFormLayout;
@@ -109,11 +107,17 @@ BagToImagesWidget::BagToImagesWidget(const Utils::UI::ImageParameters& imagePara
                            !m_topicNameComboBox->currentText().isEmpty() &&
                            !m_imagesNameLineEdit->text().isEmpty());
 
-    adjustSliderToChangedFormat(imageParameters.format);
+    adjustSliderToChangedFormat(m_imageParameters.format);
 
     connect(searchBagButton, &QPushButton::clicked, this, &BagToImagesWidget::searchButtonPressed);
+    connect(m_topicNameComboBox, &QComboBox::currentTextChanged, this, [this] (const QString& text) {
+        m_imageParameters.topicName = text;
+    });
     connect(imagesLocationButton, &QPushButton::clicked, this, &BagToImagesWidget::imagesLocationButtonPressed);
     connect(m_formatComboBox, &QComboBox::currentTextChanged, this, &BagToImagesWidget::adjustSliderToChangedFormat);
+    connect(m_slider, &QSlider::valueChanged, this, [this] (int value) {
+        m_imageParameters.quality = value;
+    });
     connect(backButton, &QPushButton::clicked, this, [this] {
         emit back();
     });
@@ -125,13 +129,13 @@ BagToImagesWidget::BagToImagesWidget(const Utils::UI::ImageParameters& imagePara
 void
 BagToImagesWidget::searchButtonPressed()
 {
-    const auto text = QFileDialog::getExistingDirectory(this, "Open Directory", "",
-                                                        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-    if (text.isEmpty()) {
+    const auto bagDirectory = QFileDialog::getExistingDirectory(this, "Open Directory", "",
+                                                                QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (bagDirectory.isEmpty()) {
         return;
     }
 
-    const auto videoTopics = Utils::ROS::getBagVideoTopics(text.toStdString());
+    const auto videoTopics = Utils::ROS::getBagVideoTopics(bagDirectory.toStdString());
     if (videoTopics.empty()) {
         auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Topic not found!",
                                              "The bag file does not contain any image/video topics!", QMessageBox::Ok);
@@ -144,7 +148,8 @@ BagToImagesWidget::searchButtonPressed()
         m_topicNameComboBox->addItem(QString::fromStdString(videoTopic));
     }
 
-    m_bagNameLineEdit->setText(text);
+    m_imageParameters.bagDirectory = bagDirectory;
+    m_bagNameLineEdit->setText(bagDirectory);
     m_okButton->setEnabled(!m_bagNameLineEdit->text().isEmpty() &&
                            !m_topicNameComboBox->currentText().isEmpty() && !m_imagesNameLineEdit->text().isEmpty());
 }
@@ -160,6 +165,7 @@ BagToImagesWidget::imagesLocationButtonPressed()
 
     // Only enable if both line edits contain text
     m_fileDialogOpened = true;
+    m_imageParameters.imagesDirectory = fileName;
     m_imagesNameLineEdit->setText(fileName);
     m_okButton->setEnabled(!m_bagNameLineEdit->text().isEmpty() &&
                            !m_topicNameComboBox->currentText().isEmpty() && !m_imagesNameLineEdit->text().isEmpty());
@@ -172,21 +178,7 @@ BagToImagesWidget::adjustSliderToChangedFormat(const QString& text)
     m_formLayoutSliderLabel->setText(text == "jpg" ? "Quality:" : "Level of Compression:");
     m_slider->setToolTip(text == "jpg" ? "Image quality. A higher quality will increase the image size."
                                        : "Higher compression will result in smaller size, but increase writing time.");
-}
-
-
-void
-BagToImagesWidget::formatComboBoxTextChanged(const QString& text)
-{
-    // If the combo box item changes, apply a different appendix to the text in the video line edit
-    if (m_imagesNameLineEdit->text().isEmpty()) {
-        return;
-    }
-
-    auto newLineEditText = m_imagesNameLineEdit->text();
-    newLineEditText.truncate(newLineEditText.lastIndexOf(QChar('.')));
-    newLineEditText += "." + text;
-    m_imagesNameLineEdit->setText(newLineEditText);
+    m_imageParameters.format = text;
 }
 
 
@@ -208,8 +200,7 @@ BagToImagesWidget::okButtonPressed()
         }
     }
 
-    emit parametersSet(m_bagNameLineEdit->text(), m_topicNameComboBox->currentText(), m_imagesNameLineEdit->text(),
-                       m_formatComboBox->currentText(), m_slider->value());
+    emit okPressed();
 }
 
 

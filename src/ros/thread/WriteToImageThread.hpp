@@ -1,18 +1,15 @@
 #pragma once
 
 #include "BasicThread.hpp"
+#include "UtilsUI.hpp"
 
 // Encoding thread, encoding a video out of a ROSBag
 class WriteToImageThread : public BasicThread {
     Q_OBJECT
 public:
     explicit
-    WriteToImageThread(const QString& bagDirectory,
-                       const QString& topicName,
-                       const QString& imagesDirectory,
-                       const QString& format,
-                       const int      quality,
-                       QObject*       parent = nullptr);
+    WriteToImageThread(const Utils::UI::ImageParameters& imageParameters,
+                       QObject*                          parent = nullptr);
 
     void
     run() override;

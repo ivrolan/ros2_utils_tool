@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BasicThread.hpp"
+#include "UtilsUI.hpp"
 
 // Encoding thread, encoding a video out of a ROSBag
 class WriteToBagThread : public BasicThread {
@@ -8,11 +9,8 @@ class WriteToBagThread : public BasicThread {
 
 public:
     explicit
-    WriteToBagThread(const QString& bagDirectory,
-                     const QString& topicName,
-                     const QString& videoDirectory,
-                     bool           useHardwareAcceleration,
-                     QObject*       parent = nullptr);
+    WriteToBagThread(const Utils::UI::VideoParameters& videoParameters,
+                     QObject*                          parent = nullptr);
 
     void
     run() override;

@@ -2,6 +2,7 @@
 
 #include "UtilsGeneral.hpp"
 #include "UtilsROS.hpp"
+#include "UtilsUI.hpp"
 
 #include <QCoreApplication>
 #include <QObject>
@@ -78,7 +79,9 @@ main(int argc, char* argv[])
     auto thisMessageCount = 0;
 
     // Create thread and connect to its informations
-    auto* const writeToImageThread = new WriteToImageThread(bagDirectory, topicName, imagesDirectory, formatString, qualityString.toInt());
+    Utils::UI::ImageParameters imageParameters { { bagDirectory, topicName }, imagesDirectory, formatString, qualityString.toInt() };
+    auto* const writeToImageThread = new WriteToImageThread(imageParameters);
+
     QObject::connect(writeToImageThread, &WriteToImageThread::calculatedMaximumInstances, [&thisMessageCount](int count) {
         thisMessageCount = count;
     });

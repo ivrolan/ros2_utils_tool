@@ -10,12 +10,11 @@
 
 #include "sensor_msgs/msg/image.hpp"
 
-EncodingThread::EncodingThread(const QString& bagDirectory,
-                               const QString& topicName,
-                               const QString& videoDirectory,
-                               bool           useHardwareAcceleration,
-                               QObject*       parent) :
-    BasicThread(bagDirectory, topicName, parent), m_videoDirectory(videoDirectory), m_useHardwareAcceleration(useHardwareAcceleration)
+EncodingThread::EncodingThread(const Utils::UI::VideoParameters& videoParameters,
+                               QObject*                          parent) :
+    BasicThread(videoParameters.bagDirectory, videoParameters.topicName, parent),
+    m_videoDirectory(videoParameters.videoDirectory),
+    m_useHardwareAcceleration(videoParameters.useHardwareAcceleration)
 {
 }
 

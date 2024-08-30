@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BasicProgressWidget.hpp"
+#include "UtilsUI.hpp"
 
 /**
  * @brief Progress widget variant used to display writing images out of a ROSBag
@@ -10,10 +11,6 @@ class ImagesProgressWidget : public BasicProgressWidget
     Q_OBJECT
 
 public:
-    ImagesProgressWidget(const QString& bagDirectory,
-                         const QString& topicName,
-                         const QString& vidDirectory,
-                         const QString& format = "",
-                         int            compressionLevel = 90,
-                         QWidget*       parent = 0);
+    ImagesProgressWidget(const Utils::UI::ImageParameters& imageParameters,
+                         QWidget*                          parent = 0);
 };

@@ -19,18 +19,15 @@ class VideoToBagWidget : public QWidget
     Q_OBJECT
 
 public:
-    VideoToBagWidget(const Utils::UI::VideoParameters& videoParameters,
-                     QWidget*                          parent = 0);
+    VideoToBagWidget(Utils::UI::VideoParameters& videoParameters,
+                     QWidget*                    parent = 0);
 
 signals:
     void
     back();
 
     void
-    parametersSet(const QString& vidDirectory,
-                  const QString& bagDirectory,
-                  const QString& topicName,
-                  bool           useHardwareAcceleration);
+    okPressed();
 
 private slots:
     void
@@ -60,4 +57,5 @@ private:
     QPointer<QCheckBox> m_useHardwareAccCheckBox;
 
     QPointer<QPushButton> m_okButton;
+    Utils::UI::VideoParameters& m_videoParameters;
 };

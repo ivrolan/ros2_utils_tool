@@ -2,6 +2,7 @@
 
 #include "UtilsGeneral.hpp"
 #include "UtilsROS.hpp"
+#include "UtilsUI.hpp"
 
 #include <QCoreApplication>
 #include <QObject>
@@ -79,7 +80,9 @@ main(int argc, char* argv[])
     auto this_messageCount = 0;
 
     // Create encoding thread and connect to its informations
-    auto* const encodingThread = new EncodingThread(bagDirectory, topicName, vidDirectory, useHardwareAcceleration);
+    Utils::UI::VideoParameters videoParameters { { bagDirectory, topicName }, vidDirectory, useHardwareAcceleration };
+    auto* const encodingThread = new EncodingThread(videoParameters);
+
     QObject::connect(encodingThread, &EncodingThread::calculatedMaximumInstances, [&this_messageCount](int count) {
         this_messageCount = count;
     });
