@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>mediassist4_ros_tools</name>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
   <description>The mediassist4_ros_tools package</description>
 
   <maintainer email="m.fleury@nct-dresden.de">maxime</maintainer>

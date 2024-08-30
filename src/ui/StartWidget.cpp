@@ -33,8 +33,8 @@ StartWidget::StartWidget(QWidget *parent) :
     lowerButtonLayout->addWidget(m_videoToBagPushButton);
     lowerButtonLayout->addStretch();
 
-    auto* const versionLabel = new QLabel("v0.1.0");
-    versionLabel->setToolTip("Initial version.");
+    auto* const versionLabel = new QLabel("v0.2.0");
+    versionLabel->setToolTip("Bag to Images feature, saved parameters and bugfixes!");
 
     auto* const versionLayout = new QHBoxLayout;
     versionLayout->addStretch();
