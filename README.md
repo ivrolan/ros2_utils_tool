@@ -1,8 +1,10 @@
 ## Overview
 
-The mediassist4_ros_tools package provides various tools for the everyday-usage of ROS2. The package provides UI as well as command line functionality. Every tool can be used inside the UI as well as the command line.\
+The mediassist4_ros_tools package provides various tools for the everyday-usage of ROS2. The package provides a UI as well as command line functionality.
+
 As of now, the tool provides the following functionalities:
 - Encode a video out of a ROSBag video topic to mp4 or mkv
+- Write images of of a ROSBag video topic, either using jpg or png format
 - Write an mp4 or mkv video file to a ROSBag.
 
 NOTE: The package is still under active development, so more tools might be added later in the future.
@@ -70,13 +72,19 @@ source install/setup.bash
 ros2 run mediassist4_ros_tools tool_ui
 ```
 
-**Bag-to-video-tool**:
+**Bag-to-Video-Tool**:
 ```
 ros2 run mediassist4_ros_tools tool_bag_to_video /path/to/bag_file topic_name_of_video_topic /path/where/video/should/be/stored use_hardware_acceleration
 ```
 (The video needs to have an .mp4 or .mkv appendix, the hardware acceleration parameter needs to be `true` or `false`).
 
-**Video-to-bag-tool**:
+**Bag-to-Images-Tool**:
+```
+ros2 run mediassist4_ros_tools tool_bag_to_images /path/to/bag_file topic_name_of_video_topic /path/where/images/should/be/stored format quality
+```
+(format needs to be either `jpg` or `png`, quality a value between `0` and `9`).
+
+**Video-to-Bag-Tool**:
 ```
 ros2 run mediassist4_ros_tools tool_video_to_bag /path/to/video_file topic_name_in_bag /path/where/bag/should/be/stored use_hardware_acceleration
 ```
