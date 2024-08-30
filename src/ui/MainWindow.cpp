@@ -25,78 +25,64 @@ void
 MainWindow::setStartWidget()
 {
     auto* const startWidget = new StartWidget;
-    connect(startWidget, &StartWidget::bagToVideoRequested, this, &MainWindow::setBagToVideoWidget);
-    connect(startWidget, &StartWidget::videoToBagRequested, this, &MainWindow::setVideoToBagWidget);
-    connect(startWidget, &StartWidget::bagToImagesRequested, this, &MainWindow::setBagToImagesWidget);
-
+    connect(startWidget, &StartWidget::bagToVideoRequested, this, [this] {
+        setConfigWidget(0);
+    });
+    connect(startWidget, &StartWidget::videoToBagRequested, this, [this] {
+        setConfigWidget(1);
+    });
+    connect(startWidget, &StartWidget::bagToImagesRequested, this, [this] {
+        setConfigWidget(2);
+    });
     setCentralWidget(startWidget);
 }
 
 
 void
-MainWindow::setBagToVideoWidget()
+MainWindow::setConfigWidget(int mode)
 {
-    auto* const bagToVideoWidget = new BagToVideoWidget(m_parametersBagToVideo, m_encodingFormat);
-    setCentralWidget(bagToVideoWidget);
+    QPointer<BasicConfigWidget> basicConfigWidget;
+    switch (mode) {
+    case 0:
+        basicConfigWidget = new BagToVideoWidget(m_parametersBagToVideo, m_encodingFormat);
+        break;
+    case 1:
+        basicConfigWidget = new VideoToBagWidget(m_parametersVideoToBag);
+        break;
+    case 2:
+        basicConfigWidget = new BagToImagesWidget(m_parametersBagToImages);
+        break;
+    }
+    setCentralWidget(basicConfigWidget);
 
-    connect(bagToVideoWidget, &BasicConfigWidget::back, this, &MainWindow::setStartWidget);
-    connect(bagToVideoWidget, &BasicConfigWidget::okPressed, this, [this] {
-        setProgressWidget(m_parametersBagToVideo, true);
+    connect(basicConfigWidget, &BasicConfigWidget::back, this, &MainWindow::setStartWidget);
+    connect(basicConfigWidget, &BasicConfigWidget::okPressed, this, [this, mode] {
+        setProgressWidget(mode);
     });
 }
 
 
 void
-MainWindow::setVideoToBagWidget()
+MainWindow::setProgressWidget(int mode)
 {
-    auto* const videoToBagWidget = new VideoToBagWidget(m_parametersVideoToBag);
-    setCentralWidget(videoToBagWidget);
+    QPointer<BasicProgressWidget> basicProgressWidget;
+    switch (mode) {
+    case 0:
+    case 1:
+        basicProgressWidget = new VideoProgressWidget(mode == 0 ? m_parametersBagToVideo : m_parametersVideoToBag, mode == 0);
+        break;
+    case 2:
+        basicProgressWidget = new ImagesProgressWidget(m_parametersBagToImages);
+        break;
+    }
+    setCentralWidget(basicProgressWidget);
 
-    connect(videoToBagWidget, &BasicConfigWidget::back, this, &MainWindow::setStartWidget);
-    connect(videoToBagWidget, &BasicConfigWidget::okPressed, this, [this] {
-        setProgressWidget(m_parametersVideoToBag, false);
+    connect(basicProgressWidget, &BasicProgressWidget::progressStopped, this, [this, mode] {
+        setConfigWidget(mode);
     });
-}
+    connect(basicProgressWidget, &BasicProgressWidget::finished, this, &MainWindow::setStartWidget);
 
-
-void
-MainWindow::setBagToImagesWidget()
-{
-    auto* const bagToImagesWidget = new BagToImagesWidget(m_parametersBagToImages);
-    setCentralWidget(bagToImagesWidget);
-
-    connect(bagToImagesWidget, &BasicConfigWidget::back, this, &MainWindow::setStartWidget);
-    connect(bagToImagesWidget, &BasicConfigWidget::okPressed, this, [this] {
-        setProgressWidget();
-    });
-}
-
-
-void
-MainWindow::setProgressWidget(const Utils::UI::VideoParameters& videoParameters, bool isEncoding)
-{
-    auto* const progressWidget = new VideoProgressWidget(videoParameters, isEncoding);
-    setCentralWidget(progressWidget);
-
-    connect(progressWidget, &BasicProgressWidget::progressStopped, this, [this, isEncoding] {
-        isEncoding ? setBagToVideoWidget() : setVideoToBagWidget();
-    });
-    connect(progressWidget, &BasicProgressWidget::finished, this, &MainWindow::setStartWidget);
-
-    progressWidget->startThread();
-}
-
-
-void
-MainWindow::setProgressWidget()
-{
-    auto* const progressWidget = new ImagesProgressWidget(m_parametersBagToImages);
-    setCentralWidget(progressWidget);
-
-    connect(progressWidget, &BasicProgressWidget::progressStopped, this, &MainWindow::setBagToImagesWidget);
-    connect(progressWidget, &BasicProgressWidget::finished, this, &MainWindow::setStartWidget);
-
-    progressWidget->startThread();
+    basicProgressWidget->startThread();
 }
 
 

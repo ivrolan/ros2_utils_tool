@@ -19,20 +19,10 @@ private slots:
     setStartWidget();
 
     void
-    setBagToVideoWidget();
+    setConfigWidget(int mode);
 
     void
-    setVideoToBagWidget();
-
-    void
-    setBagToImagesWidget();
-
-    void
-    setProgressWidget(const Utils::UI::VideoParameters& videoParameters,
-                      bool                              isEncoding);
-
-    void
-    setProgressWidget();
+    setProgressWidget(int mode);
 
 private:
     void
