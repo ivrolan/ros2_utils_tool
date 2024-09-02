@@ -6,7 +6,6 @@
 #include <QPointer>
 #include <QWidget>
 
-class QCheckBox;
 class QComboBox;
 class QLineEdit;
 
@@ -40,7 +39,6 @@ private:
     QPointer<QComboBox> m_topicNameComboBox;
     QPointer<QLineEdit> m_videoNameLineEdit;
     QPointer<QComboBox> m_formatComboBox;
-    QPointer<QCheckBox> m_useHardwareAccCheckBox;
 
     Utils::UI::VideoParameters& m_videoParameters;
     QString& m_encodingFormat;

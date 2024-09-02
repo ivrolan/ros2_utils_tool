@@ -62,16 +62,16 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
         m_formatComboBox->setCurrentText(m_encodingFormat);
     }
 
-    m_useHardwareAccCheckBox = new QCheckBox;
-    m_useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster encoding.");
-    m_useHardwareAccCheckBox->setCheckState(m_videoParameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
+    auto* const useHardwareAccCheckBox = new QCheckBox;
+    useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster encoding.");
+    useHardwareAccCheckBox->setCheckState(m_videoParameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
 
     auto* const formLayout = new QFormLayout;
     formLayout->addRow("Bag File:", searchBagFileLayout);
     formLayout->addRow("Topic Name:", m_topicNameComboBox);
     formLayout->addRow("Video Location:", searchVideoPathLayout);
     formLayout->addRow("Format:", m_formatComboBox);
-    formLayout->addRow("Use HW Acceleration:", m_useHardwareAccCheckBox);
+    formLayout->addRow("Use HW Acceleration:", useHardwareAccCheckBox);
 
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
@@ -113,7 +113,7 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
         m_videoParameters.topicName = text;
     });
     connect(m_formatComboBox, &QComboBox::currentTextChanged, this, &BagToVideoWidget::formatComboBoxTextChanged);
-    connect(m_useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
+    connect(useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         m_videoParameters.useHardwareAcceleration = state == Qt::Checked;
     });
     connect(backButton, &QPushButton::clicked, this, [this] {

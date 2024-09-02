@@ -1,6 +1,5 @@
 #include "ImagesProgressWidget.hpp"
 
-#include "UtilsUI.hpp"
 #include "WriteToImageThread.hpp"
 
 ImagesProgressWidget::ImagesProgressWidget(const Utils::UI::ImageParameters& imageParameters, QWidget* parent) :

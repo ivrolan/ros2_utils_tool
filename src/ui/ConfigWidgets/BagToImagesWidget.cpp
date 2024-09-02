@@ -46,11 +46,11 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     auto* const imagesLocationButton = new QToolButton;
     auto* const searchImagesPathLayout = Utils::UI::createLineEditButtonLayout(m_imagesNameLineEdit, imagesLocationButton);
 
-    m_formatComboBox = new QComboBox;
-    m_formatComboBox->addItem("png", 0);
-    m_formatComboBox->addItem("jpg", 1);
-    m_formatComboBox->setToolTip("The format of the written iimages.");
-    m_formatComboBox->setCurrentText(m_imageParameters.format);
+    auto* const formatComboBox = new QComboBox;
+    formatComboBox->addItem("png", 0);
+    formatComboBox->addItem("jpg", 1);
+    formatComboBox->setToolTip("The format of the written iimages.");
+    formatComboBox->setCurrentText(m_imageParameters.format);
 
     m_formLayoutSliderLabel = new QLabel;
 
@@ -64,7 +64,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     formLayout->addRow("Bag File:", searchBagFileLayout);
     formLayout->addRow("Topic Name:", m_topicNameComboBox);
     formLayout->addRow("Images Location:", searchImagesPathLayout);
-    formLayout->addRow("Format:", m_formatComboBox);
+    formLayout->addRow("Format:", formatComboBox);
     formLayout->addRow(m_formLayoutSliderLabel, m_slider);
 
     auto* const controlsLayout = new QVBoxLayout;
@@ -106,7 +106,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
         m_imageParameters.topicName = text;
     });
     connect(imagesLocationButton, &QPushButton::clicked, this, &BagToImagesWidget::imagesLocationButtonPressed);
-    connect(m_formatComboBox, &QComboBox::currentTextChanged, this, &BagToImagesWidget::adjustSliderToChangedFormat);
+    connect(formatComboBox, &QComboBox::currentTextChanged, this, &BagToImagesWidget::adjustSliderToChangedFormat);
     connect(m_slider, &QSlider::valueChanged, this, [this] (int value) {
         m_imageParameters.quality = value;
     });

@@ -36,7 +36,6 @@ private:
     QPointer<QLineEdit> m_bagNameLineEdit;
     QPointer<QComboBox> m_topicNameComboBox;
     QPointer<QLineEdit> m_imagesNameLineEdit;
-    QPointer<QComboBox> m_formatComboBox;
     QPointer<QSlider> m_slider;
     QPointer<QLabel> m_formLayoutSliderLabel;
 

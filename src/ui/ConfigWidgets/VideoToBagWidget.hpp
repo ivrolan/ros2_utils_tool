@@ -6,7 +6,6 @@
 #include <QPointer>
 #include <QWidget>
 
-class QCheckBox;
 class QLineEdit;
 
 /**
@@ -34,7 +33,6 @@ private:
     QPointer<QLineEdit> m_videoNameLineEdit;
     QPointer<QLineEdit> m_bagNameLineEdit;
     QPointer<QLineEdit> m_topicNameLineEdit;
-    QPointer<QCheckBox> m_useHardwareAccCheckBox;
 
     Utils::UI::VideoParameters& m_videoParameters;
 };

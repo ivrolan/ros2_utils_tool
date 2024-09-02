@@ -39,15 +39,15 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::VideoParameters& videoParameters, 
     m_topicNameLineEdit = new QLineEdit(m_videoParameters.topicName);
     m_topicNameLineEdit->setToolTip("The video's topic name inside the ROSBag.");
 
-    m_useHardwareAccCheckBox = new QCheckBox;
-    m_useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster video decoding and writing.");
-    m_useHardwareAccCheckBox->setCheckState(m_videoParameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
+    auto* const useHardwareAccCheckBox = new QCheckBox;
+    useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster video decoding and writing.");
+    useHardwareAccCheckBox->setCheckState(m_videoParameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
 
     auto* const formLayout = new QFormLayout;
     formLayout->addRow("Video File:", searchVideoFileLayout);
     formLayout->addRow("Bag Location:", storeBagLayout);
     formLayout->addRow("Topic Name:", m_topicNameLineEdit);
-    formLayout->addRow("Use HW Acceleration:", m_useHardwareAccCheckBox);
+    formLayout->addRow("Use HW Acceleration:", useHardwareAccCheckBox);
 
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
@@ -86,7 +86,7 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::VideoParameters& videoParameters, 
         m_videoParameters.topicName = m_topicNameLineEdit->text();
         enableOkButton(!m_videoNameLineEdit->text().isEmpty() && !m_bagNameLineEdit->text().isEmpty() && !m_topicNameLineEdit->text().isEmpty());
     });
-    connect(m_useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
+    connect(useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         m_videoParameters.useHardwareAcceleration = state == Qt::Checked;
     });
     connect(backButton, &QPushButton::clicked, this, [this] {
