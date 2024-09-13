@@ -5,18 +5,11 @@
   <description>The mediassist4_ros_tools package</description>
 
   <maintainer email="m.fleury@nct-dresden.de">maxime</maintainer>
-
   <license>GPLv3</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>rclcpp</depend>
-  <depend>sensor_msgs</depend>
-  <depend>std_msgs</depend>
-
   <export>
     <build_type>ament_cmake</build_type>
-    <depend>rclcpp</depend>
-    <depend>sensor_msgs</depend>
   </export>
 </package>

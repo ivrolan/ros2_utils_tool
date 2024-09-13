@@ -89,6 +89,6 @@ MainWindow::setProgressWidget(int mode)
 void
 MainWindow::closeEvent(QCloseEvent *event)
 {
-    rclcpp::shutdown();
+    std::raise(SIGINT);
     event->accept();
 }
