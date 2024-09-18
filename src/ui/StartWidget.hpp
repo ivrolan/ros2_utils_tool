@@ -15,13 +15,7 @@ public:
 
 signals:
     void
-    bagToVideoRequested();
-
-    void
-    videoToBagRequested();
-
-    void
-    bagToImagesRequested();
+    functionRequested(int id);
 
 private:
     QPointer<QToolButton>

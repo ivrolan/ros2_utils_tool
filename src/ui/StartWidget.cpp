@@ -52,13 +52,13 @@ StartWidget::StartWidget(QWidget *parent) :
     setLayout(mainLayout);
 
     connect(m_bagToVideoPushButton, &QPushButton::clicked, this, [this] {
-        emit bagToVideoRequested();
+        emit functionRequested(0);
     });
     connect(m_bagToImagesPushButton, &QPushButton::clicked, this, [this] {
-        emit bagToImagesRequested();
+        emit functionRequested(1);
     });
     connect(m_videoToBagPushButton, &QPushButton::clicked, this, [this] {
-        emit videoToBagRequested();
+        emit functionRequested(2);
     });
 }
 

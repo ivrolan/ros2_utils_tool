@@ -25,15 +25,7 @@ void
 MainWindow::setStartWidget()
 {
     auto* const startWidget = new StartWidget;
-    connect(startWidget, &StartWidget::bagToVideoRequested, this, [this] {
-        setConfigWidget(0);
-    });
-    connect(startWidget, &StartWidget::videoToBagRequested, this, [this] {
-        setConfigWidget(1);
-    });
-    connect(startWidget, &StartWidget::bagToImagesRequested, this, [this] {
-        setConfigWidget(2);
-    });
+    connect(startWidget, &StartWidget::functionRequested, this, &MainWindow::setConfigWidget);
     setCentralWidget(startWidget);
 }
 
@@ -47,10 +39,10 @@ MainWindow::setConfigWidget(int mode)
         basicConfigWidget = new BagToVideoWidget(m_parametersBagToVideo, m_encodingFormat);
         break;
     case 1:
-        basicConfigWidget = new VideoToBagWidget(m_parametersVideoToBag);
+        basicConfigWidget = new BagToImagesWidget(m_parametersBagToImages);
         break;
     case 2:
-        basicConfigWidget = new BagToImagesWidget(m_parametersBagToImages);
+        basicConfigWidget = new VideoToBagWidget(m_parametersVideoToBag);
         break;
     }
     setCentralWidget(basicConfigWidget);
