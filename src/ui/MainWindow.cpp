@@ -2,6 +2,8 @@
 
 #include "BagToImagesWidget.hpp"
 #include "BagToVideoWidget.hpp"
+#include "DummyBagWidget.hpp"
+#include "DummyBagProgressWidget.hpp"
 #include "ImagesProgressWidget.hpp"
 #include "StartWidget.hpp"
 #include "VideoToBagWidget.hpp"
@@ -44,6 +46,9 @@ MainWindow::setConfigWidget(int mode)
     case 2:
         basicConfigWidget = new VideoToBagWidget(m_parametersVideoToBag);
         break;
+    case 3:
+        basicConfigWidget = new DummyBagWidget(m_dummyBagParameters);
+        break;
     }
     setCentralWidget(basicConfigWidget);
 
@@ -65,6 +70,9 @@ MainWindow::setProgressWidget(int mode)
         break;
     case 2:
         basicProgressWidget = new ImagesProgressWidget(m_parametersBagToImages);
+        break;
+    case 3:
+        basicProgressWidget = new DummyBagProgressWidget(m_dummyBagParameters);
         break;
     }
     setCentralWidget(basicProgressWidget);

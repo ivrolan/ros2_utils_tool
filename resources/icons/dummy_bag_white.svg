@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<svg width="36mm" height="40mm" version="1.1" viewBox="0 0 36 40" xmlns="http://www.w3.org/2000/svg">
+ <g stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#FFF" stroke-width="2.5">
+   <path d="m15.423 7.6619h9.0893c2.0711 0.00126 7.1874 13.177 3.5953 21.018" fill="none"/>
+   <path d="m15.421 7.6619h-9.0893c-2.2206 0.0014-7.942 15.148-2.6768 22.625 0.6179 0.87748 1.4072 2.2356 2.3311 2.2787l2.1369-0.01569" fill="none"/>
+   <path d="m9.6313 7.3097a5.7906 5.7906 0 0 1 5.7906-5.7906 5.7906 5.7906 0 0 1 5.7906 5.7906" fill-opacity="0"/>
+  </g>
+  <ellipse cx="20.599" cy="22.28" rx="5.3724" ry="6.8426" fill="none" stroke="#FFF" stroke-width="2"/>
+  <path transform="matrix(1.2042 0 0 1.2042 -29.358 -11.354)" d="m39.224 32.979s-8.1092 2.15-8.9118 5.1452c-0.80258 2.9953-0.56965 3.4678-0.56965 3.4678h11.743m2.2619-8.613s8.1092 2.15 8.9118 5.1452c0.80258 2.9953 0.56965 3.4678 0.56965 3.4678h-11.743" fill="none" stroke="#FFF" stroke-width="1.6609"/>
+  <g transform="matrix(1.0734 0 0 1.0734 -1.3918 -1.2701)" stroke="#FFF" stroke-width=".2">
+   <path d="m28.002 33.092a2.0406 2.0406 0 0 1-2.0406 2.0406v-2.0406z" fill="#FFF"/>
+   <path transform="scale(-1)" d="m-23.785-32.956a2.0406 2.0406 0 0 1-2.0406 2.0406v-2.0406z" fill="#FFF"/>
+  </g>
+  <circle transform="scale(-1)" cx="-26.401" cy="-34.177" r="2.976" fill="none" stroke="#FFF" stroke-width=".5"/>
+ </g>
+</svg>

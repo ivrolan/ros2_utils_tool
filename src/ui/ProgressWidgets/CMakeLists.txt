@@ -7,6 +7,8 @@ target_include_directories (rt_progress_widgets
 target_sources(rt_progress_widgets INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/BasicProgressWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/BasicProgressWidget.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/DummyBagProgressWidget.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/DummyBagProgressWidget.hpp
     ${CMAKE_CURRENT_LIST_DIR}/ImagesProgressWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ImagesProgressWidget.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VideoProgressWidget.cpp

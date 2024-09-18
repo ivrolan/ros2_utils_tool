@@ -11,10 +11,12 @@ target_sources(rt_config_widgets INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/BagToVideoWidget.hpp
     ${CMAKE_CURRENT_LIST_DIR}/BasicConfigWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/BasicConfigWidget.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/DummyBagWidget.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/DummyBagWidget.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VideoToBagWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/VideoToBagWidget.hpp
 )
 
 target_link_libraries(rt_config_widgets
-    INTERFACE Qt::Widgets rt_utils
+    INTERFACE Qt::Widgets rt_helper_widgets rt_utils
 ) 

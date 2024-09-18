@@ -1,4 +1,5 @@
 add_subdirectory(ConfigWidgets)
+add_subdirectory(HelperWidgets)
 add_subdirectory(ProgressWidgets)
 
 add_library (rt_ui INTERFACE)

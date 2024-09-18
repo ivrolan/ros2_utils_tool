@@ -19,6 +19,7 @@ StartWidget::StartWidget(QWidget *parent) :
     m_bagToVideoPushButton = createToolButton("Encode Video\nfrom ROSBag");
     m_bagToImagesPushButton = createToolButton("Write Images\nfrom ROSBag");
     m_videoToBagPushButton = createToolButton("Write Video\nto ROSBag");
+    m_dummyBagButton = createToolButton("Create Dummy\nROSBag");
 
     setButtonIcons();
 
@@ -31,6 +32,7 @@ StartWidget::StartWidget(QWidget *parent) :
     auto* const lowerButtonLayout = new QHBoxLayout;
     lowerButtonLayout->addStretch();
     lowerButtonLayout->addWidget(m_videoToBagPushButton);
+    lowerButtonLayout->addWidget(m_dummyBagButton);
     lowerButtonLayout->addStretch();
 
     auto* const versionLabel = new QLabel("v0.2.0");
@@ -60,6 +62,9 @@ StartWidget::StartWidget(QWidget *parent) :
     connect(m_videoToBagPushButton, &QPushButton::clicked, this, [this] {
         emit functionRequested(2);
     });
+    connect(m_dummyBagButton, &QPushButton::clicked, this, [this] {
+        emit functionRequested(3);
+    });
 }
 
 
@@ -85,6 +90,7 @@ StartWidget::setButtonIcons()
     m_bagToVideoPushButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_to_video_white.svg" : ":/icons/bag_to_video_black.svg"));
     m_bagToImagesPushButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_to_images_white.svg" : ":/icons/bag_to_images_black.svg"));
     m_videoToBagPushButton->setIcon(QIcon(isDarkMode ? ":/icons/video_to_bag_white.svg" : ":/icons/video_to_bag_black.svg"));
+    m_dummyBagButton->setIcon(QIcon(isDarkMode ? ":/icons/dummy_bag_white.svg" : ":/icons/dummy_bag_black.svg"));
 }
 
 

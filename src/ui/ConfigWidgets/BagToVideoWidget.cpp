@@ -23,10 +23,6 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     BasicConfigWidget(":/icons/bag_to_video_white.svg", ":/icons/bag_to_video_black.svg", parent),
     m_videoParameters(videoParameters), m_encodingFormat(encodingFormat)
 {
-    m_headerPixmapLabel = new QLabel;
-    m_headerPixmapLabel->setAlignment(Qt::AlignHCenter);
-    setPixmapLabelIcon();
-
     auto* const headerTextLabel = new QLabel("Encode Video from ROSBag");
     Utils::UI::setWidgetHeaderFont(headerTextLabel);
     headerTextLabel->setAlignment(Qt::AlignHCenter);

@@ -23,6 +23,11 @@ struct ImageParameters : BasicParameters {
     QString format = "jpg";
     int     quality = 8;
 };
+struct DummyBagParameters : BasicParameters {
+    QVector<QString> topicTypes = {};
+    QVector<QString> topicNames = {};
+    int              messageCount = 100;
+};
 
 // Create a larger font for a certain widget
 void
