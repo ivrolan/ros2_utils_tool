@@ -23,7 +23,7 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::VideoParameters& videoParameters, 
     m_videoParameters(videoParameters)
 {
     auto* const headerTextLabel = new QLabel("Write Video to a ROSBag");
-    Utils::UI::setWidgetHeaderFont(headerTextLabel);
+    Utils::UI::setWidgetFontSize(headerTextLabel);
     headerTextLabel->setAlignment(Qt::AlignHCenter);
 
     m_videoNameLineEdit = new QLineEdit(m_videoParameters.videoDirectory);

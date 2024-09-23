@@ -31,7 +31,8 @@ struct DummyBagParameters : BasicParameters {
 
 // Create a larger font for a certain widget
 void
-setWidgetHeaderFont(QWidget* widget);
+setWidgetFontSize(QWidget* widget,
+                  bool     isButton = false);
 
 [[maybe_unused]] bool
 fillComboBoxWithTopics(QPointer<QComboBox> comboBox,
@@ -50,4 +51,7 @@ createCriticalMessageBox(const QString& headerText,
 // Checks if the application is using a dark mode
 [[nodiscard]] bool
 isDarkMode();
+
+static constexpr int FONT_SIZE_HEADER = 16;
+static constexpr int FONT_SIZE_BUTTON = 14;
 }

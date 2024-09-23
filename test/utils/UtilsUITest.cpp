@@ -16,10 +16,14 @@
 TEST_CASE("Utils UI Testing", "[utils]") {
     SECTION("Font size test") {
         auto* const widget = new QWidget;
-        Utils::UI::setWidgetHeaderFont(widget);
 
-        const auto font = widget->font();
+        Utils::UI::setWidgetFontSize(widget);
+        auto font = widget->font();
         REQUIRE(font.pointSize() == 16);
+
+        Utils::UI::setWidgetFontSize(widget, true);
+        font = widget->font();
+        REQUIRE(font.pointSize() == 14);
     }
     SECTION("Number of topics test") {
         const auto bagDirectory = std::filesystem::path("test_bag_file");

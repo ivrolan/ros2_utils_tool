@@ -22,7 +22,7 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
     m_dummyBagParameters(dummyBagParameters)
 {
     auto* const headerTextLabel = new QLabel("Create Dummy ROSBag");
-    Utils::UI::setWidgetHeaderFont(headerTextLabel);
+    Utils::UI::setWidgetFontSize(headerTextLabel);
     headerTextLabel->setAlignment(Qt::AlignHCenter);
 
     m_bagNameLineEdit = new QLineEdit(m_dummyBagParameters.bagDirectory);

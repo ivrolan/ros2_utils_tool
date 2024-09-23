@@ -13,7 +13,7 @@ StartWidget::StartWidget(QWidget *parent) :
     QWidget(parent)
 {
     auto* const headerLabel = new QLabel("ROS TOOLS");
-    Utils::UI::setWidgetHeaderFont(headerLabel);
+    Utils::UI::setWidgetFontSize(headerLabel);
     headerLabel->setAlignment(Qt::AlignHCenter);
 
     m_bagToVideoPushButton = createToolButton("Encode Video\nfrom ROSBag");
@@ -77,7 +77,7 @@ StartWidget::createToolButton(const QString& buttonText)
     toolButton->setIconSize(QSize(100, 45));
     toolButton->setFixedSize(QSize(150, 150));
 
-    Utils::UI::setWidgetHeaderFont(toolButton);
+    Utils::UI::setWidgetFontSize(toolButton, true);
 
     return toolButton;
 }

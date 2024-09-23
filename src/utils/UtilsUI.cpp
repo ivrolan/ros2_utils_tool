@@ -9,10 +9,10 @@
 namespace Utils::UI
 {
 void
-setWidgetHeaderFont(QWidget* widget)
+setWidgetFontSize(QWidget* widget, bool isButton)
 {
     auto font = widget->font();
-    font.setPointSize(16);
+    font.setPointSize(isButton ? FONT_SIZE_BUTTON : FONT_SIZE_HEADER);
     widget->setFont(font);
 }
 

@@ -17,7 +17,7 @@ BasicProgressWidget::BasicProgressWidget(QWidget *parent) :
     m_headerPixmapLabel->setAlignment(Qt::AlignHCenter);
 
     m_headerLabel = new QLabel;
-    Utils::UI::setWidgetHeaderFont(m_headerLabel);
+    Utils::UI::setWidgetFontSize(m_headerLabel);
     m_headerLabel->setAlignment(Qt::AlignHCenter);
 
     m_progressBar = new QProgressBar;

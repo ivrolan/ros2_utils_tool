@@ -23,7 +23,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     m_imageParameters(imageParameters)
 {
     auto* const headerTextLabel = new QLabel("Write Images from ROSBag");
-    Utils::UI::setWidgetHeaderFont(headerTextLabel);
+    Utils::UI::setWidgetFontSize(headerTextLabel);
     headerTextLabel->setAlignment(Qt::AlignHCenter);
 
     m_bagNameLineEdit = new QLineEdit(m_imageParameters.bagDirectory);

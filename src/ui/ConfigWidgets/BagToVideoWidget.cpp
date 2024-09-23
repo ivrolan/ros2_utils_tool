@@ -24,7 +24,7 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     m_videoParameters(videoParameters), m_encodingFormat(encodingFormat)
 {
     auto* const headerTextLabel = new QLabel("Encode Video from ROSBag");
-    Utils::UI::setWidgetHeaderFont(headerTextLabel);
+    Utils::UI::setWidgetFontSize(headerTextLabel);
     headerTextLabel->setAlignment(Qt::AlignHCenter);
 
     m_bagNameLineEdit = new QLineEdit(m_videoParameters.bagDirectory);
