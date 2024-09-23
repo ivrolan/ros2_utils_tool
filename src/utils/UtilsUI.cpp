@@ -2,6 +2,8 @@
 
 #include "UtilsROS.hpp"
 
+#include <QMessageBox>
+
 #include <cmath>
 
 namespace Utils::UI
@@ -44,6 +46,14 @@ createLineEditButtonLayout(QPointer<QLineEdit> lineEdit, QPointer<QToolButton> t
     layout->addWidget(toolButton);
 
     return layout;
+}
+
+
+void
+createCriticalMessageBox(const QString& headerText, const QString& mainText)
+{
+    auto *const msgBox = new QMessageBox(QMessageBox::Critical, headerText, mainText, QMessageBox::Ok);
+    msgBox->exec();
 }
 
 

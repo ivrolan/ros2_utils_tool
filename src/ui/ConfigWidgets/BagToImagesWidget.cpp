@@ -128,9 +128,7 @@ BagToImagesWidget::searchButtonPressed()
     }
 
     if (const auto containsVideoTopics = Utils::UI::fillComboBoxWithTopics(m_topicNameComboBox, bagDirectory); !containsVideoTopics) {
-        auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Topic not found!",
-                                             "The bag file does not contain any image/video topics!", QMessageBox::Ok);
-        msgBox->exec();
+        Utils::UI::createCriticalMessageBox("Topic not found!", "The bag file does not contain any image/video topics!");
         return;
     }
 
@@ -181,8 +179,7 @@ BagToImagesWidget::okButtonPressed()
                                              "Images already exist under the specified directory! Are you sure you want to continue? "
                                              "This will overwrite all existing files.",
                                              QMessageBox::Yes | QMessageBox::No);
-        const auto ret = msgBox->exec();
-        if (ret == QMessageBox::No) {
+        if (const auto ret = msgBox->exec(); ret == QMessageBox::No) {
             return;
         }
     }

@@ -163,9 +163,7 @@ void
 DummyBagWidget::okButtonPressed()
 {
     if (m_bagNameLineEdit->text().isEmpty()) {
-        auto *const msgBox = new QMessageBox(QMessageBox::Critical, "No bag name specified!",
-                                             "Please specify a bag name before continuing!", QMessageBox::Ok);
-        msgBox->exec();
+        Utils::UI::createCriticalMessageBox("No bag name specified!", "Please specify a bag name before continuing!");
         return;
     }
 
@@ -174,15 +172,11 @@ DummyBagWidget::okButtonPressed()
 
     for (QPointer<DummyTopicWidget> dummyTopicWidget : m_dummyTopicWidgets) {
         if (dummyTopicWidget->getTopicName().isEmpty()) {
-            auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Empty topic name!",
-                                                 "Please enter a topic name for every topic!", QMessageBox::Ok);
-            msgBox->exec();
+            Utils::UI::createCriticalMessageBox("Empty topic name!", "Please enter a topic name for every topic!");
             return;
         }
         if (!Utils::ROS::doesTopicNameFollowROS2Convention(dummyTopicWidget->getTopicName())) {
-            auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Wrong topic name format!",
-                                                 "Please make sure that the topic names follow the ROS2 conventioning!", QMessageBox::Ok);
-            msgBox->exec();
+            Utils::UI::createCriticalMessageBox("Wrong topic name format!", "Please make sure that the topic names follow the ROS2 conventioning!");
             return;
         }
 
@@ -190,9 +184,7 @@ DummyBagWidget::okButtonPressed()
     }
 
     if (topicNameSet.size() != m_dummyTopicWidgets.size()) {
-        auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Duplicate topic names!",
-                                             "Please make sure that no duplicate topic names are used!", QMessageBox::Ok);
-        msgBox->exec();
+        Utils::UI::createCriticalMessageBox("Duplicate topic names!", "Please make sure that no duplicate topic names are used!");
         return;
     }
 

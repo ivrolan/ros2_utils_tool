@@ -142,17 +142,14 @@ VideoToBagWidget::okButtonPressed()
     }
 
     if (!Utils::ROS::doesTopicNameFollowROS2Convention(m_topicNameLineEdit->text())) {
-        auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Wrong topic name format!",
-                                             "The topic name does not follow the ROS2 naming convention!", QMessageBox::Ok);
-        msgBox->exec();
+        Utils::UI::createCriticalMessageBox("Wrong topic name format!", "The topic name does not follow the ROS2 naming convention!");
         return;
     }
     if (std::filesystem::exists(m_bagNameLineEdit->text().toStdString())) {
         auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Bag file already exists!",
                                              "A bag file already exists under the specified directory! Are you sure you want to continue? This will overwrite the existing file.",
                                              QMessageBox::Yes | QMessageBox::No);
-        const auto ret = msgBox->exec();
-        if (ret == QMessageBox::No) {
+        if (const auto ret = msgBox->exec(); ret == QMessageBox::No) {
             return;
         }
     }

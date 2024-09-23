@@ -42,6 +42,11 @@ fillComboBoxWithTopics(QPointer<QComboBox> comboBox,
 createLineEditButtonLayout(QPointer<QLineEdit>   lineEdit,
                            QPointer<QToolButton> toolButton);
 
+// Creates a messagebox informing of a critical error
+void
+createCriticalMessageBox(const QString& headerText,
+                         const QString& mainText);
+
 // Checks if the application is using a dark mode
 [[nodiscard]] bool
 isDarkMode();
