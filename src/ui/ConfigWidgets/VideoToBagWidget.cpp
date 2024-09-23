@@ -102,7 +102,7 @@ VideoToBagWidget::searchButtonPressed()
 {
     enableOkButton(false);
 
-    const auto fileName = QFileDialog::getOpenFileName(this, "Open Directory");
+    const auto fileName = QFileDialog::getOpenFileName(this, "Open Video");
     if (fileName.isEmpty()) {
         return;
     }
@@ -123,7 +123,7 @@ VideoToBagWidget::searchButtonPressed()
 void
 VideoToBagWidget::bagLocationButtonPressed()
 {
-    const auto fileName = QFileDialog::getSaveFileName(this, "Save Video");
+    const auto fileName = QFileDialog::getSaveFileName(this, "Save ROSBag");
     if (fileName.isEmpty()) {
         return;
     }

@@ -123,7 +123,7 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
 void
 BagToVideoWidget::searchButtonPressed()
 {
-    const auto bagDirectory = QFileDialog::getExistingDirectory(this, "Open Directory", "",
+    const auto bagDirectory = QFileDialog::getExistingDirectory(this, "Open ROSBag", "",
                                                                 QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     if (bagDirectory.isEmpty()) {
         return;

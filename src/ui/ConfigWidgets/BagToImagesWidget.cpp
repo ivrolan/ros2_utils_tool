@@ -121,7 +121,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
 void
 BagToImagesWidget::searchButtonPressed()
 {
-    const auto bagDirectory = QFileDialog::getExistingDirectory(this, "Open Directory", "",
+    const auto bagDirectory = QFileDialog::getExistingDirectory(this, "Open ROSBag", "",
                                                                 QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     if (bagDirectory.isEmpty()) {
         return;
