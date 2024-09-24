@@ -2,6 +2,8 @@
 
 #include <QString>
 
+#include "rosbag2_storage/bag_metadata.hpp"
+
 #include <string>
 #include <vector>
 
@@ -21,6 +23,10 @@ doesBagContainTopicName(const std::string& bagDirectory,
 [[nodiscard]] int
 getTopicMessageCount(const std::string& bagDirectory,
                      const std::string& topicName);
+
+// Returns the metadata for a ROSBag
+[[nodiscard]] rosbag2_storage::BagMetadata
+getBagMetadata(const std::string& bagDirectory);
 
 // Returns a ROSBag topic's type
 [[nodiscard]] std::string

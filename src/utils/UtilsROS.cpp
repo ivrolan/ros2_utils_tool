@@ -56,6 +56,16 @@ getTopicMessageCount(const std::string& bagDirectory,
 }
 
 
+rosbag2_storage::BagMetadata
+getBagMetadata(const std::string& bagDirectory)
+{
+    rosbag2_cpp::Reader reader;
+    reader.open(bagDirectory);
+
+    return reader.get_metadata();
+}
+
+
 std::string
 getTopicType(const std::string& bagDirectory,
              const std::string& topicName)

@@ -20,6 +20,7 @@ StartWidget::StartWidget(QWidget *parent) :
     m_bagToImagesPushButton = createToolButton("Write Images\nfrom ROSBag");
     m_videoToBagPushButton = createToolButton("Write Video\nto ROSBag");
     m_dummyBagButton = createToolButton("Create Dummy\nROSBag");
+    m_bagInfoButton = createToolButton("Get Infos\nfrom ROSBag");
 
     setButtonIcons();
 
@@ -29,10 +30,15 @@ StartWidget::StartWidget(QWidget *parent) :
     upperButtonLayout->addWidget(m_bagToImagesPushButton);
     upperButtonLayout->addStretch();
 
+    auto* const centreButtonLayout = new QHBoxLayout;
+    centreButtonLayout->addStretch();
+    centreButtonLayout->addWidget(m_videoToBagPushButton);
+    centreButtonLayout->addWidget(m_dummyBagButton);
+    centreButtonLayout->addStretch();
+
     auto* const lowerButtonLayout = new QHBoxLayout;
     lowerButtonLayout->addStretch();
-    lowerButtonLayout->addWidget(m_videoToBagPushButton);
-    lowerButtonLayout->addWidget(m_dummyBagButton);
+    lowerButtonLayout->addWidget(m_bagInfoButton);
     lowerButtonLayout->addStretch();
 
     auto* const versionLabel = new QLabel("v0.2.0");
@@ -47,6 +53,7 @@ StartWidget::StartWidget(QWidget *parent) :
     mainLayout->addWidget(headerLabel);
     mainLayout->addStretch();
     mainLayout->addLayout(upperButtonLayout);
+    mainLayout->addLayout(centreButtonLayout);
     mainLayout->addLayout(lowerButtonLayout);
     mainLayout->addStretch();
     mainLayout->addLayout(versionLayout);
@@ -64,6 +71,9 @@ StartWidget::StartWidget(QWidget *parent) :
     });
     connect(m_dummyBagButton, &QPushButton::clicked, this, [this] {
         emit functionRequested(3);
+    });
+    connect(m_bagInfoButton, &QPushButton::clicked, this, [this] {
+        emit functionRequested(4);
     });
 }
 
@@ -91,6 +101,7 @@ StartWidget::setButtonIcons()
     m_bagToImagesPushButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_to_images_white.svg" : ":/icons/bag_to_images_black.svg"));
     m_videoToBagPushButton->setIcon(QIcon(isDarkMode ? ":/icons/video_to_bag_white.svg" : ":/icons/video_to_bag_black.svg"));
     m_dummyBagButton->setIcon(QIcon(isDarkMode ? ":/icons/dummy_bag_white.svg" : ":/icons/dummy_bag_black.svg"));
+    m_bagInfoButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_info_white.svg" : ":/icons/bag_info_black.svg"));
 }
 
 

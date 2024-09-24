@@ -1,5 +1,6 @@
 #include "MainWindow.hpp"
 
+#include "BagInfoWidget.hpp"
 #include "BagToImagesWidget.hpp"
 #include "BagToVideoWidget.hpp"
 #include "DummyBagWidget.hpp"
@@ -49,11 +50,17 @@ MainWindow::setConfigWidget(int mode)
     case 3:
         basicConfigWidget = new DummyBagWidget(m_dummyBagParameters);
         break;
+    case 4:
+        basicConfigWidget = new BagInfoWidget(m_basicInfoParameters);
+        break;
     }
     setCentralWidget(basicConfigWidget);
 
     connect(basicConfigWidget, &BasicConfigWidget::back, this, &MainWindow::setStartWidget);
     connect(basicConfigWidget, &BasicConfigWidget::okPressed, this, [this, mode] {
+        if (mode == 4) {
+            setStartWidget();
+        }
         setProgressWidget(mode);
     });
 }
