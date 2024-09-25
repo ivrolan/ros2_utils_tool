@@ -69,10 +69,10 @@ MainWindow::setProgressWidget(int mode)
     QPointer<BasicProgressWidget> basicProgressWidget;
     switch (mode) {
     case 0:
-    case 1:
+    case 2:
         basicProgressWidget = new VideoProgressWidget(mode == 0 ? m_parametersBagToVideo : m_parametersVideoToBag, mode == 0);
         break;
-    case 2:
+    case 1:
         basicProgressWidget = new ImagesProgressWidget(m_parametersBagToImages);
         break;
     case 3:
