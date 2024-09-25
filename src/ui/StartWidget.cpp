@@ -41,8 +41,8 @@ StartWidget::StartWidget(QWidget *parent) :
     lowerButtonLayout->addWidget(m_bagInfoButton);
     lowerButtonLayout->addStretch();
 
-    auto* const versionLabel = new QLabel("v0.2.0");
-    versionLabel->setToolTip("Bag to Images feature, saved parameters and bugfixes!");
+    auto* const versionLabel = new QLabel("v0.3.0");
+    versionLabel->setToolTip("Create dummy bags, see bag info in the ui and optimizations!");
 
     auto* const versionLayout = new QHBoxLayout;
     versionLayout->addStretch();
