@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BasicConfigWidget.hpp"
+#include "BasicInputWidget.hpp"
 #include "UtilsUI.hpp"
 
 #include <QPointer>
@@ -17,7 +17,7 @@ class QToolButton;
 /**
  * @brief The widget used to manage creating a ROS bag with dummy data
  */
-class DummyBagWidget : public BasicConfigWidget
+class DummyBagWidget : public BasicInputWidget
 {
     Q_OBJECT
 

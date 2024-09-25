@@ -1,4 +1,4 @@
-add_subdirectory(ConfigWidgets)
+add_subdirectory(InputWidgets)
 add_subdirectory(HelperWidgets)
 add_subdirectory(ProgressWidgets)
 
@@ -16,5 +16,5 @@ target_sources(rt_ui INTERFACE
 )
 
 target_link_libraries(rt_ui
-    INTERFACE Qt::Widgets rt_config_widgets rt_progress_widgets rt_thread rt_utils
+    INTERFACE Qt::Widgets rt_input_widgets rt_progress_widgets rt_thread rt_utils
 ) 

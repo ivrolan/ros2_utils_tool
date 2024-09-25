@@ -36,31 +36,28 @@ MainWindow::setStartWidget()
 void
 MainWindow::setConfigWidget(int mode)
 {
-    QPointer<BasicConfigWidget> basicConfigWidget;
+    QPointer<BasicInputWidget> basicInputWidget;
     switch (mode) {
     case 0:
-        basicConfigWidget = new BagToVideoWidget(m_parametersBagToVideo, m_encodingFormat);
+        basicInputWidget = new BagToVideoWidget(m_parametersBagToVideo, m_encodingFormat);
         break;
     case 1:
-        basicConfigWidget = new BagToImagesWidget(m_parametersBagToImages);
+        basicInputWidget = new BagToImagesWidget(m_parametersBagToImages);
         break;
     case 2:
-        basicConfigWidget = new VideoToBagWidget(m_parametersVideoToBag);
+        basicInputWidget = new VideoToBagWidget(m_parametersVideoToBag);
         break;
     case 3:
-        basicConfigWidget = new DummyBagWidget(m_dummyBagParameters);
+        basicInputWidget = new DummyBagWidget(m_dummyBagParameters);
         break;
     case 4:
-        basicConfigWidget = new BagInfoWidget(m_basicInfoParameters);
+        basicInputWidget = new BagInfoWidget(m_basicInfoParameters);
         break;
     }
-    setCentralWidget(basicConfigWidget);
+    setCentralWidget(basicInputWidget);
 
-    connect(basicConfigWidget, &BasicConfigWidget::back, this, &MainWindow::setStartWidget);
-    connect(basicConfigWidget, &BasicConfigWidget::okPressed, this, [this, mode] {
-        if (mode == 4) {
-            setStartWidget();
-        }
+    connect(basicInputWidget, &BasicInputWidget::back, this, &MainWindow::setStartWidget);
+    connect(basicInputWidget, &BasicInputWidget::okPressed, this, [this, mode] {
         setProgressWidget(mode);
     });
 }

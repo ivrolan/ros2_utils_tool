@@ -49,27 +49,15 @@ BagInfoWidget::BagInfoWidget(Utils::UI::BasicParameters& bagInfoParameters, QWid
     controlsLayout->addWidget(m_infoTreeWidget);
     controlsLayout->addStretch();
 
-    auto* const backButton = new QPushButton("Back");
-
-    auto* const buttonBox = new QDialogButtonBox;
-    buttonBox->addButton(m_okButton, QDialogButtonBox::AcceptRole);
     m_okButton->setEnabled(true);
     m_okButton->setVisible(false);
 
-    auto* const buttonLayout = new QHBoxLayout;
-    buttonLayout->addWidget(backButton);
-    buttonLayout->addStretch();
-    buttonLayout->addWidget(buttonBox);
-
     auto* const mainLayout = new QVBoxLayout;
     mainLayout->addLayout(controlsLayout);
-    mainLayout->addLayout(buttonLayout);
+    mainLayout->addLayout(m_buttonLayout);
     setLayout(mainLayout);
 
     connect(searchBagButton, &QPushButton::clicked, this, &BagInfoWidget::displayBagInfo);
-    connect(backButton, &QPushButton::clicked, this, [this] {
-        emit back();
-    });
     connect(m_okButton, &QPushButton::clicked, this, [this] {
         emit back();
     });

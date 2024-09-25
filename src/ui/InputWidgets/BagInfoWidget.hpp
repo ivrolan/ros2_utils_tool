@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BasicConfigWidget.hpp"
+#include "BasicInputWidget.hpp"
 #include "UtilsUI.hpp"
 
 #include <QPointer>
@@ -9,7 +9,7 @@
 class QTreeWidget;
 
 // The widget showing bag info data
-class BagInfoWidget : public BasicConfigWidget
+class BagInfoWidget : public BasicInputWidget
 {
     Q_OBJECT
 public:

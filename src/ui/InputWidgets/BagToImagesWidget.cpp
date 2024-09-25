@@ -19,13 +19,9 @@
 #include <filesystem>
 
 BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters, QWidget *parent) :
-    BasicConfigWidget(":/icons/bag_to_images_white.svg", ":/icons/bag_to_images_black.svg", parent),
+    BasicInputWidget("Write Images from ROSBag", ":/icons/bag_to_images_white.svg", ":/icons/bag_to_images_black.svg", parent),
     m_imageParameters(imageParameters)
 {
-    auto* const headerTextLabel = new QLabel("Write Images from ROSBag");
-    Utils::UI::setWidgetFontSize(headerTextLabel);
-    headerTextLabel->setAlignment(Qt::AlignHCenter);
-
     m_bagNameLineEdit = new QLineEdit(m_imageParameters.bagDirectory);
     m_bagNameLineEdit->setToolTip("The directory of the ROSBag source file.");
 
@@ -70,7 +66,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
     controlsLayout->addWidget(m_headerPixmapLabel);
-    controlsLayout->addWidget(headerTextLabel);
+    controlsLayout->addWidget(m_headerLabel);
     controlsLayout->addSpacing(40);
     controlsLayout->addLayout(formLayout);
     controlsLayout->addStretch();
@@ -80,19 +76,9 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     controlsSqueezedLayout->addLayout(controlsLayout);
     controlsSqueezedLayout->addStretch();
 
-    auto* const backButton = new QPushButton("Back");
-
-    auto* const buttonBox = new QDialogButtonBox;
-    buttonBox->addButton(m_okButton, QDialogButtonBox::AcceptRole);
-
-    auto* const buttonLayout = new QHBoxLayout;
-    buttonLayout->addWidget(backButton);
-    buttonLayout->addStretch();
-    buttonLayout->addWidget(buttonBox);
-
     auto* const mainLayout = new QVBoxLayout;
     mainLayout->addLayout(controlsSqueezedLayout);
-    mainLayout->addLayout(buttonLayout);
+    mainLayout->addLayout(m_buttonLayout);
     setLayout(mainLayout);
 
     auto* const okShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
@@ -110,10 +96,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     connect(m_slider, &QSlider::valueChanged, this, [this] (int value) {
         m_imageParameters.quality = value;
     });
-    connect(backButton, &QPushButton::clicked, this, [this] {
-        emit back();
-    });
-    connect(buttonBox, &QDialogButtonBox::accepted, this, &BagToImagesWidget::okButtonPressed);
+    connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &BagToImagesWidget::okButtonPressed);
     connect(okShortCut, &QShortcut::activated, this, &BagToImagesWidget::okButtonPressed);
 }
 

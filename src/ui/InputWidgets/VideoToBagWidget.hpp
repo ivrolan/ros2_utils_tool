@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BasicConfigWidget.hpp"
+#include "BasicInputWidget.hpp"
 #include "UtilsUI.hpp"
 
 #include <QPointer>
@@ -11,7 +11,7 @@ class QLineEdit;
 /**
  * @brief The widget used to write a video file into a ROSBag
  */
-class VideoToBagWidget : public BasicConfigWidget
+class VideoToBagWidget : public BasicInputWidget
 {
     Q_OBJECT
 

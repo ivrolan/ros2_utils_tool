@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BasicConfigWidget.hpp"
+#include "BasicInputWidget.hpp"
 #include "UtilsUI.hpp"
 
 class QComboBox;
@@ -11,7 +11,7 @@ class QSlider;
 /**
  * @brief The widget used to manage writing images out of a ROS bag
  */
-class BagToImagesWidget : public BasicConfigWidget
+class BagToImagesWidget : public BasicInputWidget
 {
     Q_OBJECT
 

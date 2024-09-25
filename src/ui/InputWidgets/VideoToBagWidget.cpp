@@ -19,13 +19,9 @@
 #include <filesystem>
 
 VideoToBagWidget::VideoToBagWidget(Utils::UI::VideoParameters& videoParameters, QWidget *parent) :
-    BasicConfigWidget(":/icons/video_to_bag_white.svg", ":/icons/video_to_bag_black.svg", parent),
+    BasicInputWidget("Write Video to a ROSBag", ":/icons/video_to_bag_white.svg", ":/icons/video_to_bag_black.svg", parent),
     m_videoParameters(videoParameters)
 {
-    auto* const headerTextLabel = new QLabel("Write Video to a ROSBag");
-    Utils::UI::setWidgetFontSize(headerTextLabel);
-    headerTextLabel->setAlignment(Qt::AlignHCenter);
-
     m_videoNameLineEdit = new QLineEdit(m_videoParameters.videoDirectory);
     m_videoNameLineEdit->setToolTip("The directory of the source video file.");
     auto* const searchVideoFileButton = new QToolButton;
@@ -52,7 +48,7 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::VideoParameters& videoParameters, 
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
     controlsLayout->addWidget(m_headerPixmapLabel);
-    controlsLayout->addWidget(headerTextLabel);
+    controlsLayout->addWidget(m_headerLabel);
     controlsLayout->addSpacing(40);
     controlsLayout->addLayout(formLayout);
     controlsLayout->addStretch();
@@ -62,19 +58,9 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::VideoParameters& videoParameters, 
     controlsSqueezedLayout->addLayout(controlsLayout);
     controlsSqueezedLayout->addStretch();
 
-    auto* const backButton = new QPushButton("Back");
-
-    auto* const buttonBox = new QDialogButtonBox;
-    buttonBox->addButton(m_okButton, QDialogButtonBox::AcceptRole);
-
-    auto* const buttonLayout = new QHBoxLayout;
-    buttonLayout->addWidget(backButton);
-    buttonLayout->addStretch();
-    buttonLayout->addWidget(buttonBox);
-
     auto* const mainLayout = new QVBoxLayout;
     mainLayout->addLayout(controlsSqueezedLayout);
-    mainLayout->addLayout(buttonLayout);
+    mainLayout->addLayout(m_buttonLayout);
     setLayout(mainLayout);
 
     auto* const okShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
@@ -89,10 +75,7 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::VideoParameters& videoParameters, 
     connect(useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         m_videoParameters.useHardwareAcceleration = state == Qt::Checked;
     });
-    connect(backButton, &QPushButton::clicked, this, [this] {
-        emit back();
-    });
-    connect(buttonBox, &QDialogButtonBox::accepted, this, &VideoToBagWidget::okButtonPressed);
+    connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &VideoToBagWidget::okButtonPressed);
     connect(okShortCut, &QShortcut::activated, this, &VideoToBagWidget::okButtonPressed);
 }
 

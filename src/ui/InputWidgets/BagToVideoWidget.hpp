@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BasicConfigWidget.hpp"
+#include "BasicInputWidget.hpp"
 #include "UtilsUI.hpp"
 
 #include <QPointer>
@@ -12,7 +12,7 @@ class QLineEdit;
 /**
  * @brief The widget used to manage a video encoding out of a ros bag
  */
-class BagToVideoWidget : public BasicConfigWidget
+class BagToVideoWidget : public BasicInputWidget
 {
     Q_OBJECT
 

@@ -18,13 +18,9 @@
 #include <QVBoxLayout>
 
 DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters, QWidget *parent) :
-    BasicConfigWidget(":/icons/dummy_bag_white.svg", ":/icons/dummy_bag_black.svg", parent),
+    BasicInputWidget("Create Dummy ROSBag", ":/icons/dummy_bag_white.svg", ":/icons/dummy_bag_black.svg", parent),
     m_dummyBagParameters(dummyBagParameters)
 {
-    auto* const headerTextLabel = new QLabel("Create Dummy ROSBag");
-    Utils::UI::setWidgetFontSize(headerTextLabel);
-    headerTextLabel->setAlignment(Qt::AlignHCenter);
-
     m_bagNameLineEdit = new QLineEdit(m_dummyBagParameters.bagDirectory);
     m_bagNameLineEdit->setToolTip("The directory where the ROSBag file should be stored.");
 
@@ -54,7 +50,7 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
     controlsLayout->addWidget(m_headerPixmapLabel);
-    controlsLayout->addWidget(headerTextLabel);
+    controlsLayout->addWidget(m_headerLabel);
     controlsLayout->addSpacing(40);
     controlsLayout->addLayout(m_formLayout);
     controlsLayout->addSpacing(20);
@@ -65,20 +61,11 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
     controlsSqueezedLayout->addLayout(controlsLayout);
     controlsSqueezedLayout->addStretch();
 
-    auto* const backButton = new QPushButton("Back");
-
-    auto* const buttonBox = new QDialogButtonBox;
-    buttonBox->addButton(m_okButton, QDialogButtonBox::AcceptRole);
     m_okButton->setEnabled(true);
-
-    auto* const buttonLayout = new QHBoxLayout;
-    buttonLayout->addWidget(backButton);
-    buttonLayout->addStretch();
-    buttonLayout->addWidget(buttonBox);
 
     auto* const mainLayout = new QVBoxLayout;
     mainLayout->addLayout(controlsSqueezedLayout);
-    mainLayout->addLayout(buttonLayout);
+    mainLayout->addLayout(m_buttonLayout);
     setLayout(mainLayout);
 
     const auto addNewTopic = [this] {
@@ -94,9 +81,6 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
     connect(m_minusButton, &QPushButton::clicked, this, &DummyBagWidget::removeDummyTopicWidget);
     connect(m_plusButton, &QPushButton::clicked, this, [addNewTopic] {
         addNewTopic();
-    });
-    connect(backButton, &QPushButton::clicked, this, [this] {
-        emit back();
     });
     connect(m_okButton, &QPushButton::clicked, this, &DummyBagWidget::okButtonPressed);
 
