@@ -69,9 +69,8 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
     setLayout(mainLayout);
 
     const auto addNewTopic = [this] {
-        m_dummyBagParameters.topicTypes.push_back("String");
-        m_dummyBagParameters.topicNames.push_back("");
-        createNewDummyTopicWidget(m_dummyBagParameters.topicTypes.size() - 1);
+        m_dummyBagParameters.topics.push_back({ "String", "" });
+        createNewDummyTopicWidget(m_dummyBagParameters.topics.size() - 1, { "", "" });
     };
 
     connect(bagDirectoryButton, &QPushButton::clicked, this, &DummyBagWidget::bagDirectoryButtonPressed);
@@ -86,10 +85,10 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
 
     setPixmapLabelIcon();
 
-    for (auto i = 0; i < m_dummyBagParameters.topicTypes.size(); i++) {
-        createNewDummyTopicWidget(i, m_dummyBagParameters.topicTypes.at(i), m_dummyBagParameters.topicNames.at(i));
+    for (auto i = 0; i < m_dummyBagParameters.topics.size(); i++) {
+        createNewDummyTopicWidget(i, m_dummyBagParameters.topics.at(i));
     }
-    if (m_dummyBagParameters.topicTypes.empty()) {
+    if (m_dummyBagParameters.topics.empty()) {
         addNewTopic();
     }
 }
@@ -111,27 +110,25 @@ DummyBagWidget::bagDirectoryButtonPressed()
 void
 DummyBagWidget::removeDummyTopicWidget()
 {
-    m_formLayout->removeRow(m_dummyBagParameters.topicTypes.size());
+    m_formLayout->removeRow(m_dummyBagParameters.topics.size());
     m_dummyTopicWidgets.pop_back();
-
-    m_dummyBagParameters.topicTypes.pop_back();
-    m_dummyBagParameters.topicNames.pop_back();
+    m_dummyBagParameters.topics.pop_back();
 
     m_plusButton->setEnabled(m_numberOfTopics != MAXIMUM_NUMBER_OF_TOPICS);
-    m_minusButton->setEnabled(m_dummyBagParameters.topicTypes.size() != 1);
+    m_minusButton->setEnabled(m_dummyBagParameters.topics.size() != 1);
 }
 
 
 void
-DummyBagWidget::createNewDummyTopicWidget(int index, const QString& topicTypeText, const QString& topicNameText)
+DummyBagWidget::createNewDummyTopicWidget(int index, const Utils::UI::DummyBagTopic& topic)
 {
-    auto* const dummyTopicWidget = new DummyTopicWidget(topicTypeText, topicNameText);
+    auto* const dummyTopicWidget = new DummyTopicWidget(topic.type, topic.name);
 
     connect(dummyTopicWidget, &DummyTopicWidget::topicTypeChanged, this, [this, index] (const QString& text) {
-        m_dummyBagParameters.topicTypes[index] = text;
+        m_dummyBagParameters.topics[index].type = text;
     });
     connect(dummyTopicWidget, &DummyTopicWidget::topicNameChanged, this, [this, index] (const QString& text) {
-        m_dummyBagParameters.topicNames[index] = text;
+        m_dummyBagParameters.topics[index].name = text;
     });
 
     m_formLayout->insertRow(m_formLayout->rowCount() - 2, "Topic " + QString::number(m_numberOfTopics + 1) + ":", dummyTopicWidget);
@@ -139,7 +136,7 @@ DummyBagWidget::createNewDummyTopicWidget(int index, const QString& topicTypeTex
 
     m_numberOfTopics++;
     m_plusButton->setEnabled(m_numberOfTopics != MAXIMUM_NUMBER_OF_TOPICS);
-    m_minusButton->setEnabled(m_dummyBagParameters.topicTypes.size() != 1);
+    m_minusButton->setEnabled(m_dummyBagParameters.topics.size() != 1);
 }
 
 

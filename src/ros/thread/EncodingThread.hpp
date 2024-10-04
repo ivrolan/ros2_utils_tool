@@ -15,6 +15,6 @@ public:
     run() override;
 
 private:
-    const QString m_videoDirectory;
+    const std::string m_videoDirectory;
     const bool m_useHardwareAcceleration;
 };

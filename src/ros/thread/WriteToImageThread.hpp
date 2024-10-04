@@ -15,7 +15,7 @@ public:
     run() override;
 
 private:
-    const QString m_imagesDirectory;
-    const QString m_format;
+    const std::string m_imagesDirectory;
+    const std::string m_format;
     int m_quality;
 };

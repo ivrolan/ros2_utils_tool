@@ -8,6 +8,8 @@
 
 #include "sensor_msgs/msg/image.hpp"
 
+#include <filesystem>
+
 #ifdef ROS_JAZZY
 #include <cv_bridge/cv_bridge.hpp>
 #else
@@ -17,7 +19,7 @@
 EncodingThread::EncodingThread(const Utils::UI::VideoParameters& videoParameters,
                                QObject*                          parent) :
     BasicThread(videoParameters.bagDirectory, videoParameters.topicName, parent),
-    m_videoDirectory(videoParameters.videoDirectory),
+    m_videoDirectory(videoParameters.videoDirectory.toStdString()),
     m_useHardwareAcceleration(videoParameters.useHardwareAcceleration)
 {
 }
@@ -27,17 +29,17 @@ void
 EncodingThread::run()
 {
     rosbag2_cpp::Reader reader;
-    reader.open(m_bagDirectory.toStdString());
+    reader.open(m_bagDirectory);
 
-    const auto messageCount = Utils::ROS::getTopicMessageCount(m_bagDirectory.toStdString(), m_topicName.toStdString());
+    const auto messageCount = Utils::ROS::getTopicMessageCount(m_bagDirectory, m_topicName);
     emit calculatedMaximumInstances(messageCount);
 
     // Prepare parameters
     rclcpp::Serialization<sensor_msgs::msg::Image> serialization;
     cv_bridge::CvImagePtr cvPointer;
-    const auto videoEncoder = std::make_shared<VideoEncoder>(m_videoDirectory.right(3) == "mp4");
     auto iterationCount = 0;
-    const auto topicNameStdString = m_topicName.toStdString();
+    const auto topicNameStdString = m_topicName;
+    const auto videoEncoder = std::make_shared<VideoEncoder>(std::filesystem::path(m_videoDirectory).extension() == ".mp4");
 
     // Now the main encoding
     while (reader.has_next()) {
@@ -61,7 +63,7 @@ EncodingThread::run()
             const auto width = rosMsg->width;
             const auto height = rosMsg->height;
 
-            if (!videoEncoder->setVideoWriter(m_videoDirectory.toStdString(), width, height, m_useHardwareAcceleration)) {
+            if (!videoEncoder->setVideoWriter(m_videoDirectory, width, height, m_useHardwareAcceleration)) {
                 emit openingCVInstanceFailed();
                 return;
             }

@@ -29,6 +29,6 @@ signals:
     finished();
 
 protected:
-    const QString m_bagDirectory;
-    const QString m_topicName;
+    const std::string m_bagDirectory;
+    const std::string m_topicName;
 };

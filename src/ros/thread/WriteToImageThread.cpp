@@ -20,8 +20,8 @@
 WriteToImageThread::WriteToImageThread(const Utils::UI::ImageParameters& imageParameters,
                                        QObject*                          parent) :
     BasicThread(imageParameters.bagDirectory, imageParameters.topicName, parent),
-    m_imagesDirectory(imageParameters.imagesDirectory),
-    m_format(imageParameters.format), m_quality(imageParameters.quality)
+    m_imagesDirectory(imageParameters.imagesDirectory.toStdString()),
+    m_format(imageParameters.format.toStdString()), m_quality(imageParameters.quality)
 {
 }
 
@@ -30,26 +30,26 @@ void
 WriteToImageThread::run()
 {
     rosbag2_cpp::Reader reader;
-    reader.open(m_bagDirectory.toStdString());
+    reader.open(m_bagDirectory);
 
-    if (!std::filesystem::exists(m_imagesDirectory.toStdString())) {
-        std::filesystem::create_directory(m_imagesDirectory.toStdString());
+    if (!std::filesystem::exists(m_imagesDirectory)) {
+        std::filesystem::create_directory(m_imagesDirectory);
     }
-    if (!std::filesystem::is_empty(m_imagesDirectory.toStdString())) {
+    if (!std::filesystem::is_empty(m_imagesDirectory)) {
         // Remove all images currently present
-        for (const auto& entry : std::filesystem::directory_iterator(m_imagesDirectory.toStdString())) {
+        for (const auto& entry : std::filesystem::directory_iterator(m_imagesDirectory)) {
             std::filesystem::remove_all(entry.path());
         }
     }
 
-    const auto messageCount = Utils::ROS::getTopicMessageCount(m_bagDirectory.toStdString(), m_topicName.toStdString());
+    const auto messageCount = Utils::ROS::getTopicMessageCount(m_bagDirectory, m_topicName);
     emit calculatedMaximumInstances(messageCount);
 
     // Prepare parameters
     rclcpp::Serialization<sensor_msgs::msg::Image> serialization;
     cv_bridge::CvImagePtr cvPointer;
     auto iterationCount = 0;
-    const auto topicNameStdString = m_topicName.toStdString();
+
     // Adjust the quality value to fit OpenCV param range
     if (m_format == "jpg") {
         m_quality = (m_quality * 10) + 10;
@@ -64,7 +64,7 @@ WriteToImageThread::run()
 
         // Read and deserialize the message
         rosbag2_storage::SerializedBagMessageSharedPtr msg = reader.read_next();
-        if (msg->topic_name != topicNameStdString) {
+        if (msg->topic_name != m_topicName) {
             continue;
         }
 
@@ -74,8 +74,7 @@ WriteToImageThread::run()
 
         // Convert message to cv and encode
         cvPointer = cv_bridge::toCvCopy(*rosMsg, rosMsg->encoding);
-
-        cv::imwrite(m_imagesDirectory.toStdString() + "/" + std::to_string(iterationCount) + "." + m_format.toStdString(), cvPointer->image,
+        cv::imwrite(m_imagesDirectory + "/" + std::to_string(iterationCount) + "." + m_format, cvPointer->image,
                     { m_format == "jpg" ? cv::IMWRITE_JPEG_QUALITY : cv::IMWRITE_PNG_COMPRESSION, m_quality });
 
         iterationCount++;

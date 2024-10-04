@@ -33,9 +33,8 @@ private slots:
     removeDummyTopicWidget();
 
     void
-    createNewDummyTopicWidget(int            index,
-                              const QString& topicTypeText = "",
-                              const QString& topicNameText = "");
+    createNewDummyTopicWidget(int                             index,
+                              const Utils::UI::DummyBagTopic& topics);
 
     void
     okButtonPressed();

@@ -85,8 +85,13 @@ main(int argc, char* argv[])
         return 0;
     }
 
+    // Create thread parameters
+    QVector<Utils::UI::DummyBagTopic> topics;
+    for (auto i = 0; i < topicTypes.size(); i++) {
+        topics.push_back({ topicTypes.at(i), topicNames.at(i) });
+    }
+    Utils::UI::DummyBagParameters dummyBagParameters { { bagDirectory, "" }, topics, messageCount.toInt() };
     // Create thread and connect to its informations
-    Utils::UI::DummyBagParameters dummyBagParameters { { bagDirectory, "" }, topicTypes, topicNames, messageCount.toInt() };
     auto* const dummyBagThread = new DummyBagThread(dummyBagParameters);
 
     auto thisMessageCount = 0;
