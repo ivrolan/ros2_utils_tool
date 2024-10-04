@@ -85,20 +85,28 @@ VideoToBagWidget::searchButtonPressed()
 {
     enableOkButton(false);
 
-    const auto fileName = QFileDialog::getOpenFileName(this, "Open Video");
-    if (fileName.isEmpty()) {
+    const auto videoDir = QFileDialog::getOpenFileName(this, "Open Video");
+    if (videoDir.isEmpty()) {
         return;
     }
 
-    QFileInfo fileInfo(fileName);
+    QFileInfo fileInfo(videoDir);
     if (fileInfo.suffix().toLower() != "mp4" && fileInfo.suffix().toLower() != "mkv") {
         auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Wrong format!", "The video must be in mp4 or mkv format!", QMessageBox::Ok);
         msgBox->exec();
         return;
     }
 
-    m_videoParameters.videoDirectory = fileName;
-    m_videoNameLineEdit->setText(fileName);
+    m_videoParameters.videoDirectory = videoDir;
+    m_videoNameLineEdit->setText(videoDir);
+
+    QDir videoDirectoryDir(videoDir);
+    videoDirectoryDir.cdUp();
+    if (const auto autoBagDirectory = videoDirectoryDir.path() + "/video_bag"; !std::filesystem::exists(autoBagDirectory.toStdString())) {
+        m_bagNameLineEdit->setText(autoBagDirectory);
+        m_videoParameters.bagDirectory = autoBagDirectory;
+    }
+
     enableOkButton(!m_videoNameLineEdit->text().isEmpty() && !m_bagNameLineEdit->text().isEmpty() && !m_topicNameLineEdit->text().isEmpty());
 }
 

@@ -32,6 +32,9 @@ WriteToImageThread::run()
     rosbag2_cpp::Reader reader;
     reader.open(m_bagDirectory.toStdString());
 
+    if (!std::filesystem::exists(m_imagesDirectory.toStdString())) {
+        std::filesystem::create_directory(m_imagesDirectory.toStdString());
+    }
     if (!std::filesystem::is_empty(m_imagesDirectory.toStdString())) {
         // Remove all images currently present
         for (const auto& entry : std::filesystem::directory_iterator(m_imagesDirectory.toStdString())) {

@@ -117,8 +117,17 @@ BagToVideoWidget::searchButtonPressed()
         return;
     }
 
-    m_videoParameters.bagDirectory = bagDirectory;
     m_bagNameLineEdit->setText(bagDirectory);
+    m_videoParameters.bagDirectory = bagDirectory;
+
+    QDir bagDirectoryDir(bagDirectory);
+    bagDirectoryDir.cdUp();
+    if (const auto autoVideoDirectory = bagDirectoryDir.path() + "/bag_video." + m_formatComboBox->currentText();
+        !std::filesystem::exists(autoVideoDirectory.toStdString())) {
+        m_videoNameLineEdit->setText(autoVideoDirectory);
+        m_videoParameters.videoDirectory = autoVideoDirectory;
+    }
+
     // Only enable if both line edits contain text
     enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
                    !m_topicNameComboBox->currentText().isEmpty() && !m_videoNameLineEdit->text().isEmpty());

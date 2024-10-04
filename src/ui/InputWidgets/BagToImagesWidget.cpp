@@ -115,8 +115,16 @@ BagToImagesWidget::searchButtonPressed()
         return;
     }
 
-    m_imageParameters.bagDirectory = bagDirectory;
     m_bagNameLineEdit->setText(bagDirectory);
+    m_imageParameters.bagDirectory = bagDirectory;
+
+    QDir bagDirectoryDir(bagDirectory);
+    bagDirectoryDir.cdUp();
+    if (const auto autoImageDirectory = bagDirectoryDir.path() + "/bag_images"; !std::filesystem::exists(autoImageDirectory.toStdString())) {
+        m_imagesNameLineEdit->setText(autoImageDirectory);
+        m_imageParameters.imagesDirectory = autoImageDirectory;
+    }
+
     enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
                    !m_topicNameComboBox->currentText().isEmpty() && !m_imagesNameLineEdit->text().isEmpty());
 }
@@ -157,7 +165,8 @@ BagToImagesWidget::okButtonPressed()
     }
 
     // Only ask if exists and the file dialog has not been called
-    if (!std::filesystem::is_empty(m_imagesNameLineEdit->text().toStdString())) {
+    if (std::filesystem::exists(m_imagesNameLineEdit->text().toStdString()) &&
+        !std::filesystem::is_empty(m_imagesNameLineEdit->text().toStdString())) {
         auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Images already exist!",
                                              "Images already exist under the specified directory! Are you sure you want to continue? "
                                              "This will overwrite all existing files.",
