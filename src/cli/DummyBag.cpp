@@ -8,8 +8,6 @@
 #include <QObject>
 #include <QSet>
 
-#include "rclcpp/rclcpp.hpp"
-
 #include <filesystem>
 #include <iostream>
 

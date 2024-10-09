@@ -1,6 +1,5 @@
 #pragma once
 
-#include <opencv2/core.hpp>
 #include <opencv2/videoio.hpp>
 
 // OpenCV video encoder used to write videos

@@ -3,7 +3,6 @@
 #include "DummyTopicWidget.hpp"
 #include "UtilsROS.hpp"
 
-#include <QDialogButtonBox>
 #include <QEvent>
 #include <QFileDialog>
 #include <QFormLayout>
@@ -27,10 +26,10 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
     auto* const bagDirectoryButton = new QToolButton;
     auto* const bagDirectoryLayout = Utils::UI::createLineEditButtonLayout(m_bagNameLineEdit, bagDirectoryButton);
 
-    m_messageCountSpinBox = new QSpinBox;
-    m_messageCountSpinBox->setRange(1, 1000);
-    m_messageCountSpinBox->setToolTip("The number of messages stored in the ROSBag.");
-    m_messageCountSpinBox->setValue(m_dummyBagParameters.messageCount);
+    auto* const messageCountSpinBox = new QSpinBox;
+    messageCountSpinBox->setRange(1, 1000);
+    messageCountSpinBox->setToolTip("The number of messages stored in the ROSBag.");
+    messageCountSpinBox->setValue(m_dummyBagParameters.messageCount);
 
     m_minusButton = new QToolButton;
     m_minusButton->setToolTip("Remove the topic above.");
@@ -45,7 +44,7 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
     m_formLayout = new QFormLayout;
     m_formLayout->addRow("Bag File:", bagDirectoryLayout);
     m_formLayout->addRow("", plusMinusButtonLayout);
-    m_formLayout->addRow("Message Count:", m_messageCountSpinBox);
+    m_formLayout->addRow("Message Count:", messageCountSpinBox);
 
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
@@ -74,7 +73,7 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
     };
 
     connect(bagDirectoryButton, &QPushButton::clicked, this, &DummyBagWidget::bagDirectoryButtonPressed);
-    connect(m_messageCountSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
+    connect(messageCountSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
         m_dummyBagParameters.messageCount = value;
     });
     connect(m_minusButton, &QPushButton::clicked, this, &DummyBagWidget::removeDummyTopicWidget);

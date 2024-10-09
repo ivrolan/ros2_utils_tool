@@ -1,6 +1,5 @@
 #include "BagInfoWidget.hpp"
 
-#include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QFormLayout>
 #include <QHBoxLayout>

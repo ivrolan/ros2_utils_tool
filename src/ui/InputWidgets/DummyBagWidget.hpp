@@ -10,8 +10,6 @@ class DummyTopicWidget;
 
 class QFormLayout;
 class QLineEdit;
-class QPushButton;
-class QSpinBox;
 class QToolButton;
 
 /**
@@ -51,7 +49,6 @@ private:
 
     QPointer<QFormLayout> m_formLayout;
     QPointer<QLineEdit> m_bagNameLineEdit;
-    QPointer<QSpinBox> m_messageCountSpinBox;
 
     QPointer<QToolButton> m_minusButton;
     QPointer<QToolButton> m_plusButton;

@@ -3,7 +3,6 @@
 #include "UtilsROS.hpp"
 #include "VideoEncoder.hpp"
 
-#include "rclcpp/rclcpp.hpp"
 #include "rosbag2_cpp/reader.hpp"
 
 #include "sensor_msgs/msg/image.hpp"

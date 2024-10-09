@@ -12,7 +12,7 @@
 
 #include <QCloseEvent>
 
-#include "rclcpp/rclcpp.hpp"
+#include <csignal>
 
 MainWindow::MainWindow()
 {

@@ -2,9 +2,8 @@
 
 #include "UtilsROS.hpp"
 
-#include <opencv2/opencv.hpp>
+#include <opencv2/imgcodecs.hpp>
 
-#include "rclcpp/rclcpp.hpp"
 #include "rosbag2_cpp/reader.hpp"
 
 #include "sensor_msgs/msg/image.hpp"

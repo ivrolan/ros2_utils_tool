@@ -1,9 +1,7 @@
 #include "WriteToBagThread.hpp"
 
-#include <opencv2/core.hpp>
 #include <opencv2/videoio.hpp>
 
-#include "rclcpp/rclcpp.hpp"
 #include "rosbag2_cpp/writer.hpp"
 
 #include "sensor_msgs/msg/image.hpp"
