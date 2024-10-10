@@ -16,8 +16,8 @@ class VideoToBagWidget : public BasicInputWidget
     Q_OBJECT
 
 public:
-    VideoToBagWidget(Utils::UI::VideoParameters& videoParameters,
-                     QWidget*                    parent = 0);
+    VideoToBagWidget(Utils::UI::BagParameters& bagParameters,
+                     QWidget*                  parent = 0);
 
 private slots:
     void
@@ -34,5 +34,5 @@ private:
     QPointer<QLineEdit> m_bagNameLineEdit;
     QPointer<QLineEdit> m_topicNameLineEdit;
 
-    Utils::UI::VideoParameters& m_videoParameters;
+    Utils::UI::BagParameters& m_bagParameters;
 };

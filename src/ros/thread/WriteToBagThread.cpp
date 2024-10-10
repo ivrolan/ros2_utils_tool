@@ -14,11 +14,12 @@
 #include <cv_bridge/cv_bridge.h>
 #endif
 
-WriteToBagThread::WriteToBagThread(const Utils::UI::VideoParameters& videoParameters,
-                                   QObject*                          parent) :
-    BasicThread(videoParameters.bagDirectory, videoParameters.topicName, parent),
-    m_videoDirectory(videoParameters.videoDirectory.toStdString()),
-    m_useHardwareAcceleration(videoParameters.useHardwareAcceleration)
+WriteToBagThread::WriteToBagThread(const Utils::UI::BagParameters& bagParameters,
+                                   QObject*                        parent) :
+    BasicThread(bagParameters.bagDirectory, bagParameters.topicName, parent),
+    m_videoDirectory(bagParameters.videoDirectory.toStdString()),
+    m_fps(bagParameters.fps), m_useHardwareAcceleration(bagParameters.useHardwareAcceleration),
+    m_useCDRForSerialization(bagParameters.useCDRForSerialization)
 {
 }
 
@@ -45,10 +46,11 @@ WriteToBagThread::run()
     writer.open(m_bagDirectory);
     auto iterationCount = 0;
 
-    auto fps = videoCapture.get(cv::CAP_PROP_FPS);
-    if (fps <= 2) {
-        fps = 30;
-    }
+    rosbag2_storage::TopicMetadata topicMetadata;
+    topicMetadata.name = m_topicName;
+    topicMetadata.type = "sensor_msgs/msg/Image";
+    topicMetadata.serialization_format = m_useCDRForSerialization ? "cdr" : "sqlite3";
+    writer.create_topic(topicMetadata);
 
     while (true) {
         if (isInterruptionRequested()) {
@@ -67,7 +69,7 @@ WriteToBagThread::run()
         // Create empty sensor message
         sensor_msgs::msg::Image message;
         std_msgs::msg::Header header;
-        const auto seconds = (float) iterationCount / fps;
+        const auto seconds = (float) iterationCount / m_fps;
         const auto time = rclcpp::Time(seconds, seconds * 1000000000);
         header.stamp = time;
 

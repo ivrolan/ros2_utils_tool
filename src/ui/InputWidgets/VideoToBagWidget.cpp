@@ -3,6 +3,7 @@
 #include "UtilsROS.hpp"
 
 #include <QCheckBox>
+#include <QComboBox>
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -13,44 +14,72 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QShortcut>
+#include <QSpinBox>
 #include <QToolButton>
 #include <QVBoxLayout>
 
 #include <filesystem>
 
-VideoToBagWidget::VideoToBagWidget(Utils::UI::VideoParameters& videoParameters, QWidget *parent) :
+VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWidget *parent) :
     BasicInputWidget("Write Video to a ROSBag", ":/icons/video_to_bag_white.svg", ":/icons/video_to_bag_black.svg", parent),
-    m_videoParameters(videoParameters)
+    m_bagParameters(bagParameters)
 {
-    m_videoNameLineEdit = new QLineEdit(m_videoParameters.videoDirectory);
+    m_videoNameLineEdit = new QLineEdit(m_bagParameters.videoDirectory);
     m_videoNameLineEdit->setToolTip("The directory of the source video file.");
     auto* const searchVideoFileButton = new QToolButton;
     auto* const searchVideoFileLayout = Utils::UI::createLineEditButtonLayout(m_videoNameLineEdit, searchVideoFileButton);
 
-    m_bagNameLineEdit = new QLineEdit(m_videoParameters.bagDirectory);
+    m_bagNameLineEdit = new QLineEdit(m_bagParameters.bagDirectory);
     m_bagNameLineEdit->setToolTip("The directory where the ROSBag should be stored.");
     auto* const bagLocationButton = new QToolButton;
     auto* const storeBagLayout = Utils::UI::createLineEditButtonLayout(m_bagNameLineEdit, bagLocationButton);
 
-    m_topicNameLineEdit = new QLineEdit(m_videoParameters.topicName);
+    m_topicNameLineEdit = new QLineEdit(m_bagParameters.topicName);
     m_topicNameLineEdit->setToolTip("The video's topic name inside the ROSBag.");
+
+    auto* const basicOptionsFormLayout = new QFormLayout;
+    basicOptionsFormLayout->addRow("Video File:", searchVideoFileLayout);
+    basicOptionsFormLayout->addRow("Bag Location:", storeBagLayout);
+    basicOptionsFormLayout->addRow("Topic Name:", m_topicNameLineEdit);
+
+    auto* const advancedOptionsCheckBox = new QCheckBox;
+    advancedOptionsCheckBox->setChecked(m_bagParameters.showAdvancedOptions ? Qt::Checked : Qt::Unchecked);
+    advancedOptionsCheckBox->setText("Show Advanced Options");
+
+    auto* const formatComboBox = new QComboBox;
+    formatComboBox->addItem("sqlite3", 0);
+    formatComboBox->addItem("cdr", 1);
+    formatComboBox->setCurrentText(m_bagParameters.useCDRForSerialization ? "cdr" : "sqlite3");
+    formatComboBox->setToolTip("The format used to serialize the single image messages in the bag.");
+
+    auto* const spinBox = new QSpinBox;
+    spinBox->setRange(10, 60);
+    spinBox->setValue(m_bagParameters.fps);
+    spinBox->setToolTip("FPS of the video stored in the bag.");
 
     auto* const useHardwareAccCheckBox = new QCheckBox;
     useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster video decoding and writing.");
-    useHardwareAccCheckBox->setCheckState(m_videoParameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
+    useHardwareAccCheckBox->setCheckState(m_bagParameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
 
-    auto* const formLayout = new QFormLayout;
-    formLayout->addRow("Video File:", searchVideoFileLayout);
-    formLayout->addRow("Bag Location:", storeBagLayout);
-    formLayout->addRow("Topic Name:", m_topicNameLineEdit);
-    formLayout->addRow("Use HW Acceleration:", useHardwareAccCheckBox);
+    auto* const advancedOptionsFormLayout = new QFormLayout;
+    advancedOptionsFormLayout->addRow("Serialization Format:", formatComboBox);
+    advancedOptionsFormLayout->addRow("FPS:", spinBox);
+    advancedOptionsFormLayout->addRow("Hardware Accleration:", useHardwareAccCheckBox);
+
+    auto* const advancedOptionsWidget = new QWidget;
+    advancedOptionsWidget->setLayout(advancedOptionsFormLayout);
+    advancedOptionsWidget->setVisible(m_bagParameters.showAdvancedOptions);
 
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
     controlsLayout->addWidget(m_headerPixmapLabel);
     controlsLayout->addWidget(m_headerLabel);
     controlsLayout->addSpacing(40);
-    controlsLayout->addLayout(formLayout);
+    controlsLayout->addLayout(basicOptionsFormLayout);
+    controlsLayout->addSpacing(5);
+    controlsLayout->addWidget(advancedOptionsCheckBox);
+    controlsLayout->addSpacing(10);
+    controlsLayout->addWidget(advancedOptionsWidget);
     controlsLayout->addStretch();
 
     auto* const controlsSqueezedLayout = new QHBoxLayout;
@@ -69,11 +98,21 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::VideoParameters& videoParameters, 
     connect(searchVideoFileButton, &QPushButton::clicked, this, &VideoToBagWidget::searchButtonPressed);
     connect(bagLocationButton, &QPushButton::clicked, this, &VideoToBagWidget::bagLocationButtonPressed);
     connect(m_topicNameLineEdit, &QLineEdit::textChanged, this, [this] {
-        m_videoParameters.topicName = m_topicNameLineEdit->text();
+        m_bagParameters.topicName = m_topicNameLineEdit->text();
         enableOkButton(!m_videoNameLineEdit->text().isEmpty() && !m_bagNameLineEdit->text().isEmpty() && !m_topicNameLineEdit->text().isEmpty());
     });
+    connect(advancedOptionsCheckBox, &QCheckBox::stateChanged, this, [this, advancedOptionsWidget] (int state) {
+        m_bagParameters.showAdvancedOptions = state == Qt::Checked;
+        advancedOptionsWidget->setVisible(state == Qt::Checked);
+    });
+    connect(formatComboBox, &QComboBox::currentTextChanged, this, [this] (const QString& text) {
+        m_bagParameters.useCDRForSerialization = text == "cdr";
+    });
+    connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
+        m_bagParameters.fps = value;
+    });
     connect(useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-        m_videoParameters.useHardwareAcceleration = state == Qt::Checked;
+        m_bagParameters.useHardwareAcceleration = state == Qt::Checked;
     });
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &VideoToBagWidget::okButtonPressed);
     connect(okShortCut, &QShortcut::activated, this, &VideoToBagWidget::okButtonPressed);
@@ -97,14 +136,14 @@ VideoToBagWidget::searchButtonPressed()
         return;
     }
 
-    m_videoParameters.videoDirectory = videoDir;
+    m_bagParameters.videoDirectory = videoDir;
     m_videoNameLineEdit->setText(videoDir);
 
     QDir videoDirectoryDir(videoDir);
     videoDirectoryDir.cdUp();
     if (const auto autoBagDirectory = videoDirectoryDir.path() + "/video_bag"; !std::filesystem::exists(autoBagDirectory.toStdString())) {
         m_bagNameLineEdit->setText(autoBagDirectory);
-        m_videoParameters.bagDirectory = autoBagDirectory;
+        m_bagParameters.bagDirectory = autoBagDirectory;
     }
 
     enableOkButton(!m_videoNameLineEdit->text().isEmpty() && !m_bagNameLineEdit->text().isEmpty() && !m_topicNameLineEdit->text().isEmpty());
@@ -119,7 +158,7 @@ VideoToBagWidget::bagLocationButtonPressed()
         return;
     }
 
-    m_videoParameters.bagDirectory = fileName;
+    m_bagParameters.bagDirectory = fileName;
     m_bagNameLineEdit->setText(fileName);
     enableOkButton(!m_videoNameLineEdit->text().isEmpty() && !m_bagNameLineEdit->text().isEmpty() && !m_topicNameLineEdit->text().isEmpty());
 }

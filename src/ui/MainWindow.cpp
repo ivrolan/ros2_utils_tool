@@ -1,6 +1,7 @@
 #include "MainWindow.hpp"
 
 #include "BagInfoWidget.hpp"
+#include "BagProgressWidget.hpp"
 #include "BagToImagesWidget.hpp"
 #include "BagToVideoWidget.hpp"
 #include "DummyBagWidget.hpp"
@@ -69,11 +70,13 @@ MainWindow::setProgressWidget(int mode)
     QPointer<BasicProgressWidget> basicProgressWidget;
     switch (mode) {
     case 0:
-    case 2:
-        basicProgressWidget = new VideoProgressWidget(mode == 0 ? m_parametersBagToVideo : m_parametersVideoToBag, mode == 0);
+        basicProgressWidget = new VideoProgressWidget(m_parametersBagToVideo);
         break;
     case 1:
         basicProgressWidget = new ImagesProgressWidget(m_parametersBagToImages);
+        break;
+    case 2:
+        basicProgressWidget = new BagProgressWidget(m_parametersVideoToBag);
         break;
     case 3:
         basicProgressWidget = new DummyBagProgressWidget(m_dummyBagParameters);

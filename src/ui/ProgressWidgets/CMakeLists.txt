@@ -5,6 +5,8 @@ target_include_directories (rt_progress_widgets
 )
 
 target_sources(rt_progress_widgets INTERFACE
+    ${CMAKE_CURRENT_LIST_DIR}/BagProgressWidget.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BagProgressWidget.hpp
     ${CMAKE_CURRENT_LIST_DIR}/BasicProgressWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/BasicProgressWidget.hpp
     ${CMAKE_CURRENT_LIST_DIR}/DummyBagProgressWidget.cpp

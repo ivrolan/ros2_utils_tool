@@ -14,10 +14,17 @@ struct BasicParameters {
     QString bagDirectory = "";
     QString topicName = "";
 };
+
 struct VideoParameters : BasicParameters {
     QString videoDirectory = "";
     bool    useHardwareAcceleration = false;
 };
+struct BagParameters : VideoParameters {
+    int  fps = 30;
+    bool showAdvancedOptions = false;
+    bool useCDRForSerialization = false;
+};
+
 struct ImageParameters : BasicParameters {
     QString imagesDirectory = "";
     QString format = "jpg";
@@ -27,6 +34,7 @@ struct ImageParameters : BasicParameters {
     bool    jpgOptimize = false;
     bool    pngBilevel = false;
 };
+
 struct DummyBagTopic {
     QString type;
     QString name;

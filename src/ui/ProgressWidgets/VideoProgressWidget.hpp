@@ -12,6 +12,5 @@ class VideoProgressWidget : public BasicProgressWidget
 
 public:
     VideoProgressWidget(const Utils::UI::VideoParameters& videoParameters,
-                        bool                              isEncoding,
                         QWidget*                          parent = 0);
 };

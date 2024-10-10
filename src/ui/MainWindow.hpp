@@ -30,7 +30,7 @@ private:
 
 private:
     Utils::UI::VideoParameters m_parametersBagToVideo;
-    Utils::UI::VideoParameters m_parametersVideoToBag;
+    Utils::UI::BagParameters m_parametersVideoToBag;
     Utils::UI::ImageParameters m_parametersBagToImages;
     Utils::UI::DummyBagParameters m_dummyBagParameters;
     Utils::UI::BasicParameters m_basicInfoParameters;
