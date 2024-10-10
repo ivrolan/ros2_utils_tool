@@ -22,6 +22,10 @@ struct ImageParameters : BasicParameters {
     QString imagesDirectory = "";
     QString format = "jpg";
     int     quality = 8;
+    bool    showAdvancedOptions = false;
+    bool    useBWImages = false;
+    bool    jpgOptimize = false;
+    bool    pngBilevel = false;
 };
 struct DummyBagTopic {
     QString type;

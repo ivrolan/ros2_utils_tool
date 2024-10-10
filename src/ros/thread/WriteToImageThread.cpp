@@ -20,7 +20,8 @@ WriteToImageThread::WriteToImageThread(const Utils::UI::ImageParameters& imagePa
                                        QObject*                          parent) :
     BasicThread(imageParameters.bagDirectory, imageParameters.topicName, parent),
     m_imagesDirectory(imageParameters.imagesDirectory.toStdString()),
-    m_format(imageParameters.format.toStdString()), m_quality(imageParameters.quality)
+    m_format(imageParameters.format.toStdString()), m_quality(imageParameters.quality), m_useBWImages(imageParameters.useBWImages),
+    m_optimizeJPGOrPNGBinary(imageParameters.format == "jpg" ? imageParameters.jpgOptimize : imageParameters.pngBilevel)
 {
 }
 
@@ -73,8 +74,19 @@ WriteToImageThread::run()
 
         // Convert message to cv and encode
         cvPointer = cv_bridge::toCvCopy(*rosMsg, rosMsg->encoding);
+
+        if (m_useBWImages && (m_format == "jpg" || !m_optimizeJPGOrPNGBinary)) {
+            cv::cvtColor(cvPointer->image, cvPointer->image, cv::COLOR_BGR2GRAY);
+        } else if (m_format == "png" && m_optimizeJPGOrPNGBinary) {
+            // Converting to a different channel seems to be saver then converting
+            // to grayscale before calling imwrite
+            cv::Mat mat(cvPointer->image.size(), CV_8UC1);
+            mat.convertTo(cvPointer->image, CV_8UC1);
+        }
+
         cv::imwrite(m_imagesDirectory + "/" + std::to_string(iterationCount) + "." + m_format, cvPointer->image,
-                    { m_format == "jpg" ? cv::IMWRITE_JPEG_QUALITY : cv::IMWRITE_PNG_COMPRESSION, m_quality });
+                    { m_format == "jpg" ? cv::IMWRITE_JPEG_QUALITY : cv::IMWRITE_PNG_COMPRESSION, m_quality,
+                      m_format == "jpg" ? cv::IMWRITE_JPEG_OPTIMIZE : cv::IMWRITE_PNG_BILEVEL, m_optimizeJPGOrPNGBinary });
 
         iterationCount++;
         // Inform of progress update

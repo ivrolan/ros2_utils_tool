@@ -3,7 +3,9 @@
 #include "BasicInputWidget.hpp"
 #include "UtilsUI.hpp"
 
+class QCheckBox;
 class QComboBox;
+class QFormLayout;
 class QLabel;
 class QLineEdit;
 class QSlider;
@@ -27,7 +29,7 @@ private slots:
     imagesLocationButtonPressed();
 
     void
-    adjustSliderToChangedFormat(const QString& text);
+    adjustWidgetsToChangedFormat(const QString& text);
 
     void
     okButtonPressed();
@@ -38,6 +40,10 @@ private:
     QPointer<QLineEdit> m_imagesNameLineEdit;
     QPointer<QSlider> m_slider;
     QPointer<QLabel> m_formLayoutSliderLabel;
+    QPointer<QCheckBox> m_useBWCheckBox;
+    QPointer<QCheckBox> m_optimizeBilevelCheckBox;
+
+    QPointer<QFormLayout> m_advancedOptionsFormLayout;
 
     Utils::UI::ImageParameters& m_imageParameters;
 

@@ -18,4 +18,6 @@ private:
     const std::string m_imagesDirectory;
     const std::string m_format;
     int m_quality;
+    bool m_useBWImages;
+    bool m_optimizeJPGOrPNGBinary;
 };
