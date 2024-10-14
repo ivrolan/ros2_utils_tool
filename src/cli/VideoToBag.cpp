@@ -93,12 +93,11 @@ main(int argc, char* argv[])
                 return 0;
             }
 
-            const auto framerate = arguments.at(framerateArgumentIndex + 1).toInt();
-            if (framerate < 10 || framerate > 60) {
+            bagParameters.fps = arguments.at(framerateArgumentIndex + 1).toInt();
+            if (bagParameters.fps < 10 || bagParameters.fps > 60) {
                 std::cerr << "Please enter a framerate in the range of 10 to 60!" << std::endl;
                 return 0;
             }
-            bagParameters.fps = framerate;
         }
 
         // Hardware acceleration

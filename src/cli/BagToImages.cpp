@@ -38,64 +38,61 @@ main(int argc, char* argv[])
         return 0;
     }
 
+    Utils::UI::ImageParameters imageParameters;
+
     // Handle bag directory
-    const auto bagDirectory = arguments.at(1);
-    if (!std::filesystem::exists(bagDirectory.toStdString())) {
+    imageParameters.sourceDirectory = arguments.at(1);
+    if (!std::filesystem::exists(imageParameters.sourceDirectory.toStdString())) {
         std::cerr << "Bag file not found. Make sure that the bag file exists!" << std::endl;
         return 0;
     }
-    if (const auto doesDirContainBag = Utils::ROS::doesDirectoryContainBagFile(bagDirectory.toStdString()); !doesDirContainBag) {
+    if (const auto doesDirContainBag = Utils::ROS::doesDirectoryContainBagFile(imageParameters.sourceDirectory.toStdString()); !doesDirContainBag) {
         std::cerr << "The directory does not contain a bag file!" << std::endl;
         return 0;
     }
 
     // Topic name
-    const auto topicName = arguments.at(2);
-    if (!Utils::ROS::doesBagContainTopicName(bagDirectory.toStdString(), topicName.toStdString())) {
+    imageParameters.topicName = arguments.at(2);
+    if (!Utils::ROS::doesBagContainTopicName(imageParameters.sourceDirectory.toStdString(), imageParameters.topicName.toStdString())) {
         std::cerr << "Topic has not been found in the bag file!" << std::endl;
         return 0;
     }
-    if (Utils::ROS::getTopicType(bagDirectory.toStdString(), topicName.toStdString()) != "sensor_msgs/msg/Image") {
+    if (Utils::ROS::getTopicType(imageParameters.sourceDirectory.toStdString(), imageParameters.topicName.toStdString()) != "sensor_msgs/msg/Image") {
         std::cerr << "The entered topic is not in sensor message format!" << std::endl;
         return 0;
     }
 
     // Images directory
-    const auto imagesDirectory = arguments.at(3);
+    imageParameters.targetDirectory = arguments.at(3);
 
     // Format
-    const auto formatString = arguments.at(5);
-    if (formatString != "jpg" && formatString != "png") {
+    imageParameters.format = arguments.at(5);
+    if (imageParameters.format != "jpg" && imageParameters.format != "png") {
         std::cerr << "Please enter either 'jpg' or 'png' for the format!" << std::endl;
         return 0;
     }
 
-    auto quality = 8;
-    auto isColorless = false;
-    auto optimize = false;
-    auto writeBinary = false;
-
     // Check for optional arguments
     if (arguments.size() > 6) {
         if (Utils::CLI::containsArguments(arguments, "-q", "--quality")) {
-            if (arguments.size() < 8) {
-                std::cerr << "Please specify a value for the quality!" << std::endl;
+            const auto qualityArgumentIndex = Utils::CLI::getArgumentsIndex(arguments, "-q", "--quality");
+            if (arguments.at(qualityArgumentIndex) == arguments.last()) {
+                std::cerr << "Please specify a quality value!" << std::endl;
                 return 0;
             }
 
-            const auto qualityIndex = std::max(arguments.indexOf("-q"), arguments.indexOf("--quality"));
-            if (quality = arguments.at(qualityIndex + 1).toInt(); quality < 0 || quality > 9) {
-                std::cerr << "Please enter a number between 0 and 9 for the quality value!" << std::endl;
+            imageParameters.quality = arguments.at(qualityArgumentIndex + 1).toInt();
+            if (imageParameters.quality < 0 || imageParameters.quality > 9) {
+                std::cerr << "Please enter a framerate in the range of 10 to 60!" << std::endl;
                 return 0;
             }
         }
 
-        isColorless = Utils::CLI::containsArguments(arguments, "-c", "--colorless");
-        optimize = formatString == "jpg" && Utils::CLI::containsArguments(arguments, "-o", "--optimize");
-        writeBinary = formatString == "png" && Utils::CLI::containsArguments(arguments, "-b", "--binary");
+        imageParameters.useBWImages = Utils::CLI::containsArguments(arguments, "-c", "--colorless");
+        imageParameters.jpgOptimize = imageParameters.format == "jpg" && Utils::CLI::containsArguments(arguments, "-o", "--optimize");
+        imageParameters.pngBilevel = imageParameters.format == "png" && Utils::CLI::containsArguments(arguments, "-b", "--binary");
     }
 
-    Utils::UI::ImageParameters imageParameters { { { bagDirectory, topicName }, imagesDirectory, false }, formatString, quality, isColorless, optimize, writeBinary };
     auto thisMessageCount = 0;
 
     // Create thread and connect to its informations

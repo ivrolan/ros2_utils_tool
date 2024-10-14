@@ -34,9 +34,12 @@ main(int argc, char* argv[])
         return 0;
     }
 
+    Utils::UI::DummyBagParameters dummyBagParameters;
+    dummyBagParameters.topicName = "";
+
     // Bag directory
-    const auto bagDirectory = arguments.at(1);
-    auto dirPath = bagDirectory;
+    dummyBagParameters.sourceDirectory = arguments.at(1);
+    auto dirPath = dummyBagParameters.sourceDirectory;
     dirPath.truncate(dirPath.lastIndexOf(QChar('/')));
     if (!std::filesystem::exists(dirPath.toStdString())) {
         std::cerr << "The entered directory for the bag file does not exist. Please specify a correct directory!" << std::endl;
@@ -44,8 +47,8 @@ main(int argc, char* argv[])
     }
 
     // Message count
-    const auto messageCount = arguments.at(arguments.size() - 1);
-    if (messageCount.toInt() < 1 && messageCount.toInt() > 1000) {
+    dummyBagParameters.messageCount = arguments.at(arguments.size() - 1).toInt();
+    if (dummyBagParameters.messageCount < 1 || dummyBagParameters.messageCount > 1000) {
         std::cerr << "Please enter a number between 1 and 1000 for the message count value!" << std::endl;
         return 0;
     }
@@ -86,9 +89,9 @@ main(int argc, char* argv[])
     // Create thread parameters
     QVector<Utils::UI::DummyBagTopic> topics;
     for (auto i = 0; i < topicTypes.size(); i++) {
-        topics.push_back({ topicTypes.at(i), topicNames.at(i) });
+        dummyBagParameters.topics.push_back({ topicTypes.at(i), topicNames.at(i) });
     }
-    Utils::UI::DummyBagParameters dummyBagParameters { { bagDirectory, "" }, topics, messageCount.toInt() };
+
     // Create thread and connect to its informations
     auto* const dummyBagThread = new DummyBagThread(dummyBagParameters);
 
