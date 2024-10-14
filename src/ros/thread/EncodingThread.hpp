@@ -16,5 +16,9 @@ public:
 
 private:
     const std::string m_videoDirectory;
+
+    const int m_fps;
+
     const bool m_useHardwareAcceleration;
+    const bool m_useBWImages;
 };

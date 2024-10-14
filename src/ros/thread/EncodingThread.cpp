@@ -18,8 +18,8 @@
 EncodingThread::EncodingThread(const Utils::UI::VideoParameters& videoParameters,
                                QObject*                          parent) :
     BasicThread(videoParameters.bagDirectory, videoParameters.topicName, parent),
-    m_videoDirectory(videoParameters.videoDirectory.toStdString()),
-    m_useHardwareAcceleration(videoParameters.useHardwareAcceleration)
+    m_videoDirectory(videoParameters.videoDirectory.toStdString()), m_fps(videoParameters.fps),
+    m_useHardwareAcceleration(videoParameters.useHardwareAcceleration), m_useBWImages(videoParameters.useBWImages)
 {
 }
 
@@ -62,7 +62,7 @@ EncodingThread::run()
             const auto width = rosMsg->width;
             const auto height = rosMsg->height;
 
-            if (!videoEncoder->setVideoWriter(m_videoDirectory, width, height, m_useHardwareAcceleration)) {
+            if (!videoEncoder->setVideoWriter(m_videoDirectory, m_fps, width, height, m_useHardwareAcceleration, m_useBWImages)) {
                 emit openingCVInstanceFailed();
                 return;
             }
@@ -70,7 +70,18 @@ EncodingThread::run()
 
         // Convert message to cv and encode
         cvPointer = cv_bridge::toCvCopy(*rosMsg, rosMsg->encoding);
-        videoEncoder->writeImageToVideo(cvPointer->image);
+
+        if (m_useBWImages) {
+            // @note
+            // It seems that just setting the VIDEOWRITER_PROP_IS_COLOR in the videowriter leads to a broken video,
+            // at least if FFMPEG is used. Converting to a gray mat beforehand provides a fix. More information here:
+            // https://github.com/opencv/opencv/issues/26276#issuecomment-2406825667
+            cv::Mat greyMat;
+            cv::cvtColor(cvPointer->image, greyMat, cv::COLOR_BGR2GRAY);
+            videoEncoder->writeImageToVideo(greyMat);
+        } else {
+            videoEncoder->writeImageToVideo(cvPointer->image);
+        }
 
         iterationCount++;
         // Inform of progress update

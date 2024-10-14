@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QShortcut>
+#include <QSpinBox>
 #include <QToolButton>
 #include <QVBoxLayout>
 
@@ -54,23 +55,48 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
         m_formatComboBox->setCurrentText(m_encodingFormat);
     }
 
+    auto* const basicOptionsFormLayout = new QFormLayout;
+    basicOptionsFormLayout->addRow("Bag File:", searchBagFileLayout);
+    basicOptionsFormLayout->addRow("Topic Name:", m_topicNameComboBox);
+    basicOptionsFormLayout->addRow("Video Location:", searchVideoPathLayout);
+    basicOptionsFormLayout->addRow("Format:", m_formatComboBox);
+
+    auto* const advancedOptionsCheckBox = new QCheckBox;
+    advancedOptionsCheckBox->setChecked(m_videoParameters.showAdvancedOptions ? Qt::Checked : Qt::Unchecked);
+    advancedOptionsCheckBox->setText("Show Advanced Options");
+
+    auto* const fpsSpinBox = new QSpinBox;
+    fpsSpinBox->setRange(10, 60);
+    fpsSpinBox->setValue(m_videoParameters.fps);
+    fpsSpinBox->setToolTip("FPS of the encoded video.");
+
     auto* const useHardwareAccCheckBox = new QCheckBox;
-    useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster encoding.");
+    useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster video encoding.");
     useHardwareAccCheckBox->setCheckState(m_videoParameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
 
-    auto* const formLayout = new QFormLayout;
-    formLayout->addRow("Bag File:", searchBagFileLayout);
-    formLayout->addRow("Topic Name:", m_topicNameComboBox);
-    formLayout->addRow("Video Location:", searchVideoPathLayout);
-    formLayout->addRow("Format:", m_formatComboBox);
-    formLayout->addRow("Use HW Acceleration:", useHardwareAccCheckBox);
+    auto* const useBWImagesCheckBox = new QCheckBox;
+    useBWImagesCheckBox->setToolTip("Write a colorless video.");
+    useBWImagesCheckBox->setCheckState(m_videoParameters.useBWImages ? Qt::Checked : Qt::Unchecked);
+
+    auto* const advancedOptionsFormLayout = new QFormLayout;
+    advancedOptionsFormLayout->addRow("FPS:", fpsSpinBox);
+    advancedOptionsFormLayout->addRow("HW Acceleration:", useHardwareAccCheckBox);
+    advancedOptionsFormLayout->addRow("Use Colorless Images:", useBWImagesCheckBox);
+
+    auto* const advancedOptionsWidget = new QWidget;
+    advancedOptionsWidget->setLayout(advancedOptionsFormLayout);
+    advancedOptionsWidget->setVisible(m_videoParameters.showAdvancedOptions);
 
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
     controlsLayout->addWidget(m_headerPixmapLabel);
     controlsLayout->addWidget(m_headerLabel);
     controlsLayout->addSpacing(40);
-    controlsLayout->addLayout(formLayout);
+    controlsLayout->addLayout(basicOptionsFormLayout);
+    controlsLayout->addSpacing(5);
+    controlsLayout->addWidget(advancedOptionsCheckBox);
+    controlsLayout->addSpacing(10);
+    controlsLayout->addWidget(advancedOptionsWidget);
     controlsLayout->addStretch();
 
     auto* const controlsSqueezedLayout = new QHBoxLayout;
@@ -95,8 +121,18 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
         m_videoParameters.topicName = text;
     });
     connect(m_formatComboBox, &QComboBox::currentTextChanged, this, &BagToVideoWidget::formatComboBoxTextChanged);
+    connect(advancedOptionsCheckBox, &QCheckBox::stateChanged, this, [this, advancedOptionsWidget] (int state) {
+        m_videoParameters.showAdvancedOptions = state == Qt::Checked;
+        advancedOptionsWidget->setVisible(state == Qt::Checked);
+    });
+    connect(fpsSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
+        m_videoParameters.fps = value;
+    });
     connect(useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         m_videoParameters.useHardwareAcceleration = state == Qt::Checked;
+    });
+    connect(useBWImagesCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
+        m_videoParameters.useBWImages = state == Qt::Checked;
     });
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &BagToVideoWidget::okButtonPressed);
     connect(okShortCut, &QShortcut::activated, this, &BagToVideoWidget::okButtonPressed);

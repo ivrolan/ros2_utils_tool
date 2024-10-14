@@ -17,12 +17,17 @@ struct BasicParameters {
 
 struct VideoParameters : BasicParameters {
     QString videoDirectory = "";
+    int     fps = 30;
+    bool    showAdvancedOptions = false;
     bool    useHardwareAcceleration = false;
+    bool    useBWImages = false;
 };
 struct BagParameters : VideoParameters {
-    int  fps = 30;
-    bool showAdvancedOptions = false;
-    bool useCDRForSerialization = false;
+    QString videoDirectory = "";
+    bool    useHardwareAcceleration = false;
+    int     fps = 30;
+    bool    showAdvancedOptions = false;
+    bool    useCDRForSerialization = false;
 };
 
 struct ImageParameters : BasicParameters {

@@ -10,9 +10,11 @@ public:
 
     bool
     setVideoWriter(const std::string& directory,
+                   int                fps,
                    int                width,
                    int                height,
-                   bool               useHardwareAcceleration);
+                   bool               useHardwareAcceleration,
+                   bool               useBWImages);
 
     inline void
     writeImageToVideo(const cv::Mat& mat)
