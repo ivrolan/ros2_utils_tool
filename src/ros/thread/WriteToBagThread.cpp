@@ -16,8 +16,8 @@
 
 WriteToBagThread::WriteToBagThread(const Utils::UI::BagParameters& bagParameters,
                                    QObject*                        parent) :
-    BasicThread(bagParameters.bagDirectory, bagParameters.topicName, parent),
-    m_videoDirectory(bagParameters.videoDirectory.toStdString()),
+    BasicThread(bagParameters.sourceDirectory, bagParameters.topicName, parent),
+    m_targetDirectory(bagParameters.targetDirectory.toStdString()),
     m_fps(bagParameters.fps), m_useHardwareAcceleration(bagParameters.useHardwareAcceleration),
     m_useCDRForSerialization(bagParameters.useCDRForSerialization)
 {
@@ -27,7 +27,7 @@ WriteToBagThread::WriteToBagThread(const Utils::UI::BagParameters& bagParameters
 void
 WriteToBagThread::run()
 {
-    auto videoCapture = cv::VideoCapture(m_videoDirectory, cv::CAP_ANY, {
+    auto videoCapture = cv::VideoCapture(m_sourceDirectory, cv::CAP_ANY, {
         cv::CAP_PROP_HW_ACCELERATION, m_useHardwareAcceleration ? cv::VIDEO_ACCELERATION_ANY : cv::VIDEO_ACCELERATION_NONE
     });
     if (!videoCapture.isOpened()) {
@@ -35,15 +35,15 @@ WriteToBagThread::run()
         return;
     }
 
-    if (std::filesystem::exists(m_bagDirectory)) {
-        std::filesystem::remove_all(m_bagDirectory);
+    if (std::filesystem::exists(m_targetDirectory)) {
+        std::filesystem::remove_all(m_targetDirectory);
     }
 
     const auto frameCount = videoCapture.get(cv::CAP_PROP_FRAME_COUNT);
     emit calculatedMaximumInstances(frameCount);
 
     rosbag2_cpp::Writer writer;
-    writer.open(m_bagDirectory);
+    writer.open(m_targetDirectory);
     auto iterationCount = 0;
 
     rosbag2_storage::TopicMetadata topicMetadata;

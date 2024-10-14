@@ -11,33 +11,30 @@
 namespace Utils::UI
 {
 struct BasicParameters {
-    QString bagDirectory = "";
+    QString sourceDirectory = "";
     QString topicName = "";
 };
 
-struct VideoParameters : BasicParameters {
-    QString videoDirectory = "";
-    int     fps = 30;
+struct AdvancedParameters : BasicParameters {
+    QString targetDirectory = "";
     bool    showAdvancedOptions = false;
-    bool    useHardwareAcceleration = false;
-    bool    useBWImages = false;
-};
-struct BagParameters : VideoParameters {
-    QString videoDirectory = "";
-    bool    useHardwareAcceleration = false;
-    int     fps = 30;
-    bool    showAdvancedOptions = false;
-    bool    useCDRForSerialization = false;
 };
 
-struct ImageParameters : BasicParameters {
-    QString imagesDirectory = "";
+struct ImageParameters : AdvancedParameters {
     QString format = "jpg";
     int     quality = 8;
-    bool    showAdvancedOptions = false;
     bool    useBWImages = false;
     bool    jpgOptimize = false;
     bool    pngBilevel = false;
+};
+struct VideoParameters : AdvancedParameters {
+    int  fps = 30;
+    bool useHardwareAcceleration = false;
+    bool useBWImages = false;
+};
+
+struct BagParameters : VideoParameters {
+    bool useCDRForSerialization = false;
 };
 
 struct DummyBagTopic {

@@ -17,8 +17,8 @@
 
 EncodingThread::EncodingThread(const Utils::UI::VideoParameters& videoParameters,
                                QObject*                          parent) :
-    BasicThread(videoParameters.bagDirectory, videoParameters.topicName, parent),
-    m_videoDirectory(videoParameters.videoDirectory.toStdString()), m_fps(videoParameters.fps),
+    BasicThread(videoParameters.sourceDirectory, videoParameters.topicName, parent),
+    m_targetDirectory(videoParameters.targetDirectory.toStdString()), m_fps(videoParameters.fps),
     m_useHardwareAcceleration(videoParameters.useHardwareAcceleration), m_useBWImages(videoParameters.useBWImages)
 {
 }
@@ -28,9 +28,9 @@ void
 EncodingThread::run()
 {
     rosbag2_cpp::Reader reader;
-    reader.open(m_bagDirectory);
+    reader.open(m_sourceDirectory);
 
-    const auto messageCount = Utils::ROS::getTopicMessageCount(m_bagDirectory, m_topicName);
+    const auto messageCount = Utils::ROS::getTopicMessageCount(m_sourceDirectory, m_topicName);
     emit calculatedMaximumInstances(messageCount);
 
     // Prepare parameters
@@ -38,7 +38,7 @@ EncodingThread::run()
     cv_bridge::CvImagePtr cvPointer;
     auto iterationCount = 0;
     const auto topicNameStdString = m_topicName;
-    const auto videoEncoder = std::make_shared<VideoEncoder>(std::filesystem::path(m_videoDirectory).extension() == ".mp4");
+    const auto videoEncoder = std::make_shared<VideoEncoder>(std::filesystem::path(m_targetDirectory).extension() == ".mp4");
 
     // Now the main encoding
     while (reader.has_next()) {
@@ -62,7 +62,7 @@ EncodingThread::run()
             const auto width = rosMsg->width;
             const auto height = rosMsg->height;
 
-            if (!videoEncoder->setVideoWriter(m_videoDirectory, m_fps, width, height, m_useHardwareAcceleration, m_useBWImages)) {
+            if (!videoEncoder->setVideoWriter(m_targetDirectory, m_fps, width, height, m_useHardwareAcceleration, m_useBWImages)) {
                 emit openingCVInstanceFailed();
                 return;
             }

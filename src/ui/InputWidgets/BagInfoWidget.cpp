@@ -73,7 +73,7 @@ BagInfoWidget::displayBagInfo()
     }
 
     m_infoTreeWidget->clear();
-    m_bagInfoParameters.bagDirectory = bagDirectory;
+    m_bagInfoParameters.sourceDirectory = bagDirectory;
     const auto& bagMetaData = Utils::ROS::getBagMetadata(bagDirectory.toStdString());
 
     QList<QTreeWidgetItem*> treeWidgetItems;

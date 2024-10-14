@@ -15,7 +15,7 @@ public:
     run() override;
 
 private:
-    const std::string m_videoDirectory;
+    const std::string m_targetDirectory;
 
     const int m_fps;
 

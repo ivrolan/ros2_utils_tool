@@ -24,12 +24,12 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWid
     BasicInputWidget("Write Video to a ROSBag", ":/icons/video_to_bag_white.svg", ":/icons/video_to_bag_black.svg", parent),
     m_bagParameters(bagParameters)
 {
-    m_videoNameLineEdit = new QLineEdit(m_bagParameters.videoDirectory);
+    m_videoNameLineEdit = new QLineEdit(m_bagParameters.sourceDirectory);
     m_videoNameLineEdit->setToolTip("The directory of the source video file.");
     auto* const searchVideoFileButton = new QToolButton;
     auto* const searchVideoFileLayout = Utils::UI::createLineEditButtonLayout(m_videoNameLineEdit, searchVideoFileButton);
 
-    m_bagNameLineEdit = new QLineEdit(m_bagParameters.bagDirectory);
+    m_bagNameLineEdit = new QLineEdit(m_bagParameters.targetDirectory);
     m_bagNameLineEdit->setToolTip("The directory where the ROSBag should be stored.");
     auto* const bagLocationButton = new QToolButton;
     auto* const storeBagLayout = Utils::UI::createLineEditButtonLayout(m_bagNameLineEdit, bagLocationButton);
@@ -136,14 +136,14 @@ VideoToBagWidget::searchButtonPressed()
         return;
     }
 
-    m_bagParameters.videoDirectory = videoDir;
+    m_bagParameters.sourceDirectory = videoDir;
     m_videoNameLineEdit->setText(videoDir);
 
     QDir videoDirectoryDir(videoDir);
     videoDirectoryDir.cdUp();
     if (const auto autoBagDirectory = videoDirectoryDir.path() + "/video_bag"; !std::filesystem::exists(autoBagDirectory.toStdString())) {
         m_bagNameLineEdit->setText(autoBagDirectory);
-        m_bagParameters.bagDirectory = autoBagDirectory;
+        m_bagParameters.targetDirectory = autoBagDirectory;
     }
 
     enableOkButton(!m_videoNameLineEdit->text().isEmpty() && !m_bagNameLineEdit->text().isEmpty() && !m_topicNameLineEdit->text().isEmpty());
@@ -158,7 +158,7 @@ VideoToBagWidget::bagLocationButtonPressed()
         return;
     }
 
-    m_bagParameters.bagDirectory = fileName;
+    m_bagParameters.targetDirectory = fileName;
     m_bagNameLineEdit->setText(fileName);
     enableOkButton(!m_videoNameLineEdit->text().isEmpty() && !m_bagNameLineEdit->text().isEmpty() && !m_topicNameLineEdit->text().isEmpty());
 }

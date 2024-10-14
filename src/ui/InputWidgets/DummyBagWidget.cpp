@@ -20,7 +20,7 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
     BasicInputWidget("Create Dummy ROSBag", ":/icons/dummy_bag_white.svg", ":/icons/dummy_bag_black.svg", parent),
     m_dummyBagParameters(dummyBagParameters)
 {
-    m_bagNameLineEdit = new QLineEdit(m_dummyBagParameters.bagDirectory);
+    m_bagNameLineEdit = new QLineEdit(m_dummyBagParameters.sourceDirectory);
     m_bagNameLineEdit->setToolTip("The directory where the ROSBag file should be stored.");
 
     auto* const bagDirectoryButton = new QToolButton;
@@ -101,7 +101,7 @@ DummyBagWidget::bagDirectoryButtonPressed()
         return;
     }
 
-    m_dummyBagParameters.bagDirectory = fileName;
+    m_dummyBagParameters.sourceDirectory = fileName;
     m_bagNameLineEdit->setText(fileName);
 }
 

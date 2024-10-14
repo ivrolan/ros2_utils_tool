@@ -17,7 +17,7 @@
 
 DummyBagThread::DummyBagThread(const Utils::UI::DummyBagParameters& dummyBagParameters,
                                QObject*                             parent) :
-    BasicThread(dummyBagParameters.bagDirectory, dummyBagParameters.topicName, parent),
+    BasicThread(dummyBagParameters.sourceDirectory, dummyBagParameters.topicName, parent),
     m_messageCount(dummyBagParameters.messageCount)
 {
     for (const auto& topic : dummyBagParameters.topics) {
@@ -33,7 +33,7 @@ DummyBagThread::run()
     emit calculatedMaximumInstances(m_messageCount);
 
     rosbag2_cpp::Writer writer;
-    writer.open(m_bagDirectory);
+    writer.open(m_sourceDirectory);
 
     for (auto i = 1; i <= m_messageCount; i++) {
         for (std::size_t j = 0; j < m_topicTypes.size(); j++) {

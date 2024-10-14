@@ -38,14 +38,14 @@ main(int argc, char* argv[])
     Utils::UI::BagParameters bagParameters;
 
     // Video directory
-    bagParameters.videoDirectory = arguments.at(1);
-    auto dirPath = bagParameters.videoDirectory;
+    bagParameters.sourceDirectory = arguments.at(1);
+    auto dirPath = bagParameters.sourceDirectory;
     dirPath.truncate(dirPath.lastIndexOf(QChar('/')));
     if (!std::filesystem::exists(dirPath.toStdString())) {
         std::cerr << "The entered directory for the video file does not exist. Please specify a correct directory!" << std::endl;
         return 0;
     }
-    const auto fileEnding = bagParameters.videoDirectory.right(3);
+    const auto fileEnding = bagParameters.sourceDirectory.right(3);
     if (fileEnding != "mp4" && fileEnding != "mkv") {
         std::cerr << "The entered video name is not in correct format. Please make sure that the video file ends in mp4 or mkv!" << std::endl;
         return 0;
@@ -59,8 +59,8 @@ main(int argc, char* argv[])
     }
 
     // Handle bag directory
-    bagParameters.bagDirectory = arguments.at(3);
-    dirPath = bagParameters.bagDirectory;
+    bagParameters.targetDirectory = arguments.at(3);
+    dirPath = bagParameters.targetDirectory;
     dirPath.truncate(dirPath.lastIndexOf(QChar('/')));
     if (!std::filesystem::exists(dirPath.toStdString())) {
         std::cerr << "Bag file not found. Make sure that the bag file exists!" << std::endl;

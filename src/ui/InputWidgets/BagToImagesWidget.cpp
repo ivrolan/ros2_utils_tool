@@ -23,7 +23,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     BasicInputWidget("Write Images from ROSBag", ":/icons/bag_to_images_white.svg", ":/icons/bag_to_images_black.svg", parent),
     m_imageParameters(imageParameters)
 {
-    m_bagNameLineEdit = new QLineEdit(m_imageParameters.bagDirectory);
+    m_bagNameLineEdit = new QLineEdit(m_imageParameters.sourceDirectory);
     m_bagNameLineEdit->setToolTip("The directory of the ROSBag source file.");
 
     auto* const searchBagButton = new QToolButton;
@@ -33,11 +33,11 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     m_topicNameComboBox->setMinimumWidth(200);
     m_topicNameComboBox->setToolTip("The ROSBag topic of the video file.\n"
                                     "If the Bag contains multiple video topics, you can choose one of them.");
-    if (!m_imageParameters.bagDirectory.isEmpty()) {
-        Utils::UI::fillComboBoxWithTopics(m_topicNameComboBox, m_imageParameters.bagDirectory);
+    if (!m_imageParameters.sourceDirectory.isEmpty()) {
+        Utils::UI::fillComboBoxWithTopics(m_topicNameComboBox, m_imageParameters.sourceDirectory);
     }
 
-    m_imagesNameLineEdit = new QLineEdit(m_imageParameters.imagesDirectory);
+    m_imagesNameLineEdit = new QLineEdit(m_imageParameters.targetDirectory);
     m_imagesNameLineEdit->setToolTip("The directory where the images should be stored.");
 
     auto* const imagesLocationButton = new QToolButton;
@@ -145,13 +145,13 @@ BagToImagesWidget::searchButtonPressed()
     }
 
     m_bagNameLineEdit->setText(bagDirectory);
-    m_imageParameters.bagDirectory = bagDirectory;
+    m_imageParameters.sourceDirectory = bagDirectory;
 
     QDir bagDirectoryDir(bagDirectory);
     bagDirectoryDir.cdUp();
     if (const auto autoImageDirectory = bagDirectoryDir.path() + "/bag_images"; !std::filesystem::exists(autoImageDirectory.toStdString())) {
         m_imagesNameLineEdit->setText(autoImageDirectory);
-        m_imageParameters.imagesDirectory = autoImageDirectory;
+        m_imageParameters.targetDirectory = autoImageDirectory;
     }
 
     enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
@@ -169,7 +169,7 @@ BagToImagesWidget::imagesLocationButtonPressed()
 
     // Only enable if both line edits contain text
     m_fileDialogOpened = true;
-    m_imageParameters.imagesDirectory = fileName;
+    m_imageParameters.targetDirectory = fileName;
     m_imagesNameLineEdit->setText(fileName);
     enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
                    !m_topicNameComboBox->currentText().isEmpty() && !m_imagesNameLineEdit->text().isEmpty());

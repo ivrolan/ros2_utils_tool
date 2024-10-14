@@ -95,7 +95,7 @@ main(int argc, char* argv[])
         writeBinary = formatString == "png" && Utils::CLI::containsArguments(arguments, "-b", "--binary");
     }
 
-    Utils::UI::ImageParameters imageParameters { { bagDirectory, topicName }, imagesDirectory, formatString, quality, false, isColorless, optimize, writeBinary };
+    Utils::UI::ImageParameters imageParameters { { { bagDirectory, topicName }, imagesDirectory, false }, formatString, quality, isColorless, optimize, writeBinary };
     auto thisMessageCount = 0;
 
     // Create thread and connect to its informations

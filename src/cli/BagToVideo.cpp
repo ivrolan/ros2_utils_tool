@@ -37,37 +37,37 @@ main(int argc, char* argv[])
     Utils::UI::VideoParameters videoParameters;
 
     // Handle bag directory
-    videoParameters.bagDirectory = arguments.at(1);
-    auto dirPath = videoParameters.bagDirectory;
-    if (!std::filesystem::exists(videoParameters.bagDirectory.toStdString())) {
+    videoParameters.sourceDirectory = arguments.at(1);
+    auto dirPath = videoParameters.sourceDirectory;
+    if (!std::filesystem::exists(videoParameters.sourceDirectory.toStdString())) {
         std::cerr << "Bag file not found. Make sure that the bag file exists!" << std::endl;
         return 0;
     }
-    if (const auto doesDirContainBag = Utils::ROS::doesDirectoryContainBagFile(videoParameters.bagDirectory.toStdString()); !doesDirContainBag) {
+    if (const auto doesDirContainBag = Utils::ROS::doesDirectoryContainBagFile(videoParameters.sourceDirectory.toStdString()); !doesDirContainBag) {
         std::cerr << "The directory does not contain a bag file!" << std::endl;
         return 0;
     }
 
     // Topic name
     videoParameters.topicName = arguments.at(2);
-    if (!Utils::ROS::doesBagContainTopicName(videoParameters.bagDirectory.toStdString(), videoParameters.topicName.toStdString())) {
+    if (!Utils::ROS::doesBagContainTopicName(videoParameters.sourceDirectory.toStdString(), videoParameters.topicName.toStdString())) {
         std::cerr << "Topic has not been found in the bag file!" << std::endl;
         return 0;
     }
-    if (Utils::ROS::getTopicType(videoParameters.bagDirectory.toStdString(), videoParameters.topicName.toStdString()) != "sensor_msgs/msg/Image") {
+    if (Utils::ROS::getTopicType(videoParameters.sourceDirectory.toStdString(), videoParameters.topicName.toStdString()) != "sensor_msgs/msg/Image") {
         std::cerr << "The entered topic is not in sensor message format!" << std::endl;
         return 0;
     }
 
     // Video directory
-    videoParameters.videoDirectory = arguments.at(3);
-    dirPath = videoParameters.videoDirectory;
+    videoParameters.targetDirectory = arguments.at(3);
+    dirPath = videoParameters.targetDirectory;
     dirPath.truncate(dirPath.lastIndexOf(QChar('/')));
     if (!std::filesystem::exists(dirPath.toStdString())) {
         std::cerr << "The entered directory for the video file does not exist. Please specify a correct directory!" << std::endl;
         return 0;
     }
-    const auto fileEnding = videoParameters.videoDirectory.right(3);
+    const auto fileEnding = videoParameters.targetDirectory.right(3);
     if (fileEnding != "mp4" && fileEnding != "mkv") {
         std::cerr << "The entered video name is not in correct format. Please make sure that the video file ends in mp4 or mkv!" << std::endl;
         return 0;

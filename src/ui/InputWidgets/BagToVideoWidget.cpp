@@ -24,7 +24,7 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     BasicInputWidget("Encode Video from ROSBag", ":/icons/bag_to_video_white.svg", ":/icons/bag_to_video_black.svg", parent),
     m_videoParameters(videoParameters), m_encodingFormat(encodingFormat)
 {
-    m_bagNameLineEdit = new QLineEdit(m_videoParameters.bagDirectory);
+    m_bagNameLineEdit = new QLineEdit(m_videoParameters.sourceDirectory);
     m_bagNameLineEdit->setToolTip("The directory of the ROSBag source file.");
 
     auto* const searchBagButton = new QToolButton;
@@ -34,11 +34,11 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     m_topicNameComboBox->setMinimumWidth(200);
     m_topicNameComboBox->setToolTip("The ROSBag topic of the video file.\n"
                                     "If the Bag contains multiple video topics, you can choose one of them.");
-    if (!m_videoParameters.bagDirectory.isEmpty()) {
-        Utils::UI::fillComboBoxWithTopics(m_topicNameComboBox, m_videoParameters.bagDirectory);
+    if (!m_videoParameters.sourceDirectory.isEmpty()) {
+        Utils::UI::fillComboBoxWithTopics(m_topicNameComboBox, m_videoParameters.sourceDirectory);
     }
 
-    m_videoNameLineEdit = new QLineEdit(m_videoParameters.videoDirectory);
+    m_videoNameLineEdit = new QLineEdit(m_videoParameters.targetDirectory);
     m_videoNameLineEdit->setToolTip("The directory where the video file should be stored.");
 
     auto* const videoLocationButton = new QToolButton;
@@ -48,8 +48,8 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     m_formatComboBox->addItem("mp4", 0);
     m_formatComboBox->addItem("mkv", 1);
     m_formatComboBox->setToolTip("The video format file.");
-    if (!m_videoParameters.videoDirectory.isEmpty()) {
-        QFileInfo fileInfo(m_videoParameters.videoDirectory);
+    if (!m_videoParameters.targetDirectory.isEmpty()) {
+        QFileInfo fileInfo(m_videoParameters.targetDirectory);
         m_formatComboBox->setCurrentText(fileInfo.suffix());
     } else {
         m_formatComboBox->setCurrentText(m_encodingFormat);
@@ -154,14 +154,14 @@ BagToVideoWidget::searchButtonPressed()
     }
 
     m_bagNameLineEdit->setText(bagDirectory);
-    m_videoParameters.bagDirectory = bagDirectory;
+    m_videoParameters.sourceDirectory = bagDirectory;
 
     QDir bagDirectoryDir(bagDirectory);
     bagDirectoryDir.cdUp();
     if (const auto autoVideoDirectory = bagDirectoryDir.path() + "/bag_video." + m_formatComboBox->currentText();
         !std::filesystem::exists(autoVideoDirectory.toStdString())) {
         m_videoNameLineEdit->setText(autoVideoDirectory);
-        m_videoParameters.videoDirectory = autoVideoDirectory;
+        m_videoParameters.targetDirectory = autoVideoDirectory;
     }
 
     // Only enable if both line edits contain text
@@ -181,7 +181,7 @@ BagToVideoWidget::videoLocationButtonPressed()
 
     // Only enable if both line edits contain text
     m_fileDialogOpened = true;
-    m_videoParameters.videoDirectory = fileName;
+    m_videoParameters.targetDirectory = fileName;
     m_videoNameLineEdit->setText(fileName);
     enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
                    !m_topicNameComboBox->currentText().isEmpty() && !m_videoNameLineEdit->text().isEmpty());
@@ -201,7 +201,7 @@ BagToVideoWidget::formatComboBoxTextChanged(const QString& text)
     newLineEditText.truncate(newLineEditText.lastIndexOf(QChar('.')));
     newLineEditText += "." + text;
 
-    m_videoParameters.videoDirectory = newLineEditText;
+    m_videoParameters.targetDirectory = newLineEditText;
     m_videoNameLineEdit->setText(newLineEditText);
 }
 
