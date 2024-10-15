@@ -46,18 +46,18 @@ main(int argc, char* argv[])
         std::cerr << "Bag file not found. Make sure that the bag file exists!" << std::endl;
         return 0;
     }
-    if (const auto doesDirContainBag = Utils::ROS::doesDirectoryContainBagFile(imageParameters.sourceDirectory.toStdString()); !doesDirContainBag) {
+    if (const auto doesDirContainBag = Utils::ROS::doesDirectoryContainBagFile(imageParameters.sourceDirectory); !doesDirContainBag) {
         std::cerr << "The directory does not contain a bag file!" << std::endl;
         return 0;
     }
 
     // Topic name
     imageParameters.topicName = arguments.at(2);
-    if (!Utils::ROS::doesBagContainTopicName(imageParameters.sourceDirectory.toStdString(), imageParameters.topicName.toStdString())) {
+    if (!Utils::ROS::doesBagContainTopicName(imageParameters.sourceDirectory, imageParameters.topicName)) {
         std::cerr << "Topic has not been found in the bag file!" << std::endl;
         return 0;
     }
-    if (Utils::ROS::getTopicType(imageParameters.sourceDirectory.toStdString(), imageParameters.topicName.toStdString()) != "sensor_msgs/msg/Image") {
+    if (Utils::ROS::getTopicType(imageParameters.sourceDirectory, imageParameters.topicName) != "sensor_msgs/msg/Image") {
         std::cerr << "The entered topic is not in sensor message format!" << std::endl;
         return 0;
     }
