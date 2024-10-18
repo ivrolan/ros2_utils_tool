@@ -104,8 +104,8 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     setLayout(mainLayout);
 
     auto* const okShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
-    enableOkButton(!m_bagNameLineEdit->text().isEmpty() && !m_topicNameComboBox->currentText().isEmpty() &&
-                   !m_imagesNameLineEdit->text().isEmpty());
+    enableOkButton(!m_imageParameters.sourceDirectory.isEmpty() &&
+                   !m_imageParameters.topicName.isEmpty() && !m_imageParameters.targetDirectory.isEmpty());
 
 
     connect(searchBagButton, &QPushButton::clicked, this, &BagToImagesWidget::searchButtonPressed);
@@ -154,8 +154,8 @@ BagToImagesWidget::searchButtonPressed()
         m_imageParameters.targetDirectory = autoImageDirectory;
     }
 
-    enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
-                   !m_topicNameComboBox->currentText().isEmpty() && !m_imagesNameLineEdit->text().isEmpty());
+    enableOkButton(!m_imageParameters.sourceDirectory.isEmpty() &&
+                   !m_imageParameters.topicName.isEmpty() && !m_imageParameters.targetDirectory.isEmpty());
 }
 
 
@@ -171,8 +171,8 @@ BagToImagesWidget::imagesLocationButtonPressed()
     m_fileDialogOpened = true;
     m_imageParameters.targetDirectory = fileName;
     m_imagesNameLineEdit->setText(fileName);
-    enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
-                   !m_topicNameComboBox->currentText().isEmpty() && !m_imagesNameLineEdit->text().isEmpty());
+    enableOkButton(!m_imageParameters.sourceDirectory.isEmpty() &&
+                   !m_imageParameters.topicName.isEmpty() && !m_imageParameters.targetDirectory.isEmpty());
 }
 
 

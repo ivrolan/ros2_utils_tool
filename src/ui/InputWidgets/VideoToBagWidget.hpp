@@ -32,7 +32,6 @@ private slots:
 private:
     QPointer<QLineEdit> m_videoNameLineEdit;
     QPointer<QLineEdit> m_bagNameLineEdit;
-    QPointer<QLineEdit> m_topicNameLineEdit;
 
     Utils::UI::BagParameters& m_bagParameters;
 };

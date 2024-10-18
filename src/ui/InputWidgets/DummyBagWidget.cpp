@@ -142,7 +142,7 @@ DummyBagWidget::createNewDummyTopicWidget(int index, const Utils::UI::DummyBagTo
 void
 DummyBagWidget::okButtonPressed()
 {
-    if (m_bagNameLineEdit->text().isEmpty()) {
+    if (m_dummyBagParameters.sourceDirectory.isEmpty()) {
         Utils::UI::createCriticalMessageBox("No bag name specified!", "Please specify a bag name before continuing!");
         return;
     }

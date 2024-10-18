@@ -41,7 +41,6 @@ private:
     QPointer<QComboBox> m_formatComboBox;
 
     Utils::UI::VideoParameters& m_videoParameters;
-    QString& m_encodingFormat;
 
     bool m_fileDialogOpened = false;
 };

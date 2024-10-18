@@ -22,7 +22,7 @@
 
 BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, QString& encodingFormat, QWidget *parent) :
     BasicInputWidget("Encode Video from ROSBag", ":/icons/bag_to_video_white.svg", ":/icons/bag_to_video_black.svg", parent),
-    m_videoParameters(videoParameters), m_encodingFormat(encodingFormat)
+    m_videoParameters(videoParameters)
 {
     m_bagNameLineEdit = new QLineEdit(m_videoParameters.sourceDirectory);
     m_bagNameLineEdit->setToolTip("The directory of the ROSBag source file.");
@@ -52,7 +52,7 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
         QFileInfo fileInfo(m_videoParameters.targetDirectory);
         m_formatComboBox->setCurrentText(fileInfo.suffix());
     } else {
-        m_formatComboBox->setCurrentText(m_encodingFormat);
+        m_formatComboBox->setCurrentText(encodingFormat);
     }
 
     auto* const basicOptionsFormLayout = new QFormLayout;
@@ -110,9 +110,8 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     setLayout(mainLayout);
 
     auto* const okShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
-    enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
-                   !m_topicNameComboBox->currentText().isEmpty() &&
-                   !m_videoNameLineEdit->text().isEmpty());
+    enableOkButton(!m_videoParameters.sourceDirectory.isEmpty() &&
+                   !m_videoParameters.topicName.isEmpty() && !m_videoParameters.targetDirectory.isEmpty());
 
 
     connect(searchBagButton, &QPushButton::clicked, this, &BagToVideoWidget::searchButtonPressed);
@@ -165,8 +164,8 @@ BagToVideoWidget::searchButtonPressed()
     }
 
     // Only enable if both line edits contain text
-    enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
-                   !m_topicNameComboBox->currentText().isEmpty() && !m_videoNameLineEdit->text().isEmpty());
+    enableOkButton(!m_videoParameters.sourceDirectory.isEmpty() &&
+                   !m_videoParameters.topicName.isEmpty() && !m_videoParameters.targetDirectory.isEmpty());
 }
 
 
@@ -183,15 +182,14 @@ BagToVideoWidget::videoLocationButtonPressed()
     m_fileDialogOpened = true;
     m_videoParameters.targetDirectory = fileName;
     m_videoNameLineEdit->setText(fileName);
-    enableOkButton(!m_bagNameLineEdit->text().isEmpty() &&
-                   !m_topicNameComboBox->currentText().isEmpty() && !m_videoNameLineEdit->text().isEmpty());
+    enableOkButton(!m_videoParameters.sourceDirectory.isEmpty() &&
+                   !m_videoParameters.topicName.isEmpty() && !m_videoParameters.targetDirectory.isEmpty());
 }
 
 
 void
 BagToVideoWidget::formatComboBoxTextChanged(const QString& text)
 {
-    m_encodingFormat = text;
     // If the combo box item changes, apply a different appendix to the text in the video line edit
     if (m_videoNameLineEdit->text().isEmpty()) {
         return;

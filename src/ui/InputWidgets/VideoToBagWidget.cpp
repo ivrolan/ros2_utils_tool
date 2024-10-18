@@ -34,13 +34,13 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWid
     auto* const bagLocationButton = new QToolButton;
     auto* const storeBagLayout = Utils::UI::createLineEditButtonLayout(m_bagNameLineEdit, bagLocationButton);
 
-    m_topicNameLineEdit = new QLineEdit(m_bagParameters.topicName);
-    m_topicNameLineEdit->setToolTip("The video's topic name inside the ROSBag.");
+    auto* const topicNameLineEdit = new QLineEdit(m_bagParameters.topicName);
+    topicNameLineEdit->setToolTip("The video's topic name inside the ROSBag.");
 
     auto* const basicOptionsFormLayout = new QFormLayout;
     basicOptionsFormLayout->addRow("Video File:", searchVideoFileLayout);
     basicOptionsFormLayout->addRow("Bag Location:", storeBagLayout);
-    basicOptionsFormLayout->addRow("Topic Name:", m_topicNameLineEdit);
+    basicOptionsFormLayout->addRow("Topic Name:", topicNameLineEdit);
 
     auto* const advancedOptionsCheckBox = new QCheckBox;
     advancedOptionsCheckBox->setChecked(m_bagParameters.showAdvancedOptions ? Qt::Checked : Qt::Unchecked);
@@ -93,13 +93,13 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWid
     setLayout(mainLayout);
 
     auto* const okShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
-    enableOkButton(!m_videoNameLineEdit->text().isEmpty() && !m_bagNameLineEdit->text().isEmpty() && !m_topicNameLineEdit->text().isEmpty());
+    enableOkButton(!m_bagParameters.sourceDirectory.isEmpty() && !m_bagParameters.targetDirectory.isEmpty() && !m_bagParameters.topicName.isEmpty());
 
     connect(searchVideoFileButton, &QPushButton::clicked, this, &VideoToBagWidget::searchButtonPressed);
     connect(bagLocationButton, &QPushButton::clicked, this, &VideoToBagWidget::bagLocationButtonPressed);
-    connect(m_topicNameLineEdit, &QLineEdit::textChanged, this, [this] {
-        m_bagParameters.topicName = m_topicNameLineEdit->text();
-        enableOkButton(!m_videoNameLineEdit->text().isEmpty() && !m_bagNameLineEdit->text().isEmpty() && !m_topicNameLineEdit->text().isEmpty());
+    connect(topicNameLineEdit, &QLineEdit::textChanged, this, [this, topicNameLineEdit] {
+        m_bagParameters.topicName = topicNameLineEdit->text();
+        enableOkButton(!m_bagParameters.sourceDirectory.isEmpty() && !m_bagParameters.targetDirectory.isEmpty() && !m_bagParameters.topicName.isEmpty());
     });
     connect(advancedOptionsCheckBox, &QCheckBox::stateChanged, this, [this, advancedOptionsWidget] (int state) {
         m_bagParameters.showAdvancedOptions = state == Qt::Checked;
@@ -146,7 +146,7 @@ VideoToBagWidget::searchButtonPressed()
         m_bagParameters.targetDirectory = autoBagDirectory;
     }
 
-    enableOkButton(!m_videoNameLineEdit->text().isEmpty() && !m_bagNameLineEdit->text().isEmpty() && !m_topicNameLineEdit->text().isEmpty());
+    enableOkButton(!m_bagParameters.sourceDirectory.isEmpty() && !m_bagParameters.targetDirectory.isEmpty() && !m_bagParameters.topicName.isEmpty());
 }
 
 
@@ -160,7 +160,7 @@ VideoToBagWidget::bagLocationButtonPressed()
 
     m_bagParameters.targetDirectory = fileName;
     m_bagNameLineEdit->setText(fileName);
-    enableOkButton(!m_videoNameLineEdit->text().isEmpty() && !m_bagNameLineEdit->text().isEmpty() && !m_topicNameLineEdit->text().isEmpty());
+    enableOkButton(!m_bagParameters.sourceDirectory.isEmpty() && !m_bagParameters.targetDirectory.isEmpty() && !m_bagParameters.topicName.isEmpty());
 }
 
 
@@ -171,11 +171,11 @@ VideoToBagWidget::okButtonPressed()
         return;
     }
 
-    if (!Utils::ROS::doesTopicNameFollowROS2Convention(m_topicNameLineEdit->text())) {
+    if (!Utils::ROS::doesTopicNameFollowROS2Convention(m_bagParameters.topicName)) {
         Utils::UI::createCriticalMessageBox("Wrong topic name format!", "The topic name does not follow the ROS2 naming convention!");
         return;
     }
-    if (std::filesystem::exists(m_bagNameLineEdit->text().toStdString())) {
+    if (std::filesystem::exists(m_bagParameters.targetDirectory.toStdString())) {
         auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Bag file already exists!",
                                              "A bag file already exists under the specified directory! Are you sure you want to continue? This will overwrite the existing file.",
                                              QMessageBox::Yes | QMessageBox::No);
