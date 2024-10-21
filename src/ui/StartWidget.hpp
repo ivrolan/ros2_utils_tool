@@ -3,6 +3,7 @@
 #include <QPointer>
 #include <QWidget>
 
+class QPushButton;
 class QToolButton;
 
 // The starting widget showing all possible ui tools
@@ -17,6 +18,10 @@ signals:
     void
     functionRequested(int id);
 
+private slots:
+    void
+    openSettingsDialog();
+
 private:
     QPointer<QToolButton>
     createToolButton(const QString& buttonText);
@@ -28,6 +33,8 @@ private:
     event(QEvent *event) override;
 
 private:
+    QPointer<QPushButton> m_settingsButton;
+
     QPointer<QToolButton> m_bagToVideoPushButton;
     QPointer<QToolButton> m_bagToImagesPushButton;
     QPointer<QToolButton> m_videoToBagPushButton;

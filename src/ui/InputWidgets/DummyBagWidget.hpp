@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BasicInputWidget.hpp"
+#include "DummyBagParamSettings.hpp"
 #include "UtilsUI.hpp"
 
 #include <QPointer>
@@ -54,6 +55,8 @@ private:
     QPointer<QToolButton> m_plusButton;
 
     Utils::UI::DummyBagParameters& m_dummyBagParameters;
+
+    DummyBagParamSettings m_dummyBagParamSettings;
 
     int m_numberOfTopics = 0;
 

@@ -2,6 +2,7 @@
 
 #include "BasicInputWidget.hpp"
 #include "UtilsUI.hpp"
+#include "VideoParamSettings.hpp"
 
 #include <QPointer>
 #include <QWidget>
@@ -41,6 +42,8 @@ private:
     QPointer<QComboBox> m_formatComboBox;
 
     Utils::UI::VideoParameters& m_videoParameters;
+
+    VideoParamSettings m_videoParamSettings;
 
     bool m_fileDialogOpened = false;
 };

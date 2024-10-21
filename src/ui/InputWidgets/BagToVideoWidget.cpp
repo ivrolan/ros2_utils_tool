@@ -22,7 +22,7 @@
 
 BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, QString& encodingFormat, QWidget *parent) :
     BasicInputWidget("Encode Video from ROSBag", ":/icons/bag_to_video_white.svg", ":/icons/bag_to_video_black.svg", parent),
-    m_videoParameters(videoParameters)
+    m_videoParameters(videoParameters), m_videoParamSettings(videoParameters, "bag_to_video")
 {
     m_bagNameLineEdit = new QLineEdit(m_videoParameters.sourceDirectory);
     m_bagNameLineEdit->setToolTip("The directory of the ROSBag source file.");
@@ -118,6 +118,7 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     connect(videoLocationButton, &QPushButton::clicked, this, &BagToVideoWidget::videoLocationButtonPressed);
     connect(m_topicNameComboBox, &QComboBox::currentTextChanged, this, [this] (const QString& text) {
         m_videoParameters.topicName = text;
+        m_videoParamSettings.write();
     });
     connect(m_formatComboBox, &QComboBox::currentTextChanged, this, &BagToVideoWidget::formatComboBoxTextChanged);
     connect(advancedOptionsCheckBox, &QCheckBox::stateChanged, this, [this, advancedOptionsWidget] (int state) {
@@ -126,12 +127,15 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     });
     connect(fpsSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
         m_videoParameters.fps = value;
+        m_videoParamSettings.write();
     });
     connect(useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         m_videoParameters.useHardwareAcceleration = state == Qt::Checked;
+        m_videoParamSettings.write();
     });
     connect(useBWImagesCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         m_videoParameters.useBWImages = state == Qt::Checked;
+        m_videoParamSettings.write();
     });
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &BagToVideoWidget::okButtonPressed);
     connect(okShortCut, &QShortcut::activated, this, &BagToVideoWidget::okButtonPressed);
@@ -154,6 +158,7 @@ BagToVideoWidget::searchButtonPressed()
 
     m_bagNameLineEdit->setText(bagDirectory);
     m_videoParameters.sourceDirectory = bagDirectory;
+    m_videoParamSettings.write();
 
     QDir bagDirectoryDir(bagDirectory);
     bagDirectoryDir.cdUp();
@@ -161,6 +166,7 @@ BagToVideoWidget::searchButtonPressed()
         !std::filesystem::exists(autoVideoDirectory.toStdString())) {
         m_videoNameLineEdit->setText(autoVideoDirectory);
         m_videoParameters.targetDirectory = autoVideoDirectory;
+        m_videoParamSettings.write();
     }
 
     // Only enable if both line edits contain text
@@ -181,6 +187,7 @@ BagToVideoWidget::videoLocationButtonPressed()
     // Only enable if both line edits contain text
     m_fileDialogOpened = true;
     m_videoParameters.targetDirectory = fileName;
+    m_videoParamSettings.write();
     m_videoNameLineEdit->setText(fileName);
     enableOkButton(!m_videoParameters.sourceDirectory.isEmpty() &&
                    !m_videoParameters.topicName.isEmpty() && !m_videoParameters.targetDirectory.isEmpty());

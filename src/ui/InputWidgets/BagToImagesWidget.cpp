@@ -21,7 +21,7 @@
 
 BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters, QWidget *parent) :
     BasicInputWidget("Write Images from ROSBag", ":/icons/bag_to_images_white.svg", ":/icons/bag_to_images_black.svg", parent),
-    m_imageParameters(imageParameters)
+    m_imageParameters(imageParameters), m_imageParamSettings(imageParameters, "bag_to_images")
 {
     m_bagNameLineEdit = new QLineEdit(m_imageParameters.sourceDirectory);
     m_bagNameLineEdit->setToolTip("The directory of the ROSBag source file.");
@@ -116,6 +116,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     connect(formatComboBox, &QComboBox::currentTextChanged, this, &BagToImagesWidget::adjustWidgetsToChangedFormat);
     connect(m_slider, &QSlider::valueChanged, this, [this] (int value) {
         m_imageParameters.quality = value;
+        m_imageParamSettings.write();
     });
     connect(advancedOptionsCheckBox, &QCheckBox::stateChanged, this, [this, advancedOptionsWidget] (int state) {
         m_imageParameters.showAdvancedOptions = state == Qt::Checked;
@@ -123,6 +124,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     });
     connect(m_useBWCheckBox, &QCheckBox::stateChanged, this, [this, formatComboBox] (int state) {
         m_imageParameters.useBWImages = state == Qt::Checked;
+        m_imageParamSettings.write();
         m_optimizeBilevelCheckBox->setEnabled(formatComboBox->currentText() == "jpg" || state != Qt::Checked);
     });
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &BagToImagesWidget::okButtonPressed);
@@ -146,12 +148,14 @@ BagToImagesWidget::searchButtonPressed()
 
     m_bagNameLineEdit->setText(bagDirectory);
     m_imageParameters.sourceDirectory = bagDirectory;
+    m_imageParamSettings.write();
 
     QDir bagDirectoryDir(bagDirectory);
     bagDirectoryDir.cdUp();
     if (const auto autoImageDirectory = bagDirectoryDir.path() + "/bag_images"; !std::filesystem::exists(autoImageDirectory.toStdString())) {
         m_imagesNameLineEdit->setText(autoImageDirectory);
         m_imageParameters.targetDirectory = autoImageDirectory;
+        m_imageParamSettings.write();
     }
 
     enableOkButton(!m_imageParameters.sourceDirectory.isEmpty() &&
@@ -170,6 +174,7 @@ BagToImagesWidget::imagesLocationButtonPressed()
     // Only enable if both line edits contain text
     m_fileDialogOpened = true;
     m_imageParameters.targetDirectory = fileName;
+    m_imageParamSettings.write();
     m_imagesNameLineEdit->setText(fileName);
     enableOkButton(!m_imageParameters.sourceDirectory.isEmpty() &&
                    !m_imageParameters.topicName.isEmpty() && !m_imageParameters.targetDirectory.isEmpty());
@@ -183,6 +188,7 @@ BagToImagesWidget::adjustWidgetsToChangedFormat(const QString& text)
     m_slider->setToolTip(text == "jpg" ? "Image quality. A higher quality will increase the image size."
                                        : "Higher compression will result in smaller size, but increase writing time.");
     m_imageParameters.format = text;
+    m_imageParamSettings.write();
 
     if (m_optimizeBilevelCheckBox) {
         m_advancedOptionsFormLayout->removeRow(m_optimizeBilevelCheckBox);
@@ -200,6 +206,7 @@ BagToImagesWidget::adjustWidgetsToChangedFormat(const QString& text)
 
     connect(m_optimizeBilevelCheckBox, &QCheckBox::stateChanged, this, [this, text] (int state) {
         text == "jpg" ? m_imageParameters.jpgOptimize = state == Qt::Checked : m_imageParameters.pngBilevel = state == Qt::Checked;
+        m_imageParamSettings.write();
         m_useBWCheckBox->setEnabled(text == "jpg" || state != Qt::Checked);
     });
 }

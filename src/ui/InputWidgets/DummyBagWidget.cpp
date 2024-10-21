@@ -18,7 +18,7 @@
 
 DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters, QWidget *parent) :
     BasicInputWidget("Create Dummy ROSBag", ":/icons/dummy_bag_white.svg", ":/icons/dummy_bag_black.svg", parent),
-    m_dummyBagParameters(dummyBagParameters)
+    m_dummyBagParameters(dummyBagParameters), m_dummyBagParamSettings(dummyBagParameters, "dummy_bag")
 {
     m_bagNameLineEdit = new QLineEdit(m_dummyBagParameters.sourceDirectory);
     m_bagNameLineEdit->setToolTip("The directory where the ROSBag file should be stored.");
@@ -69,12 +69,14 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
 
     const auto addNewTopic = [this] {
         m_dummyBagParameters.topics.push_back({ "String", "" });
+        m_dummyBagParamSettings.write();
         createNewDummyTopicWidget(m_dummyBagParameters.topics.size() - 1, { "", "" });
     };
 
     connect(bagDirectoryButton, &QPushButton::clicked, this, &DummyBagWidget::bagDirectoryButtonPressed);
     connect(messageCountSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
         m_dummyBagParameters.messageCount = value;
+        m_dummyBagParamSettings.write();
     });
     connect(m_minusButton, &QPushButton::clicked, this, &DummyBagWidget::removeDummyTopicWidget);
     connect(m_plusButton, &QPushButton::clicked, this, [addNewTopic] {
@@ -102,6 +104,7 @@ DummyBagWidget::bagDirectoryButtonPressed()
     }
 
     m_dummyBagParameters.sourceDirectory = fileName;
+    m_dummyBagParamSettings.write();
     m_bagNameLineEdit->setText(fileName);
 }
 
@@ -112,6 +115,7 @@ DummyBagWidget::removeDummyTopicWidget()
     m_formLayout->removeRow(m_dummyBagParameters.topics.size());
     m_dummyTopicWidgets.pop_back();
     m_dummyBagParameters.topics.pop_back();
+    m_dummyBagParamSettings.write();
 
     m_plusButton->setEnabled(m_numberOfTopics != MAXIMUM_NUMBER_OF_TOPICS);
     m_minusButton->setEnabled(m_dummyBagParameters.topics.size() != 1);
@@ -125,9 +129,11 @@ DummyBagWidget::createNewDummyTopicWidget(int index, const Utils::UI::DummyBagTo
 
     connect(dummyTopicWidget, &DummyTopicWidget::topicTypeChanged, this, [this, index] (const QString& text) {
         m_dummyBagParameters.topics[index].type = text;
+        m_dummyBagParamSettings.write();
     });
     connect(dummyTopicWidget, &DummyTopicWidget::topicNameChanged, this, [this, index] (const QString& text) {
         m_dummyBagParameters.topics[index].name = text;
+        m_dummyBagParamSettings.write();
     });
 
     m_formLayout->insertRow(m_formLayout->rowCount() - 2, "Topic " + QString::number(m_numberOfTopics + 1) + ":", dummyTopicWidget);

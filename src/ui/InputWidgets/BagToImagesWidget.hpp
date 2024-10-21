@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BasicInputWidget.hpp"
+#include "ImageParamSettings.hpp"
 #include "UtilsUI.hpp"
 
 class QCheckBox;
@@ -46,6 +47,8 @@ private:
     QPointer<QFormLayout> m_advancedOptionsFormLayout;
 
     Utils::UI::ImageParameters& m_imageParameters;
+
+    ImageParamSettings m_imageParamSettings;
 
     bool m_fileDialogOpened = false;
 };

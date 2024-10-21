@@ -37,4 +37,6 @@ private:
 
     // We only need this one for encoding a video, but not for writing to a bag file
     QString m_encodingFormat = "mp4";
+
+    bool m_saveParametersOnChange;
 };

@@ -22,7 +22,7 @@
 
 VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWidget *parent) :
     BasicInputWidget("Write Video to a ROSBag", ":/icons/video_to_bag_white.svg", ":/icons/video_to_bag_black.svg", parent),
-    m_bagParameters(bagParameters)
+    m_bagParameters(bagParameters), m_bagParamSettings(bagParameters, "vid_to_bag")
 {
     m_videoNameLineEdit = new QLineEdit(m_bagParameters.sourceDirectory);
     m_videoNameLineEdit->setToolTip("The directory of the source video file.");
@@ -99,6 +99,7 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWid
     connect(bagLocationButton, &QPushButton::clicked, this, &VideoToBagWidget::bagLocationButtonPressed);
     connect(topicNameLineEdit, &QLineEdit::textChanged, this, [this, topicNameLineEdit] {
         m_bagParameters.topicName = topicNameLineEdit->text();
+        m_bagParamSettings.write();
         enableOkButton(!m_bagParameters.sourceDirectory.isEmpty() && !m_bagParameters.targetDirectory.isEmpty() && !m_bagParameters.topicName.isEmpty());
     });
     connect(advancedOptionsCheckBox, &QCheckBox::stateChanged, this, [this, advancedOptionsWidget] (int state) {
@@ -107,12 +108,15 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWid
     });
     connect(formatComboBox, &QComboBox::currentTextChanged, this, [this] (const QString& text) {
         m_bagParameters.useCDRForSerialization = text == "cdr";
+        m_bagParamSettings.write();
     });
     connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
         m_bagParameters.fps = value;
+        m_bagParamSettings.write();
     });
     connect(useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         m_bagParameters.useHardwareAcceleration = state == Qt::Checked;
+        m_bagParamSettings.write();
     });
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &VideoToBagWidget::okButtonPressed);
     connect(okShortCut, &QShortcut::activated, this, &VideoToBagWidget::okButtonPressed);
@@ -137,6 +141,7 @@ VideoToBagWidget::searchButtonPressed()
     }
 
     m_bagParameters.sourceDirectory = videoDir;
+    m_bagParamSettings.write();
     m_videoNameLineEdit->setText(videoDir);
 
     QDir videoDirectoryDir(videoDir);
@@ -144,6 +149,7 @@ VideoToBagWidget::searchButtonPressed()
     if (const auto autoBagDirectory = videoDirectoryDir.path() + "/video_bag"; !std::filesystem::exists(autoBagDirectory.toStdString())) {
         m_bagNameLineEdit->setText(autoBagDirectory);
         m_bagParameters.targetDirectory = autoBagDirectory;
+        m_bagParamSettings.write();
     }
 
     enableOkButton(!m_bagParameters.sourceDirectory.isEmpty() && !m_bagParameters.targetDirectory.isEmpty() && !m_bagParameters.topicName.isEmpty());
@@ -159,6 +165,7 @@ VideoToBagWidget::bagLocationButtonPressed()
     }
 
     m_bagParameters.targetDirectory = fileName;
+    m_bagParamSettings.write();
     m_bagNameLineEdit->setText(fileName);
     enableOkButton(!m_bagParameters.sourceDirectory.isEmpty() && !m_bagParameters.targetDirectory.isEmpty() && !m_bagParameters.topicName.isEmpty());
 }

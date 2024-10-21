@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BagParamSettings.hpp"
 #include "BasicInputWidget.hpp"
 #include "UtilsUI.hpp"
 
@@ -34,4 +35,6 @@ private:
     QPointer<QLineEdit> m_bagNameLineEdit;
 
     Utils::UI::BagParameters& m_bagParameters;
+
+    BagParamSettings m_bagParamSettings;
 };
