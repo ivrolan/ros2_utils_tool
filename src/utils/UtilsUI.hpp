@@ -11,6 +11,9 @@
 namespace Utils::UI
 {
 struct BasicParameters {
+    virtual
+    ~BasicParameters() = default;
+
     QString sourceDirectory = "";
     QString topicName = "";
 };
