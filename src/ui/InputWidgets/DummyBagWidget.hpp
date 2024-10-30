@@ -10,7 +10,6 @@
 class DummyTopicWidget;
 
 class QFormLayout;
-class QLineEdit;
 class QToolButton;
 
 /**
@@ -49,7 +48,6 @@ private:
     QVector<QPointer<DummyTopicWidget> > m_dummyTopicWidgets;
 
     QPointer<QFormLayout> m_formLayout;
-    QPointer<QLineEdit> m_bagNameLineEdit;
 
     QPointer<QToolButton> m_minusButton;
     QPointer<QToolButton> m_plusButton;

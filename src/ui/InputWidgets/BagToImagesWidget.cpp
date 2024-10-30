@@ -20,14 +20,11 @@
 #include <filesystem>
 
 BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters, QWidget *parent) :
-    BasicInputWidget("Write Images from ROSBag", ":/icons/bag_to_images_white.svg", ":/icons/bag_to_images_black.svg", parent),
+    BasicInputWidget("Write Images from ROSBag", ":/icons/bag_to_images", parent),
     m_imageParameters(imageParameters), m_imageParamSettings(imageParameters, "bag_to_images")
 {
-    m_bagNameLineEdit = new QLineEdit(m_imageParameters.sourceDirectory);
-    m_bagNameLineEdit->setToolTip("The directory of the ROSBag source file.");
-
-    auto* const searchBagButton = new QToolButton;
-    auto* const searchBagFileLayout = Utils::UI::createLineEditButtonLayout(m_bagNameLineEdit, searchBagButton);
+    m_sourceLineEdit->setText(imageParameters.sourceDirectory);
+    m_sourceLineEdit->setToolTip("The directory of the ROSBag source file.");
 
     m_topicNameComboBox = new QComboBox;
     m_topicNameComboBox->setMinimumWidth(200);
@@ -50,7 +47,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     formatComboBox->setCurrentText(m_imageParameters.format);
 
     auto* const basicOptionsFormLayout = new QFormLayout;
-    basicOptionsFormLayout->addRow("Bag File:", searchBagFileLayout);
+    basicOptionsFormLayout->addRow("Bag File:", m_findSourceLayout);
     basicOptionsFormLayout->addRow("Topic Name:", m_topicNameComboBox);
     basicOptionsFormLayout->addRow("Images Location:", searchImagesPathLayout);
     basicOptionsFormLayout->addRow("Format:", formatComboBox);
@@ -108,7 +105,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
                    !m_imageParameters.topicName.isEmpty() && !m_imageParameters.targetDirectory.isEmpty());
 
 
-    connect(searchBagButton, &QPushButton::clicked, this, &BagToImagesWidget::searchButtonPressed);
+    connect(m_findSourceButton, &QPushButton::clicked, this, &BagToImagesWidget::searchButtonPressed);
     connect(m_topicNameComboBox, &QComboBox::currentTextChanged, this, [this] (const QString& text) {
         m_imageParameters.topicName = text;
     });
@@ -146,7 +143,7 @@ BagToImagesWidget::searchButtonPressed()
         return;
     }
 
-    m_bagNameLineEdit->setText(bagDirectory);
+    m_sourceLineEdit->setText(bagDirectory);
     m_imageParameters.sourceDirectory = bagDirectory;
     m_imageParamSettings.write();
 

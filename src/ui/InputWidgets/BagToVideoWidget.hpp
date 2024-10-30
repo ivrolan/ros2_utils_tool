@@ -36,7 +36,6 @@ private slots:
     okButtonPressed();
 
 private:
-    QPointer<QLineEdit> m_bagNameLineEdit;
     QPointer<QComboBox> m_topicNameComboBox;
     QPointer<QLineEdit> m_videoNameLineEdit;
     QPointer<QComboBox> m_formatComboBox;

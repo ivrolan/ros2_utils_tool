@@ -17,14 +17,11 @@
 #include <QVBoxLayout>
 
 DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters, QWidget *parent) :
-    BasicInputWidget("Create Dummy ROSBag", ":/icons/dummy_bag_white.svg", ":/icons/dummy_bag_black.svg", parent),
+    BasicInputWidget("Create Dummy ROSBag", ":/icons/dummy_bag", parent),
     m_dummyBagParameters(dummyBagParameters), m_dummyBagParamSettings(dummyBagParameters, "dummy_bag")
 {
-    m_bagNameLineEdit = new QLineEdit(m_dummyBagParameters.sourceDirectory);
-    m_bagNameLineEdit->setToolTip("The directory where the ROSBag file should be stored.");
-
-    auto* const bagDirectoryButton = new QToolButton;
-    auto* const bagDirectoryLayout = Utils::UI::createLineEditButtonLayout(m_bagNameLineEdit, bagDirectoryButton);
+    m_sourceLineEdit->setText(dummyBagParameters.sourceDirectory);
+    m_sourceLineEdit->setToolTip("The directory where the ROSBag file should be stored.");
 
     auto* const messageCountSpinBox = new QSpinBox;
     messageCountSpinBox->setRange(1, 1000);
@@ -42,7 +39,7 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
     plusMinusButtonLayout->addWidget(m_plusButton);
 
     m_formLayout = new QFormLayout;
-    m_formLayout->addRow("Bag File:", bagDirectoryLayout);
+    m_formLayout->addRow("Bag File:", m_findSourceLayout);
     m_formLayout->addRow("", plusMinusButtonLayout);
     m_formLayout->addRow("Message Count:", messageCountSpinBox);
 
@@ -73,7 +70,7 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
         createNewDummyTopicWidget(m_dummyBagParameters.topics.size() - 1, { "", "" });
     };
 
-    connect(bagDirectoryButton, &QPushButton::clicked, this, &DummyBagWidget::bagDirectoryButtonPressed);
+    connect(m_findSourceButton, &QPushButton::clicked, this, &DummyBagWidget::bagDirectoryButtonPressed);
     connect(messageCountSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
         m_dummyBagParameters.messageCount = value;
         m_dummyBagParamSettings.write();
@@ -105,7 +102,7 @@ DummyBagWidget::bagDirectoryButtonPressed()
 
     m_dummyBagParameters.sourceDirectory = fileName;
     m_dummyBagParamSettings.write();
-    m_bagNameLineEdit->setText(fileName);
+    m_sourceLineEdit->setText(fileName);
 }
 
 
@@ -182,7 +179,7 @@ void
 DummyBagWidget::setPixmapLabelIcon()
 {
     const auto isDarkMode = Utils::UI::isDarkMode();
-    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? m_pathLogoDark : m_pathLogoLight).pixmap(QSize(100, 45)));
+    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? m_logoPath + "_white.svg" : m_logoPath + "_black.svg").pixmap(QSize(100, 45)));
     m_minusButton->setIcon(QIcon(isDarkMode ? ":/icons/minus_white.svg" : ":/icons/minus_black.svg"));
     m_plusButton->setIcon(QIcon(isDarkMode ? ":/icons/plus_white.svg" : ":/icons/plus_black.svg"));
 }

@@ -14,17 +14,14 @@
 #include "UtilsROS.hpp"
 
 BagInfoWidget::BagInfoWidget(Utils::UI::BasicParameters& bagInfoParameters, QWidget *parent) :
-    BasicInputWidget("Get Infos from ROSBag", ":/icons/bag_to_video_white.svg", ":/icons/bag_to_video_black.svg", parent),
+    BasicInputWidget("Get Infos from ROSBag", ":/icons/bag_info", parent),
     m_bagInfoParameters(bagInfoParameters)
 {
     auto* const bagLineEdit = new QLineEdit();
     bagLineEdit->setToolTip("The directory of the ROSBag source file.");
 
-    auto* const searchBagButton = new QToolButton;
-    auto* const searchBagFileLayout = Utils::UI::createLineEditButtonLayout(bagLineEdit, searchBagButton);
-
     auto* const formLayout = new QFormLayout;
-    formLayout->addRow("Bag File:", searchBagFileLayout);
+    formLayout->addRow("Bag File:", m_findSourceLayout);
 
     auto* const formLayoutSqueezed = new QHBoxLayout;
     formLayoutSqueezed->addStretch();
@@ -56,7 +53,7 @@ BagInfoWidget::BagInfoWidget(Utils::UI::BasicParameters& bagInfoParameters, QWid
     mainLayout->addLayout(m_buttonLayout);
     setLayout(mainLayout);
 
-    connect(searchBagButton, &QPushButton::clicked, this, &BagInfoWidget::displayBagInfo);
+    connect(m_findSourceButton, &QPushButton::clicked, this, &BagInfoWidget::displayBagInfo);
     connect(m_okButton, &QPushButton::clicked, this, [this] {
         emit back();
     });

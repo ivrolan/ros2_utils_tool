@@ -21,13 +21,11 @@
 #include <filesystem>
 
 VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWidget *parent) :
-    BasicInputWidget("Write Video to a ROSBag", ":/icons/video_to_bag_white.svg", ":/icons/video_to_bag_black.svg", parent),
+    BasicInputWidget("Write Video to a ROSBag", ":/icons/video_to_bag", parent),
     m_bagParameters(bagParameters), m_bagParamSettings(bagParameters, "vid_to_bag")
 {
-    m_videoNameLineEdit = new QLineEdit(m_bagParameters.sourceDirectory);
-    m_videoNameLineEdit->setToolTip("The directory of the source video file.");
-    auto* const searchVideoFileButton = new QToolButton;
-    auto* const searchVideoFileLayout = Utils::UI::createLineEditButtonLayout(m_videoNameLineEdit, searchVideoFileButton);
+    m_sourceLineEdit->setText(bagParameters.sourceDirectory);
+    m_sourceLineEdit->setToolTip("The directory of the source video file.");
 
     m_bagNameLineEdit = new QLineEdit(m_bagParameters.targetDirectory);
     m_bagNameLineEdit->setToolTip("The directory where the ROSBag should be stored.");
@@ -38,7 +36,7 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWid
     topicNameLineEdit->setToolTip("The video's topic name inside the ROSBag.");
 
     auto* const basicOptionsFormLayout = new QFormLayout;
-    basicOptionsFormLayout->addRow("Video File:", searchVideoFileLayout);
+    basicOptionsFormLayout->addRow("Video File:", m_findSourceLayout);
     basicOptionsFormLayout->addRow("Bag Location:", storeBagLayout);
     basicOptionsFormLayout->addRow("Topic Name:", topicNameLineEdit);
 
@@ -95,7 +93,7 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWid
     auto* const okShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
     enableOkButton(!m_bagParameters.sourceDirectory.isEmpty() && !m_bagParameters.targetDirectory.isEmpty() && !m_bagParameters.topicName.isEmpty());
 
-    connect(searchVideoFileButton, &QPushButton::clicked, this, &VideoToBagWidget::searchButtonPressed);
+    connect(m_findSourceButton, &QPushButton::clicked, this, &VideoToBagWidget::searchButtonPressed);
     connect(bagLocationButton, &QPushButton::clicked, this, &VideoToBagWidget::bagLocationButtonPressed);
     connect(topicNameLineEdit, &QLineEdit::textChanged, this, [this, topicNameLineEdit] {
         m_bagParameters.topicName = topicNameLineEdit->text();
@@ -142,7 +140,7 @@ VideoToBagWidget::searchButtonPressed()
 
     m_bagParameters.sourceDirectory = videoDir;
     m_bagParamSettings.write();
-    m_videoNameLineEdit->setText(videoDir);
+    m_sourceLineEdit->setText(videoDir);
 
     QDir videoDirectoryDir(videoDir);
     videoDirectoryDir.cdUp();

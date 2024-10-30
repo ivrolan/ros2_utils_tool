@@ -31,7 +31,6 @@ private slots:
     okButtonPressed();
 
 private:
-    QPointer<QLineEdit> m_videoNameLineEdit;
     QPointer<QLineEdit> m_bagNameLineEdit;
 
     Utils::UI::BagParameters& m_bagParameters;

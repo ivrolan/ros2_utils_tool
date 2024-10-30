@@ -21,14 +21,11 @@
 #include <filesystem>
 
 BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, QString& encodingFormat, QWidget *parent) :
-    BasicInputWidget("Encode Video from ROSBag", ":/icons/bag_to_video_white.svg", ":/icons/bag_to_video_black.svg", parent),
+    BasicInputWidget("Encode Video from ROSBag", ":/icons/bag_to_video", parent),
     m_videoParameters(videoParameters), m_videoParamSettings(videoParameters, "bag_to_video")
 {
-    m_bagNameLineEdit = new QLineEdit(m_videoParameters.sourceDirectory);
-    m_bagNameLineEdit->setToolTip("The directory of the ROSBag source file.");
-
-    auto* const searchBagButton = new QToolButton;
-    auto* const searchBagFileLayout = Utils::UI::createLineEditButtonLayout(m_bagNameLineEdit, searchBagButton);
+    m_sourceLineEdit->setText(videoParameters.sourceDirectory);
+    m_sourceLineEdit->setToolTip("The directory of the ROSBag source file.");
 
     m_topicNameComboBox = new QComboBox;
     m_topicNameComboBox->setMinimumWidth(200);
@@ -56,7 +53,7 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     }
 
     auto* const basicOptionsFormLayout = new QFormLayout;
-    basicOptionsFormLayout->addRow("Bag File:", searchBagFileLayout);
+    basicOptionsFormLayout->addRow("Bag File:", m_findSourceLayout);
     basicOptionsFormLayout->addRow("Topic Name:", m_topicNameComboBox);
     basicOptionsFormLayout->addRow("Video Location:", searchVideoPathLayout);
     basicOptionsFormLayout->addRow("Format:", m_formatComboBox);
@@ -114,7 +111,7 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
                    !m_videoParameters.topicName.isEmpty() && !m_videoParameters.targetDirectory.isEmpty());
 
 
-    connect(searchBagButton, &QPushButton::clicked, this, &BagToVideoWidget::searchButtonPressed);
+    connect(m_findSourceButton, &QPushButton::clicked, this, &BagToVideoWidget::searchButtonPressed);
     connect(videoLocationButton, &QPushButton::clicked, this, &BagToVideoWidget::videoLocationButtonPressed);
     connect(m_topicNameComboBox, &QComboBox::currentTextChanged, this, [this] (const QString& text) {
         m_videoParameters.topicName = text;
@@ -156,7 +153,7 @@ BagToVideoWidget::searchButtonPressed()
         return;
     }
 
-    m_bagNameLineEdit->setText(bagDirectory);
+    m_sourceLineEdit->setText(bagDirectory);
     m_videoParameters.sourceDirectory = bagDirectory;
     m_videoParamSettings.write();
 
