@@ -7,16 +7,19 @@ AdvancedParamSettings::AdvancedParamSettings(Utils::UI::AdvancedParameters& adva
 }
 
 
-void
+bool
 AdvancedParamSettings::write()
 {
-    BasicParamSettings::write();
+    if (!BasicParamSettings::write()) {
+        return false;
+    }
 
     QSettings settings;
-
     settings.beginGroup(m_groupName);
     setSettingsParameter(settings, m_advancedParameters.targetDirectory, "target_dir");
     settings.endGroup();
+
+    return true;
 }
 
 

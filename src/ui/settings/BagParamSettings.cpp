@@ -1,8 +1,5 @@
 #include "BagParamSettings.hpp"
 
-#include "UtilsSettings.hpp"
-
-#include <QSettings>
 BagParamSettings::BagParamSettings(Utils::UI::BagParameters& bagParameters,
                                    const QString&            groupName) :
     VideoParamSettings(bagParameters, groupName), m_bagParameters(bagParameters)
@@ -11,16 +8,19 @@ BagParamSettings::BagParamSettings(Utils::UI::BagParameters& bagParameters,
 }
 
 
-void
+bool
 BagParamSettings::write()
 {
-    VideoParamSettings::write();
+    if (!VideoParamSettings::write()) {
+        return false;
+    }
 
     QSettings settings;
-
     settings.beginGroup(m_groupName);
     setSettingsParameter(settings, m_bagParameters.useCDRForSerialization, "cdr");
     settings.endGroup();
+
+    return true;
 }
 
 

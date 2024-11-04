@@ -8,7 +8,7 @@ public:
     BagParamSettings(Utils::UI::BagParameters& bagParameters,
                      const QString&            groupName);
 
-    void
+    bool
     write() override;
 
 private:

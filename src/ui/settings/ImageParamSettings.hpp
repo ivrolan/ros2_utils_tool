@@ -8,7 +8,7 @@ public:
     ImageParamSettings(Utils::UI::ImageParameters& imageParameters,
                        const QString&              groupName);
 
-    void
+    bool
     write() override;
 
 private:

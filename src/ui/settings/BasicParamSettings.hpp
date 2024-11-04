@@ -14,7 +14,7 @@ public:
     BasicParamSettings(Utils::UI::BasicParameters& basicParameters,
                        const QString&              groupName);
 
-    virtual void
+    virtual bool
     write();
 
 protected:

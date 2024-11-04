@@ -1,7 +1,5 @@
 #include "ImageParamSettings.hpp"
 
-#include <QSettings>
-
 ImageParamSettings::ImageParamSettings(Utils::UI::ImageParameters& imageParameters, const QString& groupName) :
     AdvancedParamSettings(imageParameters, groupName), m_imageParameters(imageParameters)
 {
@@ -9,13 +7,14 @@ ImageParamSettings::ImageParamSettings(Utils::UI::ImageParameters& imageParamete
 }
 
 
-void
+bool
 ImageParamSettings::write()
 {
-    AdvancedParamSettings::write();
+    if (!AdvancedParamSettings::write()) {
+        return false;
+    }
 
     QSettings settings;
-
     settings.beginGroup(m_groupName);
     setSettingsParameter(settings, m_imageParameters.format, "format");
     setSettingsParameter(settings, m_imageParameters.quality, "quality");
@@ -23,6 +22,8 @@ ImageParamSettings::write()
     setSettingsParameter(settings, m_imageParameters.jpgOptimize, "jpg_optimize");
     setSettingsParameter(settings, m_imageParameters.pngBilevel, "png_bilevel");
     settings.endGroup();
+
+    return true;
 }
 
 

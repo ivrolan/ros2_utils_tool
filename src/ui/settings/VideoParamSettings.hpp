@@ -8,7 +8,7 @@ public:
     VideoParamSettings(Utils::UI::VideoParameters& videoParameters,
                        const QString&              groupName);
 
-    void
+    bool
     write() override;
 
 protected:

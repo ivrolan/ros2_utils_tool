@@ -7,10 +7,12 @@ DummyBagParamSettings::DummyBagParamSettings(Utils::UI::DummyBagParameters& dumm
 }
 
 
-void
+bool
 DummyBagParamSettings::write()
 {
-    BasicParamSettings::write();
+    if (!BasicParamSettings::write()) {
+        return false;
+    }
 
     QSettings settings;
     settings.beginGroup(m_groupName);
@@ -25,6 +27,8 @@ DummyBagParamSettings::write()
 
     setSettingsParameter(settings, m_dummyBagParameters.messageCount, "msg_count");
     settings.endGroup();
+
+    return true;
 }
 
 

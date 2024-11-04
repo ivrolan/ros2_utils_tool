@@ -7,18 +7,21 @@ VideoParamSettings::VideoParamSettings(Utils::UI::VideoParameters& videoParamete
 }
 
 
-void
+bool
 VideoParamSettings::write()
 {
-    AdvancedParamSettings::write();
+    if (!AdvancedParamSettings::write()) {
+        return false;
+    }
 
     QSettings settings;
-
     settings.beginGroup(m_groupName);
     setSettingsParameter(settings, m_videoParameters.fps, "fps");
     setSettingsParameter(settings, m_videoParameters.useHardwareAcceleration, "hw_acc");
     setSettingsParameter(settings, m_videoParameters.useBWImages, "bw_images");
     settings.endGroup();
+
+    return true;
 }
 
 

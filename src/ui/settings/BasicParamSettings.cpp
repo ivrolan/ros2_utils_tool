@@ -8,15 +8,20 @@ BasicParamSettings::BasicParamSettings(Utils::UI::BasicParameters& basicParamete
 }
 
 
-void
+bool
 BasicParamSettings::write()
 {
-    QSettings settings;
+    if (const auto parametersSaved = Utils::Settings::readAreParametersSaved(); !parametersSaved) {
+        return false;
+    }
 
+    QSettings settings;
     settings.beginGroup(m_groupName);
     setSettingsParameter(settings, m_basicParameters.sourceDirectory, "source_dir");
     setSettingsParameter(settings, m_basicParameters.topicName, "topic_name");
     settings.endGroup();
+
+    return true;
 }
 
 

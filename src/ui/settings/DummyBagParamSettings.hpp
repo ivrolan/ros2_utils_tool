@@ -8,7 +8,7 @@ public:
     DummyBagParamSettings(Utils::UI::DummyBagParameters& dummyBagParameters,
                           const QString&                 groupName);
 
-    void
+    bool
     write() override;
 
 private:

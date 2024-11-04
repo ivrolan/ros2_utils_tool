@@ -8,7 +8,7 @@ public:
     AdvancedParamSettings(Utils::UI::AdvancedParameters& advancedParameters,
                           const QString&                 groupName);
 
-    void
+    bool
     write() override;
 
 protected:
