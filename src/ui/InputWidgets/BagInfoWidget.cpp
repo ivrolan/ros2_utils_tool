@@ -23,33 +23,34 @@ BagInfoWidget::BagInfoWidget(Utils::UI::BasicParameters& bagInfoParameters, QWid
     auto* const formLayout = new QFormLayout;
     formLayout->addRow("Bag File:", m_findSourceLayout);
 
-    auto* const formLayoutSqueezed = new QHBoxLayout;
-    formLayoutSqueezed->addStretch();
-    formLayoutSqueezed->addLayout(formLayout);
-    formLayoutSqueezed->addStretch();
-
     m_infoTreeWidget = new QTreeWidget;
     m_infoTreeWidget->setColumnCount(2);
     m_infoTreeWidget->headerItem()->setText(COL_DESCRIPTION, "Metadata");
     m_infoTreeWidget->headerItem()->setText(COL_INFORMATION, "Values");
     m_infoTreeWidget->setVisible(false);
     m_infoTreeWidget->setRootIsDecorated(false);
+    m_infoTreeWidget->setMinimumWidth(350);
 
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
     controlsLayout->addWidget(m_headerPixmapLabel);
     controlsLayout->addWidget(m_headerLabel);
-    controlsLayout->addSpacing(40);
-    controlsLayout->addLayout(formLayoutSqueezed);
+    controlsLayout->addSpacing(30);
+    controlsLayout->addLayout(formLayout);
     controlsLayout->addSpacing(10);
     controlsLayout->addWidget(m_infoTreeWidget);
     controlsLayout->addStretch();
+
+    auto* const controlsSqueezedLayout = new QHBoxLayout;
+    controlsSqueezedLayout->addStretch();
+    controlsSqueezedLayout->addLayout(controlsLayout);
+    controlsSqueezedLayout->addStretch();
 
     m_okButton->setEnabled(true);
     m_okButton->setVisible(false);
 
     auto* const mainLayout = new QVBoxLayout;
-    mainLayout->addLayout(controlsLayout);
+    mainLayout->addLayout(controlsSqueezedLayout);
     mainLayout->addLayout(m_buttonLayout);
     setLayout(mainLayout);
 
