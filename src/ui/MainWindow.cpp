@@ -4,15 +4,13 @@
 #include "BagToImagesWidget.hpp"
 #include "BagToVideoWidget.hpp"
 #include "DummyBagWidget.hpp"
-#include "DummyBagProgressWidget.hpp"
-#include "ImagesProgressWidget.hpp"
+#include "ProgressWidget.hpp"
 #include "StartWidget.hpp"
 #include "VideoToBagWidget.hpp"
-#include "VideoProgressWidget.hpp"
 
 #include <QCloseEvent>
 
-#include "rclcpp/rclcpp.hpp"
+#include <csignal>
 
 MainWindow::MainWindow()
 {
@@ -66,27 +64,33 @@ MainWindow::setConfigWidget(int mode)
 void
 MainWindow::setProgressWidget(int mode)
 {
-    QPointer<BasicProgressWidget> basicProgressWidget;
+    QPointer<ProgressWidget> progressWidget;
     switch (mode) {
     case 0:
-    case 2:
-        basicProgressWidget = new VideoProgressWidget(mode == 0 ? m_parametersBagToVideo : m_parametersVideoToBag, mode == 0);
+        progressWidget = new ProgressWidget(":/icons/bag_to_video_black.svg", ":/icons/bag_to_video_white.svg",
+                                            "Encoding Video...", m_parametersBagToVideo, mode);
         break;
     case 1:
-        basicProgressWidget = new ImagesProgressWidget(m_parametersBagToImages);
+        progressWidget = new ProgressWidget(":/icons/bag_to_images_black.svg", ":/icons/bag_to_images_white.svg",
+                                            "Writing Images...", m_parametersBagToImages, mode);
+        break;
+    case 2:
+        progressWidget = new ProgressWidget(":/icons/video_to_bag_black.svg", ":/icons/video_to_bag_white.svg",
+                                            "Writing to Bag...", m_parametersVideoToBag, mode);
         break;
     case 3:
-        basicProgressWidget = new DummyBagProgressWidget(m_dummyBagParameters);
+        progressWidget = new ProgressWidget(":/icons/dummy_bag_black.svg", ":/icons/dummy_bag_white.svg",
+                                            "Creating ROSBag...", m_dummyBagParameters, mode);
         break;
     }
-    setCentralWidget(basicProgressWidget);
+    setCentralWidget(progressWidget);
 
-    connect(basicProgressWidget, &BasicProgressWidget::progressStopped, this, [this, mode] {
+    connect(progressWidget, &ProgressWidget::progressStopped, this, [this, mode] {
         setConfigWidget(mode);
     });
-    connect(basicProgressWidget, &BasicProgressWidget::finished, this, &MainWindow::setStartWidget);
+    connect(progressWidget, &ProgressWidget::finished, this, &MainWindow::setStartWidget);
 
-    basicProgressWidget->startThread();
+    progressWidget->startThread();
 }
 
 

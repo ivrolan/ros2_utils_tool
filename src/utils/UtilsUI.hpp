@@ -11,22 +11,42 @@
 namespace Utils::UI
 {
 struct BasicParameters {
-    QString bagDirectory = "";
+    virtual
+    ~BasicParameters() = default;
+
+    QString sourceDirectory = "";
     QString topicName = "";
 };
-struct VideoParameters : BasicParameters {
-    QString videoDirectory = "";
-    bool    useHardwareAcceleration = false;
+
+struct AdvancedParameters : BasicParameters {
+    QString targetDirectory = "";
+    bool    showAdvancedOptions = false;
 };
-struct ImageParameters : BasicParameters {
-    QString imagesDirectory = "";
+
+struct ImageParameters : AdvancedParameters {
     QString format = "jpg";
     int     quality = 8;
+    bool    useBWImages = false;
+    bool    jpgOptimize = false;
+    bool    pngBilevel = false;
+};
+struct VideoParameters : AdvancedParameters {
+    int  fps = 30;
+    bool useHardwareAcceleration = false;
+    bool useBWImages = false;
+};
+
+struct BagParameters : VideoParameters {
+    bool useCDRForSerialization = false;
+};
+
+struct DummyBagTopic {
+    QString type;
+    QString name;
 };
 struct DummyBagParameters : BasicParameters {
-    QVector<QString> topicTypes = {};
-    QVector<QString> topicNames = {};
-    int              messageCount = 100;
+    QVector<DummyBagTopic> topics = {};
+    int                    messageCount = 100;
 };
 
 // Create a larger font for a certain widget

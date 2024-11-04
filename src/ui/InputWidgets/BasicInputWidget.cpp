@@ -7,9 +7,10 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QToolButton>
 
-BasicInputWidget::BasicInputWidget(const QString& headerText, const QString& pathLogoDark, const QString& pathLogoLight, QWidget *parent) :
-    QWidget(parent), m_pathLogoDark(pathLogoDark), m_pathLogoLight(pathLogoLight)
+BasicInputWidget::BasicInputWidget(const QString& headerText, const QString& logoPath, QWidget *parent) :
+    QWidget(parent), m_logoPath(logoPath)
 {
     m_headerLabel = new QLabel(headerText);
     Utils::UI::setWidgetFontSize(m_headerLabel);
@@ -19,6 +20,8 @@ BasicInputWidget::BasicInputWidget(const QString& headerText, const QString& pat
     m_headerPixmapLabel->setAlignment(Qt::AlignHCenter);
     setPixmapLabelIcon();
 
+    m_sourceLineEdit = new QLineEdit;
+    m_findSourceButton = new QToolButton;
     m_backButton = new QPushButton("Back", this);
 
     m_okButton = new QPushButton("Ok", this);
@@ -26,6 +29,8 @@ BasicInputWidget::BasicInputWidget(const QString& headerText, const QString& pat
 
     m_dialogButtonBox = new QDialogButtonBox;
     m_dialogButtonBox->addButton(m_okButton, QDialogButtonBox::AcceptRole);
+
+    m_findSourceLayout = Utils::UI::createLineEditButtonLayout(m_sourceLineEdit, m_findSourceButton);
 
     m_buttonLayout = new QHBoxLayout;
     m_buttonLayout->addWidget(m_backButton);
@@ -49,7 +54,7 @@ void
 BasicInputWidget::setPixmapLabelIcon()
 {
     const auto isDarkMode = Utils::UI::isDarkMode();
-    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? m_pathLogoDark : m_pathLogoLight).pixmap(QSize(100, 45)));
+    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? m_logoPath + "_white.svg" : m_logoPath + "_black.svg").pixmap(QSize(100, 45)));
 }
 
 

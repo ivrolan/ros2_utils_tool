@@ -17,10 +17,13 @@
 
 DummyBagThread::DummyBagThread(const Utils::UI::DummyBagParameters& dummyBagParameters,
                                QObject*                             parent) :
-    BasicThread(dummyBagParameters.bagDirectory, dummyBagParameters.topicName, parent),
-    m_topicTypes(dummyBagParameters.topicTypes), m_topicNames(dummyBagParameters.topicNames),
+    BasicThread(dummyBagParameters.sourceDirectory, dummyBagParameters.topicName, parent),
     m_messageCount(dummyBagParameters.messageCount)
 {
+    for (const auto& topic : dummyBagParameters.topics) {
+        m_topicTypes.push_back(topic.type.toStdString());
+        m_topicNames.push_back(topic.name.toStdString());
+    }
 }
 
 
@@ -30,22 +33,22 @@ DummyBagThread::run()
     emit calculatedMaximumInstances(m_messageCount);
 
     rosbag2_cpp::Writer writer;
-    writer.open(m_bagDirectory.toStdString());
+    writer.open(m_sourceDirectory);
 
     for (auto i = 1; i <= m_messageCount; i++) {
-        for (auto j = 0; j < m_topicTypes.size(); j++) {
+        for (std::size_t j = 0; j < m_topicTypes.size(); j++) {
             const auto timeStamp = rclcpp::Clock().now();
 
             if (m_topicTypes.at(j) == "String") {
                 std_msgs::msg::String message;
                 message.data = "Message " + std::to_string(i);
 
-                writer.write(message, m_topicNames.at(j).toStdString(), timeStamp);
+                writer.write(message, m_topicNames.at(j), timeStamp);
             } else if (m_topicTypes.at(j) == "Integer") {
                 std_msgs::msg::Int32 message;
                 message.data = i;
 
-                writer.write(message, m_topicNames.at(j).toStdString(), timeStamp);
+                writer.write(message, m_topicNames.at(j), timeStamp);
             } else if (m_topicTypes.at(j) == "Image") {
                 cv::Mat mat(720, 1280, CV_8UC3, cv::Scalar(255, 0, 0));
                 sensor_msgs::msg::Image message;
@@ -54,7 +57,7 @@ DummyBagThread::run()
 
                 const auto cvBridge = cv_bridge::CvImage(header, sensor_msgs::image_encodings::BGR8, mat);
                 cvBridge.toImageMsg(message);
-                writer.write(message, m_topicNames.at(j).toStdString(), timeStamp);
+                writer.write(message, m_topicNames.at(j), timeStamp);
             }
         }
 

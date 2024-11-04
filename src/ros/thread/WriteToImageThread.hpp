@@ -15,7 +15,10 @@ public:
     run() override;
 
 private:
-    const QString m_imagesDirectory;
-    const QString m_format;
+    const std::string m_targetDirectory;
+    const std::string m_format;
+
     int m_quality;
+    bool m_useBWImages;
+    bool m_optimizeJPGOrPNGBinary;
 };

@@ -9,13 +9,16 @@ class WriteToBagThread : public BasicThread {
 
 public:
     explicit
-    WriteToBagThread(const Utils::UI::VideoParameters& videoParameters,
-                     QObject*                          parent = nullptr);
+    WriteToBagThread(const Utils::UI::BagParameters& bagParameters,
+                     QObject*                        parent = nullptr);
 
     void
     run() override;
 
 private:
-    const QString m_videoDirectory;
+    const std::string m_targetDirectory;
+
+    const int m_fps;
     const bool m_useHardwareAcceleration;
+    const bool m_useCDRForSerialization;
 };

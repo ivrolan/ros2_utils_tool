@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BagParamSettings.hpp"
 #include "BasicInputWidget.hpp"
 #include "UtilsUI.hpp"
 
@@ -16,8 +17,8 @@ class VideoToBagWidget : public BasicInputWidget
     Q_OBJECT
 
 public:
-    VideoToBagWidget(Utils::UI::VideoParameters& videoParameters,
-                     QWidget*                    parent = 0);
+    VideoToBagWidget(Utils::UI::BagParameters& bagParameters,
+                     QWidget*                  parent = 0);
 
 private slots:
     void
@@ -30,9 +31,9 @@ private slots:
     okButtonPressed();
 
 private:
-    QPointer<QLineEdit> m_videoNameLineEdit;
     QPointer<QLineEdit> m_bagNameLineEdit;
-    QPointer<QLineEdit> m_topicNameLineEdit;
 
-    Utils::UI::VideoParameters& m_videoParameters;
+    Utils::UI::BagParameters& m_bagParameters;
+
+    BagParamSettings m_bagParamSettings;
 };

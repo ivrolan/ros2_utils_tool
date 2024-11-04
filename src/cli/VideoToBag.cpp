@@ -1,5 +1,6 @@
 #include "WriteToBagThread.hpp"
 
+#include "UtilsCLI.hpp"
 #include "UtilsGeneral.hpp"
 #include "UtilsROS.hpp"
 #include "UtilsUI.hpp"
@@ -13,9 +14,12 @@
 void
 showHelp()
 {
-    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_video_to_bag path/to/video topic_name path/of/stored/ros_bag use_hardware_acceleration" << std::endl;
-    std::cout << "The video must have an ending of .mp4 or .mkv." << std::endl;
-    std::cout << "use_hardware_acceleration is either 'true' or 'false'.\n" << std::endl;
+    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_video_to_bag path/to/video topic_name path/of/stored/ros_bag" << std::endl;
+    std::cout << "The video must have an ending of .mp4 or .mkv.\n" << std::endl;
+    std::cout << "Additional parameters:" << std::endl;
+    std::cout << "-f or --format: Specify the format used to serialize the video images. Must be 'sqlite3' or 'cdr'." << std::endl;
+    std::cout << "-r or --rate: Framerate for the image stream. Must be from 10 to 60." << std::endl;
+    std::cout << "-a or --accelerate: Use hardware acceleration." << std::endl;
     std::cout << "-h or --help: Show this help." << std::endl;
 }
 
@@ -26,55 +30,84 @@ main(int argc, char* argv[])
     // Create application
     QCoreApplication app(argc, argv);
     const auto arguments = app.arguments();
-    if (arguments.size() != 5 || arguments.contains("--help") || arguments.contains("-h")) {
+    if (arguments.size() < 4 || arguments.contains("--help") || arguments.contains("-h")) {
         showHelp();
         return 0;
     }
 
+    Utils::UI::BagParameters bagParameters;
 
     // Video directory
-    const auto vidDirectory = arguments.at(1);
-    auto dirPath = vidDirectory;
+    bagParameters.sourceDirectory = arguments.at(1);
+    auto dirPath = bagParameters.sourceDirectory;
     dirPath.truncate(dirPath.lastIndexOf(QChar('/')));
     if (!std::filesystem::exists(dirPath.toStdString())) {
         std::cerr << "The entered directory for the video file does not exist. Please specify a correct directory!" << std::endl;
         return 0;
     }
-    const auto fileEnding = vidDirectory.right(3);
+    const auto fileEnding = bagParameters.sourceDirectory.right(3);
     if (fileEnding != "mp4" && fileEnding != "mkv") {
         std::cerr << "The entered video name is not in correct format. Please make sure that the video file ends in mp4 or mkv!" << std::endl;
         return 0;
     }
 
     // Topic name
-    const auto topicName = arguments.at(2);
-    if (!Utils::ROS::doesTopicNameFollowROS2Convention(topicName)) {
+    bagParameters.topicName = arguments.at(2);
+    if (!Utils::ROS::doesTopicNameFollowROS2Convention(bagParameters.topicName)) {
         std::cerr << "The topic name does not follow the ROS2 naming convention!" << std::endl;
         return 0;
     }
 
     // Handle bag directory
-    const auto bagDirectory = arguments.at(3);
-    dirPath = bagDirectory;
+    bagParameters.targetDirectory = arguments.at(3);
+    dirPath = bagParameters.targetDirectory;
     dirPath.truncate(dirPath.lastIndexOf(QChar('/')));
     if (!std::filesystem::exists(dirPath.toStdString())) {
         std::cerr << "Bag file not found. Make sure that the bag file exists!" << std::endl;
         return 0;
     }
 
-    // Hardware acceleration
-    const auto useHardwareAccelerationString = arguments.at(4);
-    if (useHardwareAccelerationString != "true" && useHardwareAccelerationString != "false") {
-        std::cerr << "Please enter either 'true' or 'false' for the hardware acceleration parameter!" << std::endl;
-        return 0;
+    // Check for optional arguments
+    if (arguments.size() > 4) {
+        // Format
+        if (Utils::CLI::containsArguments(arguments, "-f", "--format")) {
+            const auto formatArgumentIndex = Utils::CLI::getArgumentsIndex(arguments, "-f", "--format");
+            if (arguments.at(formatArgumentIndex) == arguments.last()) {
+                std::cerr << "Please specify a format type!" << std::endl;
+                return 0;
+            }
+
+            const auto formatString = arguments.at(formatArgumentIndex + 1);
+            if (formatString != "sqlite3" && formatString != "cdr") {
+                std::cerr << "Please enter a correct format type ('sqlite3' or 'cdr')!" << std::endl;
+                return 0;
+            }
+            bagParameters.useCDRForSerialization = formatString == "cdr";
+        }
+
+        // Framerate
+        if (Utils::CLI::containsArguments(arguments, "-r", "--rate")) {
+            const auto framerateArgumentIndex = Utils::CLI::getArgumentsIndex(arguments, "-r", "--rate");
+            if (arguments.at(framerateArgumentIndex) == arguments.last()) {
+                std::cerr << "Please specify a framerate!" << std::endl;
+                return 0;
+            }
+
+            bagParameters.fps = arguments.at(framerateArgumentIndex + 1).toInt();
+            if (bagParameters.fps < 10 || bagParameters.fps > 60) {
+                std::cerr << "Please enter a framerate in the range of 10 to 60!" << std::endl;
+                return 0;
+            }
+        }
+
+        // Hardware acceleration
+        bagParameters.useHardwareAcceleration = Utils::CLI::containsArguments(arguments, "-a", "--accelerate");
     }
-    const auto useHardwareAcceleration = useHardwareAccelerationString == "true";
 
     auto this_messageCount = 0;
 
     // Create thread and connect to its informations
-    Utils::UI::VideoParameters videoParameters { { bagDirectory, topicName }, vidDirectory, useHardwareAcceleration };
-    auto* const writeToBagThread = new WriteToBagThread(videoParameters);
+    auto* const writeToBagThread = new WriteToBagThread(bagParameters);
 
     QObject::connect(writeToBagThread, &WriteToBagThread::calculatedMaximumInstances, [&this_messageCount](int count) {
         this_messageCount = count;

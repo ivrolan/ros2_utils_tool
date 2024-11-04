@@ -1,6 +1,5 @@
 #include "BagInfoWidget.hpp"
 
-#include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QFormLayout>
 #include <QHBoxLayout>
@@ -15,22 +14,14 @@
 #include "UtilsROS.hpp"
 
 BagInfoWidget::BagInfoWidget(Utils::UI::BasicParameters& bagInfoParameters, QWidget *parent) :
-    BasicInputWidget("Get Infos from ROSBag", ":/icons/bag_to_video_white.svg", ":/icons/bag_to_video_black.svg", parent),
+    BasicInputWidget("Get Infos from ROSBag", ":/icons/bag_info", parent),
     m_bagInfoParameters(bagInfoParameters)
 {
     auto* const bagLineEdit = new QLineEdit();
     bagLineEdit->setToolTip("The directory of the ROSBag source file.");
 
-    auto* const searchBagButton = new QToolButton;
-    auto* const searchBagFileLayout = Utils::UI::createLineEditButtonLayout(bagLineEdit, searchBagButton);
-
     auto* const formLayout = new QFormLayout;
-    formLayout->addRow("Bag File:", searchBagFileLayout);
-
-    auto* const formLayoutSqueezed = new QHBoxLayout;
-    formLayoutSqueezed->addStretch();
-    formLayoutSqueezed->addLayout(formLayout);
-    formLayoutSqueezed->addStretch();
+    formLayout->addRow("Bag File:", m_findSourceLayout);
 
     m_infoTreeWidget = new QTreeWidget;
     m_infoTreeWidget->setColumnCount(2);
@@ -38,26 +29,32 @@ BagInfoWidget::BagInfoWidget(Utils::UI::BasicParameters& bagInfoParameters, QWid
     m_infoTreeWidget->headerItem()->setText(COL_INFORMATION, "Values");
     m_infoTreeWidget->setVisible(false);
     m_infoTreeWidget->setRootIsDecorated(false);
+    m_infoTreeWidget->setMinimumWidth(350);
 
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
     controlsLayout->addWidget(m_headerPixmapLabel);
     controlsLayout->addWidget(m_headerLabel);
-    controlsLayout->addSpacing(40);
-    controlsLayout->addLayout(formLayoutSqueezed);
+    controlsLayout->addSpacing(30);
+    controlsLayout->addLayout(formLayout);
     controlsLayout->addSpacing(10);
     controlsLayout->addWidget(m_infoTreeWidget);
     controlsLayout->addStretch();
+
+    auto* const controlsSqueezedLayout = new QHBoxLayout;
+    controlsSqueezedLayout->addStretch();
+    controlsSqueezedLayout->addLayout(controlsLayout);
+    controlsSqueezedLayout->addStretch();
 
     m_okButton->setEnabled(true);
     m_okButton->setVisible(false);
 
     auto* const mainLayout = new QVBoxLayout;
-    mainLayout->addLayout(controlsLayout);
+    mainLayout->addLayout(controlsSqueezedLayout);
     mainLayout->addLayout(m_buttonLayout);
     setLayout(mainLayout);
 
-    connect(searchBagButton, &QPushButton::clicked, this, &BagInfoWidget::displayBagInfo);
+    connect(m_findSourceButton, &QPushButton::clicked, this, &BagInfoWidget::displayBagInfo);
     connect(m_okButton, &QPushButton::clicked, this, [this] {
         emit back();
     });
@@ -74,8 +71,9 @@ BagInfoWidget::displayBagInfo()
     }
 
     m_infoTreeWidget->clear();
-    m_bagInfoParameters.bagDirectory = bagDirectory;
-    const auto& bagMetaData = Utils::ROS::getBagMetadata(bagDirectory.toStdString());
+    m_sourceLineEdit->setText(bagDirectory);
+    m_bagInfoParameters.sourceDirectory = bagDirectory;
+    const auto& bagMetaData = Utils::ROS::getBagMetadata(bagDirectory);
 
     QList<QTreeWidgetItem*> treeWidgetItems;
     treeWidgetItems.append(new QTreeWidgetItem({ "Duration (Nanoseconds):", QString::number(bagMetaData.duration.count()) }));

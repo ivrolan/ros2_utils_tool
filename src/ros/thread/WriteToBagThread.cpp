@@ -1,9 +1,7 @@
 #include "WriteToBagThread.hpp"
 
-#include <opencv2/core.hpp>
 #include <opencv2/videoio.hpp>
 
-#include "rclcpp/rclcpp.hpp"
 #include "rosbag2_cpp/writer.hpp"
 
 #include "sensor_msgs/msg/image.hpp"
@@ -16,11 +14,12 @@
 #include <cv_bridge/cv_bridge.h>
 #endif
 
-WriteToBagThread::WriteToBagThread(const Utils::UI::VideoParameters& videoParameters,
-                                   QObject*                          parent) :
-    BasicThread(videoParameters.bagDirectory, videoParameters.topicName, parent),
-    m_videoDirectory(videoParameters.videoDirectory),
-    m_useHardwareAcceleration(videoParameters.useHardwareAcceleration)
+WriteToBagThread::WriteToBagThread(const Utils::UI::BagParameters& bagParameters,
+                                   QObject*                        parent) :
+    BasicThread(bagParameters.sourceDirectory, bagParameters.topicName, parent),
+    m_targetDirectory(bagParameters.targetDirectory.toStdString()),
+    m_fps(bagParameters.fps), m_useHardwareAcceleration(bagParameters.useHardwareAcceleration),
+    m_useCDRForSerialization(bagParameters.useCDRForSerialization)
 {
 }
 
@@ -28,7 +27,7 @@ WriteToBagThread::WriteToBagThread(const Utils::UI::VideoParameters& videoParame
 void
 WriteToBagThread::run()
 {
-    auto videoCapture = cv::VideoCapture(m_videoDirectory.toStdString(), cv::CAP_ANY, {
+    auto videoCapture = cv::VideoCapture(m_sourceDirectory, cv::CAP_ANY, {
         cv::CAP_PROP_HW_ACCELERATION, m_useHardwareAcceleration ? cv::VIDEO_ACCELERATION_ANY : cv::VIDEO_ACCELERATION_NONE
     });
     if (!videoCapture.isOpened()) {
@@ -36,21 +35,22 @@ WriteToBagThread::run()
         return;
     }
 
-    if (std::filesystem::exists(m_bagDirectory.toStdString())) {
-        std::filesystem::remove_all(m_bagDirectory.toStdString());
+    if (std::filesystem::exists(m_targetDirectory)) {
+        std::filesystem::remove_all(m_targetDirectory);
     }
 
     const auto frameCount = videoCapture.get(cv::CAP_PROP_FRAME_COUNT);
     emit calculatedMaximumInstances(frameCount);
 
     rosbag2_cpp::Writer writer;
-    writer.open(m_bagDirectory.toStdString());
+    writer.open(m_targetDirectory);
     auto iterationCount = 0;
 
-    auto fps = videoCapture.get(cv::CAP_PROP_FPS);
-    if (fps <= 2) {
-        fps = 30;
-    }
+    rosbag2_storage::TopicMetadata topicMetadata;
+    topicMetadata.name = m_topicName;
+    topicMetadata.type = "sensor_msgs/msg/Image";
+    topicMetadata.serialization_format = m_useCDRForSerialization ? "cdr" : "sqlite3";
+    writer.create_topic(topicMetadata);
 
     while (true) {
         if (isInterruptionRequested()) {
@@ -69,14 +69,14 @@ WriteToBagThread::run()
         // Create empty sensor message
         sensor_msgs::msg::Image message;
         std_msgs::msg::Header header;
-        const auto seconds = (float) iterationCount / fps;
+        const auto seconds = (float) iterationCount / m_fps;
         const auto time = rclcpp::Time(seconds, seconds * 1000000000);
         header.stamp = time;
 
         // Convert image and write
         const auto cvBridge = cv_bridge::CvImage(header, sensor_msgs::image_encodings::BGR8, frame);
         cvBridge.toImageMsg(message);
-        writer.write(message, m_topicName.toStdString(), time);
+        writer.write(message, m_topicName, time);
 
         emit progressChanged(iterationCount, ((float) iterationCount / (float) frameCount) * 100);
     }

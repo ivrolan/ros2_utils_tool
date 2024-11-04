@@ -1,8 +1,8 @@
 #include "BasicThread.hpp"
 
-BasicThread::BasicThread(const QString& bagDirectory,
+BasicThread::BasicThread(const QString& sourceDirectory,
                          const QString& topicName,
                          QObject*       parent) :
-    QThread(parent), m_bagDirectory(bagDirectory), m_topicName(topicName)
+    QThread(parent), m_sourceDirectory(sourceDirectory.toStdString()), m_topicName(topicName.toStdString())
 {
 }

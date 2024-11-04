@@ -1,6 +1,5 @@
 #pragma once
 
-#include <opencv2/core.hpp>
 #include <opencv2/videoio.hpp>
 
 // OpenCV video encoder used to write videos
@@ -11,9 +10,11 @@ public:
 
     bool
     setVideoWriter(const std::string& directory,
+                   int                fps,
                    int                width,
                    int                height,
-                   bool               useHardwareAcceleration);
+                   bool               useHardwareAcceleration,
+                   bool               useBWImages);
 
     inline void
     writeImageToVideo(const cv::Mat& mat)

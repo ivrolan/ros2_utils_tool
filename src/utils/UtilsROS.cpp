@@ -8,11 +8,11 @@
 namespace Utils::ROS
 {
 bool
-doesDirectoryContainBagFile(const std::string& bagDirectory)
+doesDirectoryContainBagFile(const QString& bagDirectory)
 {
     rosbag2_cpp::Reader reader;
     try {
-        reader.open(bagDirectory);
+        reader.open(bagDirectory.toStdString());
     } catch (...) {
         return false;
     }
@@ -23,81 +23,85 @@ doesDirectoryContainBagFile(const std::string& bagDirectory)
 
 
 bool
-doesBagContainTopicName(const std::string& bagDirectory,
-                        const std::string& topicName)
+doesBagContainTopicName(const QString& bagDirectory, const QString& topicName)
 {
     rosbag2_cpp::Reader reader;
-    reader.open(bagDirectory);
+    reader.open(bagDirectory.toStdString());
 
     const auto& topicsAndTypes = reader.get_all_topics_and_types();
-    for (const auto& topicAndType : topicsAndTypes) {
-        if (topicAndType.name == topicName) {
-            return true;
-        }
-    }
-    return false;
+    const auto stdStringTopicName = topicName.toStdString();
+
+    auto iter = std::find_if(topicsAndTypes.begin(), topicsAndTypes.end(), [&] (const auto& topic) {
+        return topic.name == stdStringTopicName;
+    });
+    return iter != topicsAndTypes.end();
 }
 
 
 int
-getTopicMessageCount(const std::string& bagDirectory,
-                     const std::string& topicName)
+getTopicMessageCount(const QString& bagDirectory, const QString& topicName)
 {
     rosbag2_cpp::Reader reader;
-    reader.open(bagDirectory);
+    reader.open(bagDirectory.toStdString());
 
-    const auto& metaData = reader.get_metadata();
-    for (const auto& topic : metaData.topics_with_message_count) {
-        if (topic.topic_metadata.name == topicName) {
-            return topic.message_count;
-        }
-    }
-    return 0;
+    const auto& topics = reader.get_metadata().topics_with_message_count;
+    const auto stdStringTopicName = topicName.toStdString();
+
+    auto iter = std::find_if(topics.begin(), topics.end(), [&] (const auto& topic) {
+        return topic.topic_metadata.name == stdStringTopicName;
+    });
+    return iter != topics.end() ? iter->message_count : 0;
+}
+
+
+int
+getTopicMessageCount(const std::string& bagDirectory, const std::string& topicName)
+{
+    return getTopicMessageCount(QString::fromStdString(bagDirectory), QString::fromStdString(topicName));
 }
 
 
 rosbag2_storage::BagMetadata
-getBagMetadata(const std::string& bagDirectory)
+getBagMetadata(const QString& bagDirectory)
 {
     rosbag2_cpp::Reader reader;
-    reader.open(bagDirectory);
+    reader.open(bagDirectory.toStdString());
 
     return reader.get_metadata();
 }
 
 
-std::string
-getTopicType(const std::string& bagDirectory,
-             const std::string& topicName)
+QString
+getTopicType(const QString& bagDirectory, const QString& topicName)
 {
     rosbag2_cpp::Reader reader;
-    reader.open(bagDirectory);
+    reader.open(bagDirectory.toStdString());
 
     const auto& topicsAndTypes = reader.get_all_topics_and_types();
-    for (const auto& topicAndType : topicsAndTypes) {
-        if (topicAndType.name == topicName) {
-            return topicAndType.type;
-        }
-    }
-    return "";
+    const auto stdStringTopicName = topicName.toStdString();
+
+    auto iter = std::find_if(topicsAndTypes.begin(), topicsAndTypes.end(), [&] (const auto& topic) {
+        return topic.name == stdStringTopicName;
+    });
+    return iter != topicsAndTypes.end() ? QString::fromStdString(iter->type) : "";
 }
 
 
-std::vector<std::string>
-getBagVideoTopics(const std::string& bagDirectory)
+QVector<QString>
+getBagVideoTopics(const QString& bagDirectory)
 {
-    std::vector<std::string> videoTopics;
+    QVector<QString> videoTopics;
     if (const auto doesDirContainBag = doesDirectoryContainBagFile(bagDirectory); !doesDirContainBag) {
         return videoTopics;
     }
 
     rosbag2_cpp::Reader reader;
-    reader.open(bagDirectory);
+    reader.open(bagDirectory.toStdString());
 
     const auto topicsAndTypes = reader.get_all_topics_and_types();
     for (const auto& topicAndType : topicsAndTypes) {
         if (topicAndType.type == "sensor_msgs/msg/Image") {
-            videoTopics.push_back(topicAndType.name);
+            videoTopics.push_back(QString::fromStdString(topicAndType.name));
         }
     }
     reader.close();

@@ -3,7 +3,6 @@
 #include "DummyTopicWidget.hpp"
 #include "UtilsROS.hpp"
 
-#include <QDialogButtonBox>
 #include <QEvent>
 #include <QFileDialog>
 #include <QFormLayout>
@@ -18,19 +17,16 @@
 #include <QVBoxLayout>
 
 DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters, QWidget *parent) :
-    BasicInputWidget("Create Dummy ROSBag", ":/icons/dummy_bag_white.svg", ":/icons/dummy_bag_black.svg", parent),
-    m_dummyBagParameters(dummyBagParameters)
+    BasicInputWidget("Create Dummy ROSBag", ":/icons/dummy_bag", parent),
+    m_dummyBagParameters(dummyBagParameters), m_dummyBagParamSettings(dummyBagParameters, "dummy_bag")
 {
-    m_bagNameLineEdit = new QLineEdit(m_dummyBagParameters.bagDirectory);
-    m_bagNameLineEdit->setToolTip("The directory where the ROSBag file should be stored.");
+    m_sourceLineEdit->setText(dummyBagParameters.sourceDirectory);
+    m_sourceLineEdit->setToolTip("The directory where the ROSBag file should be stored.");
 
-    auto* const bagDirectoryButton = new QToolButton;
-    auto* const bagDirectoryLayout = Utils::UI::createLineEditButtonLayout(m_bagNameLineEdit, bagDirectoryButton);
-
-    m_messageCountSpinBox = new QSpinBox;
-    m_messageCountSpinBox->setRange(1, 1000);
-    m_messageCountSpinBox->setToolTip("The number of messages stored in the ROSBag.");
-    m_messageCountSpinBox->setValue(m_dummyBagParameters.messageCount);
+    auto* const messageCountSpinBox = new QSpinBox;
+    messageCountSpinBox->setRange(1, 1000);
+    messageCountSpinBox->setToolTip("The number of messages stored in the ROSBag.");
+    messageCountSpinBox->setValue(m_dummyBagParameters.messageCount);
 
     m_minusButton = new QToolButton;
     m_minusButton->setToolTip("Remove the topic above.");
@@ -43,9 +39,9 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
     plusMinusButtonLayout->addWidget(m_plusButton);
 
     m_formLayout = new QFormLayout;
-    m_formLayout->addRow("Bag File:", bagDirectoryLayout);
+    m_formLayout->addRow("Bag File:", m_findSourceLayout);
     m_formLayout->addRow("", plusMinusButtonLayout);
-    m_formLayout->addRow("Message Count:", m_messageCountSpinBox);
+    m_formLayout->addRow("Message Count:", messageCountSpinBox);
 
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
@@ -69,14 +65,15 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
     setLayout(mainLayout);
 
     const auto addNewTopic = [this] {
-        m_dummyBagParameters.topicTypes.push_back("String");
-        m_dummyBagParameters.topicNames.push_back("");
-        createNewDummyTopicWidget(m_dummyBagParameters.topicTypes.size() - 1);
+        m_dummyBagParameters.topics.push_back({ "String", "" });
+        m_dummyBagParamSettings.write();
+        createNewDummyTopicWidget(m_dummyBagParameters.topics.size() - 1, { "", "" });
     };
 
-    connect(bagDirectoryButton, &QPushButton::clicked, this, &DummyBagWidget::bagDirectoryButtonPressed);
-    connect(m_messageCountSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
+    connect(m_findSourceButton, &QPushButton::clicked, this, &DummyBagWidget::bagDirectoryButtonPressed);
+    connect(messageCountSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
         m_dummyBagParameters.messageCount = value;
+        m_dummyBagParamSettings.write();
     });
     connect(m_minusButton, &QPushButton::clicked, this, &DummyBagWidget::removeDummyTopicWidget);
     connect(m_plusButton, &QPushButton::clicked, this, [addNewTopic] {
@@ -86,10 +83,10 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
 
     setPixmapLabelIcon();
 
-    for (auto i = 0; i < m_dummyBagParameters.topicTypes.size(); i++) {
-        createNewDummyTopicWidget(i, m_dummyBagParameters.topicTypes.at(i), m_dummyBagParameters.topicNames.at(i));
+    for (auto i = 0; i < m_dummyBagParameters.topics.size(); i++) {
+        createNewDummyTopicWidget(i, m_dummyBagParameters.topics.at(i));
     }
-    if (m_dummyBagParameters.topicTypes.empty()) {
+    if (m_dummyBagParameters.topics.empty()) {
         addNewTopic();
     }
 }
@@ -103,35 +100,37 @@ DummyBagWidget::bagDirectoryButtonPressed()
         return;
     }
 
-    m_dummyBagParameters.bagDirectory = fileName;
-    m_bagNameLineEdit->setText(fileName);
+    m_dummyBagParameters.sourceDirectory = fileName;
+    m_dummyBagParamSettings.write();
+    m_sourceLineEdit->setText(fileName);
 }
 
 
 void
 DummyBagWidget::removeDummyTopicWidget()
 {
-    m_formLayout->removeRow(m_dummyBagParameters.topicTypes.size());
+    m_formLayout->removeRow(m_dummyBagParameters.topics.size());
     m_dummyTopicWidgets.pop_back();
-
-    m_dummyBagParameters.topicTypes.pop_back();
-    m_dummyBagParameters.topicNames.pop_back();
+    m_dummyBagParameters.topics.pop_back();
+    m_dummyBagParamSettings.write();
 
     m_plusButton->setEnabled(m_numberOfTopics != MAXIMUM_NUMBER_OF_TOPICS);
-    m_minusButton->setEnabled(m_dummyBagParameters.topicTypes.size() != 1);
+    m_minusButton->setEnabled(m_dummyBagParameters.topics.size() != 1);
 }
 
 
 void
-DummyBagWidget::createNewDummyTopicWidget(int index, const QString& topicTypeText, const QString& topicNameText)
+DummyBagWidget::createNewDummyTopicWidget(int index, const Utils::UI::DummyBagTopic& topic)
 {
-    auto* const dummyTopicWidget = new DummyTopicWidget(topicTypeText, topicNameText);
+    auto* const dummyTopicWidget = new DummyTopicWidget(topic.type, topic.name);
 
     connect(dummyTopicWidget, &DummyTopicWidget::topicTypeChanged, this, [this, index] (const QString& text) {
-        m_dummyBagParameters.topicTypes[index] = text;
+        m_dummyBagParameters.topics[index].type = text;
+        m_dummyBagParamSettings.write();
     });
     connect(dummyTopicWidget, &DummyTopicWidget::topicNameChanged, this, [this, index] (const QString& text) {
-        m_dummyBagParameters.topicNames[index] = text;
+        m_dummyBagParameters.topics[index].name = text;
+        m_dummyBagParamSettings.write();
     });
 
     m_formLayout->insertRow(m_formLayout->rowCount() - 2, "Topic " + QString::number(m_numberOfTopics + 1) + ":", dummyTopicWidget);
@@ -139,14 +138,14 @@ DummyBagWidget::createNewDummyTopicWidget(int index, const QString& topicTypeTex
 
     m_numberOfTopics++;
     m_plusButton->setEnabled(m_numberOfTopics != MAXIMUM_NUMBER_OF_TOPICS);
-    m_minusButton->setEnabled(m_dummyBagParameters.topicTypes.size() != 1);
+    m_minusButton->setEnabled(m_dummyBagParameters.topics.size() != 1);
 }
 
 
 void
 DummyBagWidget::okButtonPressed()
 {
-    if (m_bagNameLineEdit->text().isEmpty()) {
+    if (m_dummyBagParameters.sourceDirectory.isEmpty()) {
         Utils::UI::createCriticalMessageBox("No bag name specified!", "Please specify a bag name before continuing!");
         return;
     }
@@ -180,7 +179,7 @@ void
 DummyBagWidget::setPixmapLabelIcon()
 {
     const auto isDarkMode = Utils::UI::isDarkMode();
-    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? m_pathLogoDark : m_pathLogoLight).pixmap(QSize(100, 45)));
+    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? m_logoPath + "_white.svg" : m_logoPath + "_black.svg").pixmap(QSize(100, 45)));
     m_minusButton->setIcon(QIcon(isDarkMode ? ":/icons/minus_white.svg" : ":/icons/minus_black.svg"));
     m_plusButton->setIcon(QIcon(isDarkMode ? ":/icons/plus_white.svg" : ":/icons/plus_black.svg"));
 }

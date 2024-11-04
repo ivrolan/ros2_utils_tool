@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BasicInputWidget.hpp"
+#include "DummyBagParamSettings.hpp"
 #include "UtilsUI.hpp"
 
 #include <QPointer>
@@ -9,9 +10,6 @@
 class DummyTopicWidget;
 
 class QFormLayout;
-class QLineEdit;
-class QPushButton;
-class QSpinBox;
 class QToolButton;
 
 /**
@@ -33,9 +31,8 @@ private slots:
     removeDummyTopicWidget();
 
     void
-    createNewDummyTopicWidget(int            index,
-                              const QString& topicTypeText = "",
-                              const QString& topicNameText = "");
+    createNewDummyTopicWidget(int                             index,
+                              const Utils::UI::DummyBagTopic& topics);
 
     void
     okButtonPressed();
@@ -51,13 +48,13 @@ private:
     QVector<QPointer<DummyTopicWidget> > m_dummyTopicWidgets;
 
     QPointer<QFormLayout> m_formLayout;
-    QPointer<QLineEdit> m_bagNameLineEdit;
-    QPointer<QSpinBox> m_messageCountSpinBox;
 
     QPointer<QToolButton> m_minusButton;
     QPointer<QToolButton> m_plusButton;
 
     Utils::UI::DummyBagParameters& m_dummyBagParameters;
+
+    DummyBagParamSettings m_dummyBagParamSettings;
 
     int m_numberOfTopics = 0;
 

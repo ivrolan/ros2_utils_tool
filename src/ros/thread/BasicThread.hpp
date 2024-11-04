@@ -7,7 +7,7 @@ class BasicThread : public QThread {
     Q_OBJECT
 public:
     explicit
-    BasicThread(const QString& bagDirectory,
+    BasicThread(const QString& sourceDirectory,
                 const QString& topicName,
                 QObject*       parent = nullptr);
 
@@ -29,6 +29,6 @@ signals:
     finished();
 
 protected:
-    const QString m_bagDirectory;
-    const QString m_topicName;
+    const std::string m_sourceDirectory;
+    const std::string m_topicName;
 };

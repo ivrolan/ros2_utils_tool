@@ -1,5 +1,6 @@
 #include "WriteToImageThread.hpp"
 
+#include "UtilsCLI.hpp"
 #include "UtilsGeneral.hpp"
 #include "UtilsROS.hpp"
 #include "UtilsUI.hpp"
@@ -15,9 +16,13 @@
 void
 showHelp()
 {
-    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_bag_to_images path/to/ROSBag topic_name path/to/target/image/dir format quality" << std::endl;
-    std::cout << "The format must be jpg or png." << std::endl;
-    std::cout << "The quality must be between 0 and 9 (9 is highest).\n" << std::endl;
+    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_bag_to_images path/to/ROSBag topic_name path/to/target/image/dir --format format" << std::endl;
+    std::cout << "-f or --format: Must be jpg or png.\n" << std::endl;
+    std::cout << "Additional parameters:" << std::endl;
+    std::cout << "-q 0-9 or --quality 0-9: Image quality, must be between 0 and 9 (9 is highest)." << std::endl;
+    std::cout << "-c or --colorless: Encode images without color." << std::endl;
+    std::cout << "-o or --optimize (jpg only): Optimize jpeg file size." << std::endl;
+    std::cout << "-b or --binary (png only): Write images with only black and white pixels." << std::endl;
     std::cout << "-h or --help: Show this help." << std::endl;
 }
 
@@ -27,61 +32,71 @@ main(int argc, char* argv[])
 {
     // Create application
     QCoreApplication app(argc, argv);
-    const auto arguments = app.arguments();
-    if (arguments.size() != 6 || arguments.contains("--help") || arguments.contains("-h")) {
+    const auto& arguments = app.arguments();
+    if (arguments.size() < 6 || arguments.contains("--help") || arguments.contains("-h") || (!arguments.contains("-f") && !arguments.contains("--format"))) {
         showHelp();
         return 0;
     }
 
+    Utils::UI::ImageParameters imageParameters;
+
     // Handle bag directory
-    const auto bagDirectory = arguments.at(1);
-    if (!std::filesystem::exists(bagDirectory.toStdString())) {
+    imageParameters.sourceDirectory = arguments.at(1);
+    if (!std::filesystem::exists(imageParameters.sourceDirectory.toStdString())) {
         std::cerr << "Bag file not found. Make sure that the bag file exists!" << std::endl;
         return 0;
     }
-    if (const auto doesDirContainBag = Utils::ROS::doesDirectoryContainBagFile(bagDirectory.toStdString()); !doesDirContainBag) {
+    if (const auto doesDirContainBag = Utils::ROS::doesDirectoryContainBagFile(imageParameters.sourceDirectory); !doesDirContainBag) {
         std::cerr << "The directory does not contain a bag file!" << std::endl;
         return 0;
     }
 
     // Topic name
-    const auto topicName = arguments.at(2);
-    if (!Utils::ROS::doesBagContainTopicName(bagDirectory.toStdString(), topicName.toStdString())) {
+    imageParameters.topicName = arguments.at(2);
+    if (!Utils::ROS::doesBagContainTopicName(imageParameters.sourceDirectory, imageParameters.topicName)) {
         std::cerr << "Topic has not been found in the bag file!" << std::endl;
         return 0;
     }
-    if (Utils::ROS::getTopicType(bagDirectory.toStdString(), topicName.toStdString()) != "sensor_msgs/msg/Image") {
+    if (Utils::ROS::getTopicType(imageParameters.sourceDirectory, imageParameters.topicName) != "sensor_msgs/msg/Image") {
         std::cerr << "The entered topic is not in sensor message format!" << std::endl;
         return 0;
     }
 
-    // Video directory
-    const auto imagesDirectory = arguments.at(3);
-    if (!std::filesystem::is_empty(imagesDirectory.toStdString())) {
-        std::cerr << "The target directory is not empty. Please make sure that the directory is empty!" << std::endl;
-        return 0;
-    }
+    // Images directory
+    imageParameters.targetDirectory = arguments.at(3);
 
     // Format
-    const auto formatString = arguments.at(4);
-    if (formatString != "jpg" && formatString != "png") {
+    imageParameters.format = arguments.at(5);
+    if (imageParameters.format != "jpg" && imageParameters.format != "png") {
         std::cerr << "Please enter either 'jpg' or 'png' for the format!" << std::endl;
         return 0;
     }
 
-    // Quality
-    const auto qualityString = arguments.at(5);
-    if (qualityString.toInt() < 0 && qualityString.toInt() > 9) {
-        std::cerr << "Please enter a number between 0 and 9 for the quality value!" << std::endl;
-        return 0;
+    // Check for optional arguments
+    if (arguments.size() > 6) {
+        if (Utils::CLI::containsArguments(arguments, "-q", "--quality")) {
+            const auto qualityArgumentIndex = Utils::CLI::getArgumentsIndex(arguments, "-q", "--quality");
+            if (arguments.at(qualityArgumentIndex) == arguments.last()) {
+                std::cerr << "Please specify a quality value!" << std::endl;
+                return 0;
+            }
+
+            imageParameters.quality = arguments.at(qualityArgumentIndex + 1).toInt();
+            if (imageParameters.quality < 0 || imageParameters.quality > 9) {
+                std::cerr << "Please enter a framerate in the range of 10 to 60!" << std::endl;
+                return 0;
+            }
+        }
+
+        imageParameters.useBWImages = Utils::CLI::containsArguments(arguments, "-c", "--colorless");
+        imageParameters.jpgOptimize = imageParameters.format == "jpg" && Utils::CLI::containsArguments(arguments, "-o", "--optimize");
+        imageParameters.pngBilevel = imageParameters.format == "png" && Utils::CLI::containsArguments(arguments, "-b", "--binary");
     }
 
     auto thisMessageCount = 0;
 
     // Create thread and connect to its informations
-    Utils::UI::ImageParameters imageParameters { { bagDirectory, topicName }, imagesDirectory, formatString, qualityString.toInt() };
     auto* const writeToImageThread = new WriteToImageThread(imageParameters);
-
     QObject::connect(writeToImageThread, &WriteToImageThread::calculatedMaximumInstances, [&thisMessageCount](int count) {
         thisMessageCount = count;
     });

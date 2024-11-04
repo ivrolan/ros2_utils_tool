@@ -15,8 +15,8 @@ public:
     run() override;
 
 private:
-    const QVector<QString>& m_topicTypes;
-    const QVector<QString>& m_topicNames;
+    std::vector<std::string> m_topicTypes;
+    std::vector<std::string> m_topicNames;
 
     const int m_messageCount;
 };

@@ -2,6 +2,7 @@
 
 #include "BasicInputWidget.hpp"
 #include "UtilsUI.hpp"
+#include "VideoParamSettings.hpp"
 
 #include <QPointer>
 #include <QWidget>
@@ -35,13 +36,13 @@ private slots:
     okButtonPressed();
 
 private:
-    QPointer<QLineEdit> m_bagNameLineEdit;
     QPointer<QComboBox> m_topicNameComboBox;
     QPointer<QLineEdit> m_videoNameLineEdit;
     QPointer<QComboBox> m_formatComboBox;
 
     Utils::UI::VideoParameters& m_videoParameters;
-    QString& m_encodingFormat;
+
+    VideoParamSettings m_videoParamSettings;
 
     bool m_fileDialogOpened = false;
 };
