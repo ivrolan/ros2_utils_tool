@@ -62,7 +62,6 @@ void
 SettingsDialog::writeSettings()
 {
     QSettings settings;
-
     settings.setValue("save", m_storeParametersCheckBox->checkState() == Qt::Checked);
 }
 

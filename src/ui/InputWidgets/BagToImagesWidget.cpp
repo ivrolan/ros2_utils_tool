@@ -192,11 +192,9 @@ BagToImagesWidget::adjustWidgetsToChangedFormat(const QString& text)
     }
     m_optimizeBilevelCheckBox = new QCheckBox;
 
-    if (text == "jpg") {
-        m_optimizeBilevelCheckBox->setChecked(m_imageParameters.jpgOptimize ? Qt::Checked : Qt::Unchecked);
-    } else {
-        m_optimizeBilevelCheckBox->setChecked(m_imageParameters.pngBilevel ? Qt::Checked : Qt::Unchecked);
-    }
+    auto& memberVal = text == "jpg" ? m_imageParameters.jpgOptimize : m_imageParameters.pngBilevel;
+    m_optimizeBilevelCheckBox->setChecked(memberVal ? Qt::Checked : Qt::Unchecked);
+
     m_optimizeBilevelCheckBox->setToolTip(text == "jpg" ? "Optimize the stored file size." : "Save as an image containing only black and white pixels.");
 
     m_advancedOptionsFormLayout->addRow(text == "jpg" ? "Optimize Size" : "Binary Image", m_optimizeBilevelCheckBox);

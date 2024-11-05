@@ -91,8 +91,8 @@ StartWidget::StartWidget(QWidget *parent) :
 void
 StartWidget::openSettingsDialog()
 {
-    if (auto* const settingsDialog = new SettingsDialog; settingsDialog->exec() == QDialog::Accepted) {
-    }
+    auto* const settingsDialog = new SettingsDialog;
+    settingsDialog->exec();
 }
 
 
