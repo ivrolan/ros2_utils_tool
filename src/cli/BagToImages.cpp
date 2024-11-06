@@ -33,7 +33,7 @@ main(int argc, char* argv[])
     // Create application
     QCoreApplication app(argc, argv);
     const auto& arguments = app.arguments();
-    if (arguments.size() < 6 || arguments.contains("--help") || arguments.contains("-h") || (!arguments.contains("-f") && !arguments.contains("--format"))) {
+    if (arguments.size() < 5 || arguments.contains("--help") || arguments.contains("-h") || (!arguments.contains("-f") && !arguments.contains("--format"))) {
         showHelp();
         return 0;
     }
