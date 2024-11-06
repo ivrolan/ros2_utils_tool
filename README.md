@@ -102,4 +102,8 @@ ros2 run mediassist4_ros_tools tool_dummy_bag path/to/ROSBag topic_type_1 topic_
 ros2 run mediassist4_ros_tools tool_tests
 ```
 
+## License
+
+The mediassist4_ros_tools package is licensed under [EUPLv1.2](https://interoperable-europe.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt).
+
 [1] https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html
