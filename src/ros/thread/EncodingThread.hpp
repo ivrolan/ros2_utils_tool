@@ -16,9 +16,11 @@ public:
 
 private:
     const std::string m_targetDirectory;
+    const std::string m_format;
 
     const int m_fps;
 
     const bool m_useHardwareAcceleration;
     const bool m_useBWImages;
+    const bool m_lossless;
 };

@@ -6,7 +6,7 @@
 class VideoEncoder {
 public:
     explicit
-    VideoEncoder(bool isMP4);
+    VideoEncoder(int fourcc);
 
     bool
     setVideoWriter(const std::string& directory,

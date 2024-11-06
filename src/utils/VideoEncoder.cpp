@@ -1,9 +1,8 @@
 #include "VideoEncoder.hpp"
 
-VideoEncoder::VideoEncoder(bool isMP4)
+VideoEncoder::VideoEncoder(int fourcc) :
+    m_fourcc(fourcc)
 {
-    m_fourcc = isMP4 ? cv::VideoWriter::fourcc('m', 'p', '4', 'v')
-                     : cv::VideoWriter::fourcc('X', '2', '6', '4');
 }
 
 

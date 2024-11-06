@@ -104,27 +104,35 @@ TEST_CASE("Settings Testing", "[ui]") {
     SECTION("Video Params Test") {
         SECTION("Read") {
             settings.beginGroup("video");
+            REQUIRE(!settings.value("format").isValid());
             REQUIRE(!settings.value("fps").isValid());
             REQUIRE(!settings.value("hw_acc").isValid());
             REQUIRE(!settings.value("bw_images").isValid());
+            REQUIRE(!settings.value("lossless_images").isValid());
             settings.endGroup();
         }
         SECTION("Write") {
             Utils::UI::VideoParameters videoParameters;
             VideoParamSettings videoParamSettings(videoParameters, "video");
 
+            videoParameters.format = "mkv";
             videoParameters.fps = 20;
             videoParameters.useHardwareAcceleration = true;
             videoParameters.useBWImages = true;
+            videoParameters.lossless = true;
             videoParamSettings.write();
 
             settings.beginGroup("video");
+            REQUIRE(settings.value("format").isValid());
+            REQUIRE(settings.value("format").toString() == "mkv");
             REQUIRE(settings.value("fps").isValid());
             REQUIRE(settings.value("fps").toInt() == 20);
             REQUIRE(settings.value("hw_acc").isValid());
             REQUIRE(settings.value("hw_acc").toBool() == true);
             REQUIRE(settings.value("bw_images").isValid());
             REQUIRE(settings.value("bw_images").toBool() == true);
+            REQUIRE(settings.value("lossless_images").isValid());
+            REQUIRE(settings.value("lossless_images").toBool() == true);
             settings.endGroup();
         }
     }

@@ -7,8 +7,6 @@
 
 #include "sensor_msgs/msg/image.hpp"
 
-#include <filesystem>
-
 #ifdef ROS_JAZZY
 #include <cv_bridge/cv_bridge.hpp>
 #else
@@ -18,8 +16,9 @@
 EncodingThread::EncodingThread(const Utils::UI::VideoParameters& videoParameters,
                                QObject*                          parent) :
     BasicThread(videoParameters.sourceDirectory, videoParameters.topicName, parent),
-    m_targetDirectory(videoParameters.targetDirectory.toStdString()), m_fps(videoParameters.fps),
-    m_useHardwareAcceleration(videoParameters.useHardwareAcceleration), m_useBWImages(videoParameters.useBWImages)
+    m_targetDirectory(videoParameters.targetDirectory.toStdString()), m_format(videoParameters.format.toStdString()),
+    m_fps(videoParameters.fps), m_useHardwareAcceleration(videoParameters.useHardwareAcceleration),
+    m_useBWImages(videoParameters.useBWImages), m_lossless(videoParameters.lossless)
 {
 }
 
@@ -38,7 +37,8 @@ EncodingThread::run()
     cv_bridge::CvImagePtr cvPointer;
     auto iterationCount = 0;
     const auto topicNameStdString = m_topicName;
-    const auto videoEncoder = std::make_shared<VideoEncoder>(std::filesystem::path(m_targetDirectory).extension() == ".mp4");
+    const auto videoEncoder = std::make_shared<VideoEncoder>(m_format == "mp4" ? cv::VideoWriter::fourcc('m', 'p', '4', 'v') :
+                                                             m_lossless ? cv::VideoWriter::fourcc('F', 'F', 'V', '1') : cv::VideoWriter::fourcc('X', '2', '6', '4'));
 
     // Now the main encoding
     while (reader.has_next()) {

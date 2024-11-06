@@ -19,6 +19,7 @@ showHelp()
     std::cout << "-r or --rate: Framerate for the encoded video. Must be from 10 to 60." << std::endl;
     std::cout << "-a or --accelerate: Use hardware acceleration." << std::endl;
     std::cout << "-c or --colorless: Use colorless images." << std::endl;
+    std::cout << "-l or --lossless (mkv only): Use lossless images." << std::endl;
     std::cout << "-h or --help: Show this help." << std::endl;
 }
 
@@ -67,8 +68,8 @@ main(int argc, char* argv[])
         std::cerr << "The entered directory for the video file does not exist. Please specify a correct directory!" << std::endl;
         return 0;
     }
-    const auto fileEnding = videoParameters.targetDirectory.right(3);
-    if (fileEnding != "mp4" && fileEnding != "mkv") {
+    videoParameters.format = videoParameters.targetDirectory.right(3);
+    if (videoParameters.format != "mp4" && videoParameters.format != "mkv") {
         std::cerr << "The entered video name is not in correct format. Please make sure that the video file ends in mp4 or mkv!" << std::endl;
         return 0;
     }
@@ -93,6 +94,7 @@ main(int argc, char* argv[])
         // Hardware acceleration
         videoParameters.useHardwareAcceleration = Utils::CLI::containsArguments(arguments, "-a", "--accelerate");
         videoParameters.useBWImages = Utils::CLI::containsArguments(arguments, "-c", "--colorless");
+        videoParameters.lossless = Utils::CLI::containsArguments(arguments, "-l", "--lossless");
     }
 
     auto this_messageCount = 0;
