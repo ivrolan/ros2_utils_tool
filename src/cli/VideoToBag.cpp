@@ -18,7 +18,7 @@ showHelp()
     std::cout << "The video must have an ending of .mp4 or .mkv.\n" << std::endl;
     std::cout << "Additional parameters:" << std::endl;
     std::cout << "-f or --format: Specify the format used to serialize the video images. Must be 'sqlite3' or 'cdr'." << std::endl;
-    std::cout << "-r or --rate: Framerate for the image stream. Must be from 10 to 60." << std::endl;
+    std::cout << "-r or --rate: Framerate for the image stream. Must be from 10 to 60. If no rate is specified, the video's rate will be taken." << std::endl;
     std::cout << "-a or --accelerate: Use hardware acceleration." << std::endl;
     std::cout << "-h or --help: Show this help." << std::endl;
 }
@@ -87,6 +87,8 @@ main(int argc, char* argv[])
 
         // Framerate
         if (Utils::CLI::containsArguments(arguments, "-r", "--rate")) {
+            bagParameters.useCustomFPS = true;
+
             const auto framerateArgumentIndex = Utils::CLI::getArgumentsIndex(arguments, "-r", "--rate");
             if (arguments.at(framerateArgumentIndex) == arguments.last()) {
                 std::cerr << "Please specify a framerate!" << std::endl;

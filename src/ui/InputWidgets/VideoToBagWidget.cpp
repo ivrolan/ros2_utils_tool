@@ -50,22 +50,21 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWid
     formatComboBox->setCurrentText(m_bagParameters.useCDRForSerialization ? "cdr" : "sqlite3");
     formatComboBox->setToolTip("The format used to serialize the single image messages in the bag.");
 
-    auto* const spinBox = new QSpinBox;
-    spinBox->setRange(10, 60);
-    spinBox->setValue(m_bagParameters.fps);
-    spinBox->setToolTip("FPS of the video stored in the bag.");
+    auto* const useCustomFPSCheckBox = new QCheckBox;
+    useCustomFPSCheckBox->setToolTip("Use custom fps for the bag file. If this is unchecked, the video's fps will be used.");
+    useCustomFPSCheckBox->setCheckState(m_bagParameters.useCustomFPS ? Qt::Checked : Qt::Unchecked);
 
     auto* const useHardwareAccCheckBox = new QCheckBox;
     useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster video decoding and writing.");
     useHardwareAccCheckBox->setCheckState(m_bagParameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
 
-    auto* const advancedOptionsFormLayout = new QFormLayout;
-    advancedOptionsFormLayout->addRow("Serialization Format:", formatComboBox);
-    advancedOptionsFormLayout->addRow("FPS:", spinBox);
-    advancedOptionsFormLayout->addRow("Hardware Accleration:", useHardwareAccCheckBox);
+    m_advancedOptionsFormLayout = new QFormLayout;
+    m_advancedOptionsFormLayout->addRow("Serialization Format:", formatComboBox);
+    m_advancedOptionsFormLayout->addRow("Use Custom FPS:", useCustomFPSCheckBox);
+    m_advancedOptionsFormLayout->addRow("Hardware Accleration:", useHardwareAccCheckBox);
 
     auto* const advancedOptionsWidget = new QWidget;
-    advancedOptionsWidget->setLayout(advancedOptionsFormLayout);
+    advancedOptionsWidget->setLayout(m_advancedOptionsFormLayout);
     advancedOptionsWidget->setVisible(m_bagParameters.showAdvancedOptions);
 
     auto* const controlsLayout = new QVBoxLayout;
@@ -108,16 +107,15 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWid
         m_bagParameters.useCDRForSerialization = text == "cdr";
         m_bagParamSettings.write();
     });
-    connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
-        m_bagParameters.fps = value;
-        m_bagParamSettings.write();
-    });
+    connect(useCustomFPSCheckBox, &QCheckBox::stateChanged, this, &VideoToBagWidget::useCustomFPSCheckBoxPressed);
     connect(useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         m_bagParameters.useHardwareAcceleration = state == Qt::Checked;
         m_bagParamSettings.write();
     });
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &VideoToBagWidget::okButtonPressed);
     connect(okShortCut, &QShortcut::activated, this, &VideoToBagWidget::okButtonPressed);
+
+    useCustomFPSCheckBoxPressed(m_bagParameters.useCustomFPS);
 }
 
 
@@ -166,6 +164,31 @@ VideoToBagWidget::bagLocationButtonPressed()
     m_bagParamSettings.write();
     m_bagNameLineEdit->setText(fileName);
     enableOkButton(!m_bagParameters.sourceDirectory.isEmpty() && !m_bagParameters.targetDirectory.isEmpty() && !m_bagParameters.topicName.isEmpty());
+}
+
+
+void
+VideoToBagWidget::useCustomFPSCheckBoxPressed(int state)
+{
+    // Partially checked value can still count for this case
+    m_bagParameters.useCustomFPS = state != Qt::Unchecked;
+    m_bagParamSettings.write();
+
+    if (state != Qt::Unchecked) {
+        m_fpsSpinBox = new QSpinBox;
+        m_fpsSpinBox->setRange(10, 60);
+        m_fpsSpinBox->setValue(m_bagParameters.fps);
+        m_fpsSpinBox->setToolTip("FPS of the video stored in the bag.");
+
+        m_advancedOptionsFormLayout->insertRow(2, "", m_fpsSpinBox);
+
+        connect(m_fpsSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
+            m_bagParameters.fps = value;
+            m_bagParamSettings.write();
+        });
+    } else if (m_fpsSpinBox) {
+        m_advancedOptionsFormLayout->removeRow(m_fpsSpinBox);
+    }
 }
 
 

@@ -7,7 +7,9 @@
 #include <QPointer>
 #include <QWidget>
 
+class QFormLayout;
 class QLineEdit;
+class QSpinBox;
 
 /**
  * @brief The widget used to write a video file into a ROSBag
@@ -28,10 +30,15 @@ private slots:
     bagLocationButtonPressed();
 
     void
+    useCustomFPSCheckBoxPressed(int state);
+
+    void
     okButtonPressed();
 
 private:
     QPointer<QLineEdit> m_bagNameLineEdit;
+    QPointer<QFormLayout> m_advancedOptionsFormLayout;
+    QPointer<QSpinBox> m_fpsSpinBox;
 
     Utils::UI::BagParameters& m_bagParameters;
 

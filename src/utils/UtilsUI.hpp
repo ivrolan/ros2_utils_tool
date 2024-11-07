@@ -39,6 +39,7 @@ struct VideoParameters : AdvancedParameters {
 };
 
 struct BagParameters : VideoParameters {
+    bool useCustomFPS = false;
     bool useCDRForSerialization = false;
 };
 
