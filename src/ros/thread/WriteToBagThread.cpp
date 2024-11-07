@@ -47,12 +47,6 @@ WriteToBagThread::run()
     writer.open(targetDirectoryStd);
     auto iterationCount = 0;
 
-    rosbag2_storage::TopicMetadata topicMetadata;
-    topicMetadata.name = m_topicName;
-    topicMetadata.type = "sensor_msgs/msg/Image";
-    topicMetadata.serialization_format = m_bagParameters.useCDRForSerialization ? "cdr" : "sqlite3";
-    writer.create_topic(topicMetadata);
-
     while (true) {
         if (isInterruptionRequested()) {
             return;

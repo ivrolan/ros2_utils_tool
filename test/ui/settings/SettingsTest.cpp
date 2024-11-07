@@ -147,14 +147,11 @@ TEST_CASE("Settings Testing", "[ui]") {
             BagParamSettings bagParamSettings(bagParameters, "bag");
 
             bagParameters.useCustomFPS = true;
-            bagParameters.useCDRForSerialization = true;
             bagParamSettings.write();
 
             settings.beginGroup("bag");
             REQUIRE(settings.value("custom_fps").isValid());
             REQUIRE(settings.value("custom_fps").toBool() == true);
-            REQUIRE(settings.value("cdr").isValid());
-            REQUIRE(settings.value("cdr").toBool() == true);
             settings.endGroup();
         }
     }

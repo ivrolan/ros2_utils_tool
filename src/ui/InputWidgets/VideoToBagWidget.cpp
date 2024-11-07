@@ -44,12 +44,6 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWid
     advancedOptionsCheckBox->setChecked(m_bagParameters.showAdvancedOptions ? Qt::Checked : Qt::Unchecked);
     advancedOptionsCheckBox->setText("Show Advanced Options");
 
-    auto* const formatComboBox = new QComboBox;
-    formatComboBox->addItem("sqlite3", 0);
-    formatComboBox->addItem("cdr", 1);
-    formatComboBox->setCurrentText(m_bagParameters.useCDRForSerialization ? "cdr" : "sqlite3");
-    formatComboBox->setToolTip("The format used to serialize the single image messages in the bag.");
-
     auto* const useCustomFPSCheckBox = new QCheckBox;
     useCustomFPSCheckBox->setToolTip("Use custom fps for the bag file. If this is unchecked, the video's fps will be used.");
     useCustomFPSCheckBox->setCheckState(m_bagParameters.useCustomFPS ? Qt::Checked : Qt::Unchecked);
@@ -59,7 +53,6 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWid
     useHardwareAccCheckBox->setCheckState(m_bagParameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
 
     m_advancedOptionsFormLayout = new QFormLayout;
-    m_advancedOptionsFormLayout->addRow("Serialization Format:", formatComboBox);
     m_advancedOptionsFormLayout->addRow("Use Custom FPS:", useCustomFPSCheckBox);
     m_advancedOptionsFormLayout->addRow("Hardware Accleration:", useHardwareAccCheckBox);
 
@@ -102,10 +95,6 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWid
     connect(advancedOptionsCheckBox, &QCheckBox::stateChanged, this, [this, advancedOptionsWidget] (int state) {
         m_bagParameters.showAdvancedOptions = state == Qt::Checked;
         advancedOptionsWidget->setVisible(state == Qt::Checked);
-    });
-    connect(formatComboBox, &QComboBox::currentTextChanged, this, [this] (const QString& text) {
-        m_bagParameters.useCDRForSerialization = text == "cdr";
-        m_bagParamSettings.write();
     });
     connect(useCustomFPSCheckBox, &QCheckBox::stateChanged, this, &VideoToBagWidget::useCustomFPSCheckBoxPressed);
     connect(useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
@@ -180,7 +169,7 @@ VideoToBagWidget::useCustomFPSCheckBoxPressed(int state)
         m_fpsSpinBox->setValue(m_bagParameters.fps);
         m_fpsSpinBox->setToolTip("FPS of the video stored in the bag.");
 
-        m_advancedOptionsFormLayout->insertRow(2, "", m_fpsSpinBox);
+        m_advancedOptionsFormLayout->insertRow(1, "", m_fpsSpinBox);
 
         connect(m_fpsSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
             m_bagParameters.fps = value;
