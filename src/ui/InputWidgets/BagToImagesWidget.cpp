@@ -107,10 +107,18 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
         m_imageParameters.showAdvancedOptions = state == Qt::Checked;
         advancedOptionsWidget->setVisible(state == Qt::Checked);
     });
-    connect(m_useBWCheckBox, &QCheckBox::stateChanged, this, [this, formatComboBox] (int state) {
+    connect(m_slider, &QSlider::valueChanged, this, [this] (int value) {
+        m_imageParameters.quality = value;
+        m_imageParamSettings.write();
+    });
+    connect(m_optimizeOrBilevelCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
+        m_imageParameters.format == "jpg" ? m_imageParameters.jpgOptimize = state == Qt::Checked :
+                                                                            m_imageParameters.pngBilevel = state == Qt::Checked;
+        m_imageParamSettings.write();
+    });
+    connect(m_useBWCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         m_imageParameters.useBWImages = state == Qt::Checked;
         m_imageParamSettings.write();
-        m_optimizeBilevelCheckBox->setEnabled(formatComboBox->currentText() == "jpg" || state != Qt::Checked);
     });
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &BagToImagesWidget::okButtonPressed);
     connect(okShortCut, &QShortcut::activated, this, &BagToImagesWidget::okButtonPressed);
@@ -172,8 +180,8 @@ BagToImagesWidget::adjustWidgetsToChangedFormat(const QString& text)
     m_imageParameters.format = text;
     m_imageParamSettings.write();
 
-    if (m_optimizeBilevelCheckBox && m_slider) {
-        m_advancedOptionsFormLayout->removeRow(m_optimizeBilevelCheckBox);
+    if (m_optimizeOrBilevelCheckBox && m_slider) {
+        m_advancedOptionsFormLayout->removeRow(m_optimizeOrBilevelCheckBox);
         m_advancedOptionsFormLayout->removeRow(m_slider);
     }
     if (text == "bmp") {
@@ -188,23 +196,13 @@ BagToImagesWidget::adjustWidgetsToChangedFormat(const QString& text)
     m_slider->setToolTip(text == "jpg" ? "Image quality. A higher quality will increase the image size."
                                        : "Higher compression will result in smaller size, but increase writing time.");
 
-    m_optimizeBilevelCheckBox = new QCheckBox;
+    m_optimizeOrBilevelCheckBox = new QCheckBox;
     auto& memberVal = text == "jpg" ? m_imageParameters.jpgOptimize : m_imageParameters.pngBilevel;
-    m_optimizeBilevelCheckBox->setChecked(memberVal ? Qt::Checked : Qt::Unchecked);
-    m_optimizeBilevelCheckBox->setToolTip(text == "jpg" ? "Optimize the stored file size." : "Save as an image containing only black and white pixels.");
+    m_optimizeOrBilevelCheckBox->setChecked(memberVal ? Qt::Checked : Qt::Unchecked);
+    m_optimizeOrBilevelCheckBox->setToolTip(text == "jpg" ? "Optimize the stored file size." : "Save as an image containing only black and white pixels.");
 
     m_advancedOptionsFormLayout->insertRow(0, text == "jpg" ? "Quality:" : "Level of Compression:", m_slider);
-    m_advancedOptionsFormLayout->insertRow(1, text == "jpg" ? "Optimize Size" : "Binary Image", m_optimizeBilevelCheckBox);
-
-    connect(m_optimizeBilevelCheckBox, &QCheckBox::stateChanged, this, [this, text] (int state) {
-        text == "jpg" ? m_imageParameters.jpgOptimize = state == Qt::Checked : m_imageParameters.pngBilevel = state == Qt::Checked;
-        m_imageParamSettings.write();
-        m_useBWCheckBox->setEnabled(text == "jpg" || state != Qt::Checked);
-    });
-    connect(m_slider, &QSlider::valueChanged, this, [this] (int value) {
-        m_imageParameters.quality = value;
-        m_imageParamSettings.write();
-    });
+    m_advancedOptionsFormLayout->insertRow(1, text == "jpg" ? "Optimize Size" : "Binary Image", m_optimizeOrBilevelCheckBox);
 }
 
 

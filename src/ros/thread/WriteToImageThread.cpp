@@ -73,14 +73,14 @@ WriteToImageThread::run()
 
         // Convert message to cv and encode
         cvPointer = cv_bridge::toCvCopy(*rosMsg, rosMsg->encoding);
-
-        if (m_imageParameters.useBWImages && (formatStd == "jpg" || !m_imageParameters.jpgOptimize)) {
-            cv::cvtColor(cvPointer->image, cvPointer->image, cv::COLOR_BGR2GRAY);
-        } else if (formatStd == "png" && m_imageParameters.pngBilevel) {
+        // Convert to grayscale
+        if (formatStd == "png" && m_imageParameters.pngBilevel) {
             // Converting to a different channel seems to be saver then converting
             // to grayscale before calling imwrite
             cv::Mat mat(cvPointer->image.size(), CV_8UC1);
             mat.convertTo(cvPointer->image, CV_8UC1);
+        } else if (m_imageParameters.useBWImages) {
+            cv::cvtColor(cvPointer->image, cvPointer->image, cv::COLOR_BGR2GRAY);
         }
 
         cv::imwrite(targetDirectoryStd + "/" + std::to_string(iterationCount) + "." + formatStd, cvPointer->image,

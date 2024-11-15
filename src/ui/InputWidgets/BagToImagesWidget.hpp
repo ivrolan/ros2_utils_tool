@@ -39,7 +39,7 @@ private:
     QPointer<QLineEdit> m_imagesNameLineEdit;
     QPointer<QSlider> m_slider;
     QPointer<QCheckBox> m_useBWCheckBox;
-    QPointer<QCheckBox> m_optimizeBilevelCheckBox;
+    QPointer<QCheckBox> m_optimizeOrBilevelCheckBox;
 
     QPointer<QFormLayout> m_advancedOptionsFormLayout;
 
