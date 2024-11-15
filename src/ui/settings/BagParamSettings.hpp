@@ -1,9 +1,9 @@
 #pragma once
 
-#include "VideoParamSettings.hpp"
+#include "AdvancedParamSettings.hpp"
 
 // Store bag parameter settings
-class BagParamSettings : public VideoParamSettings {
+class BagParamSettings : public AdvancedParamSettings {
 public:
     BagParamSettings(Utils::UI::BagParameters& bagParameters,
                      const QString&            groupName);

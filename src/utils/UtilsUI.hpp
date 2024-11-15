@@ -37,9 +37,10 @@ struct VideoParameters : AdvancedParameters {
     bool    useBWImages = false;
     bool    lossless = false;
 };
-
-struct BagParameters : VideoParameters {
+struct BagParameters : AdvancedParameters {
+    int  fps = 30;
     bool useCustomFPS = false;
+    bool useHardwareAcceleration = false;
 };
 
 struct DummyBagTopic {

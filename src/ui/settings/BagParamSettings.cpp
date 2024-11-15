@@ -2,7 +2,7 @@
 
 BagParamSettings::BagParamSettings(Utils::UI::BagParameters& bagParameters,
                                    const QString&            groupName) :
-    VideoParamSettings(bagParameters, groupName), m_bagParameters(bagParameters)
+    AdvancedParamSettings(bagParameters, groupName), m_bagParameters(bagParameters)
 {
     read();
 }
@@ -11,7 +11,7 @@ BagParamSettings::BagParamSettings(Utils::UI::BagParameters& bagParameters,
 bool
 BagParamSettings::write()
 {
-    if (!VideoParamSettings::write()) {
+    if (!AdvancedParamSettings::write()) {
         return false;
     }
 
@@ -27,7 +27,7 @@ BagParamSettings::write()
 bool
 BagParamSettings::read()
 {
-    if (!VideoParamSettings::read()) {
+    if (!AdvancedParamSettings::read()) {
         return false;
     }
 
