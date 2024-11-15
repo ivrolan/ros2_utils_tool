@@ -19,9 +19,7 @@
 WriteToImageThread::WriteToImageThread(const Utils::UI::ImageParameters& imageParameters,
                                        QObject*                          parent) :
     BasicThread(imageParameters.sourceDirectory, imageParameters.topicName, parent),
-    m_targetDirectory(imageParameters.targetDirectory.toStdString()),
-    m_format(imageParameters.format.toStdString()), m_quality(imageParameters.quality), m_useBWImages(imageParameters.useBWImages),
-    m_optimizeJPGOrPNGBinary(imageParameters.format == "jpg" ? imageParameters.jpgOptimize : imageParameters.pngBilevel)
+    m_imageParameters(imageParameters)
 {
 }
 
@@ -32,12 +30,15 @@ WriteToImageThread::run()
     rosbag2_cpp::Reader reader;
     reader.open(m_sourceDirectory);
 
-    if (!std::filesystem::exists(m_targetDirectory)) {
-        std::filesystem::create_directory(m_targetDirectory);
+    const auto targetDirectoryStd = m_imageParameters.targetDirectory.toStdString();
+    const auto formatStd = m_imageParameters.format.toStdString();
+
+    if (!std::filesystem::exists(targetDirectoryStd)) {
+        std::filesystem::create_directory(targetDirectoryStd);
     }
-    if (!std::filesystem::is_empty(m_targetDirectory)) {
+    if (!std::filesystem::is_empty(targetDirectoryStd)) {
         // Remove all images currently present
-        for (const auto& entry : std::filesystem::directory_iterator(m_targetDirectory)) {
+        for (const auto& entry : std::filesystem::directory_iterator(targetDirectoryStd)) {
             std::filesystem::remove_all(entry.path());
         }
     }
@@ -51,9 +52,7 @@ WriteToImageThread::run()
     auto iterationCount = 0;
 
     // Adjust the quality value to fit OpenCV param range
-    if (m_format == "jpg") {
-        m_quality = (m_quality * 10) + 10;
-    }
+    const auto finalQuality = formatStd == "jpg" ? (m_imageParameters.quality * 10) + 10 : m_imageParameters.quality;
 
     // Now the main encoding
     while (reader.has_next()) {
@@ -75,18 +74,19 @@ WriteToImageThread::run()
         // Convert message to cv and encode
         cvPointer = cv_bridge::toCvCopy(*rosMsg, rosMsg->encoding);
 
-        if (m_useBWImages && (m_format == "jpg" || !m_optimizeJPGOrPNGBinary)) {
+        if (m_imageParameters.useBWImages && (formatStd == "jpg" || !m_imageParameters.jpgOptimize)) {
             cv::cvtColor(cvPointer->image, cvPointer->image, cv::COLOR_BGR2GRAY);
-        } else if (m_format == "png" && m_optimizeJPGOrPNGBinary) {
+        } else if (formatStd == "png" && m_imageParameters.pngBilevel) {
             // Converting to a different channel seems to be saver then converting
             // to grayscale before calling imwrite
             cv::Mat mat(cvPointer->image.size(), CV_8UC1);
             mat.convertTo(cvPointer->image, CV_8UC1);
         }
 
-        cv::imwrite(m_targetDirectory + "/" + std::to_string(iterationCount) + "." + m_format, cvPointer->image,
-                    { m_format == "jpg" ? cv::IMWRITE_JPEG_QUALITY : cv::IMWRITE_PNG_COMPRESSION, m_quality,
-                      m_format == "jpg" ? cv::IMWRITE_JPEG_OPTIMIZE : cv::IMWRITE_PNG_BILEVEL, m_optimizeJPGOrPNGBinary });
+        cv::imwrite(targetDirectoryStd + "/" + std::to_string(iterationCount) + "." + formatStd, cvPointer->image,
+                    { formatStd == "jpg" ? cv::IMWRITE_JPEG_QUALITY : cv::IMWRITE_PNG_COMPRESSION, finalQuality,
+                      formatStd == "jpg" ? cv::IMWRITE_JPEG_OPTIMIZE : cv::IMWRITE_PNG_BILEVEL,
+                      formatStd == "jpg" ? m_imageParameters.jpgOptimize : m_imageParameters.pngBilevel });
 
         iterationCount++;
         // Inform of progress update
