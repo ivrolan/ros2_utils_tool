@@ -2,12 +2,7 @@
 
 #include "UtilsROS.hpp"
 
-#include "rclcpp/rclcpp.hpp"
-#include "rosbag2_cpp/writer.hpp"
-
 #include "sensor_msgs/msg/image.hpp"
-#include "std_msgs/msg/int32.hpp"
-#include "std_msgs/msg/string.hpp"
 
 #ifdef ROS_JAZZY
 #include <cv_bridge/cv_bridge.hpp>
@@ -36,15 +31,9 @@ DummyBagThread::run()
             const auto timeStamp = rclcpp::Clock().now();
 
             if (m_dummyBagParameters.topics.at(j).type == "String") {
-                std_msgs::msg::String message;
-                message.data = "Message " + std::to_string(i);
-
-                writer.write(message, m_dummyBagParameters.topics.at(j).name.toStdString(), timeStamp);
+                Utils::ROS::writeMessage(std_msgs::msg::String(), "Message " + std::to_string(i), writer, m_dummyBagParameters.topics.at(j).name, timeStamp);
             } else if (m_dummyBagParameters.topics.at(j).type == "Integer") {
-                std_msgs::msg::Int32 message;
-                message.data = i;
-
-                writer.write(message, m_dummyBagParameters.topics.at(j).name.toStdString(), timeStamp);
+                Utils::ROS::writeMessage(std_msgs::msg::Int32(), i, writer, m_dummyBagParameters.topics.at(j).name, timeStamp);
             } else if (m_dummyBagParameters.topics.at(j).type == "Image") {
                 cv::Mat mat(720, 1280, CV_8UC3, cv::Scalar(255, 0, 0));
                 sensor_msgs::msg::Image message;

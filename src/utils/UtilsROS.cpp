@@ -2,7 +2,6 @@
 
 #include <QRegularExpression>
 
-#include "rclcpp/rclcpp.hpp"
 #include "rosbag2_cpp/reader.hpp"
 
 namespace Utils::ROS

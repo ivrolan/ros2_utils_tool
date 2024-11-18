@@ -3,7 +3,6 @@
 #include <opencv2/videoio.hpp>
 
 #include "rosbag2_cpp/writer.hpp"
-
 #include "sensor_msgs/msg/image.hpp"
 
 #include <filesystem>
