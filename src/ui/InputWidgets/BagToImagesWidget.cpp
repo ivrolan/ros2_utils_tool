@@ -108,17 +108,15 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
         advancedOptionsWidget->setVisible(state == Qt::Checked);
     });
     connect(m_slider, &QSlider::valueChanged, this, [this] (int value) {
-        m_imageParameters.quality = value;
-        m_imageParamSettings.write();
+        writeSettingsParameter(m_imageParameters.quality, value, m_imageParamSettings);
     });
     connect(m_optimizeOrBilevelCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-        m_imageParameters.format == "jpg" ? m_imageParameters.jpgOptimize = state == Qt::Checked :
-                                                                            m_imageParameters.pngBilevel = state == Qt::Checked;
-        m_imageParamSettings.write();
+        m_imageParameters.format == "jpg" ?
+        writeSettingsParameter(m_imageParameters.jpgOptimize, state == Qt::Checked, m_imageParamSettings) :
+        writeSettingsParameter(m_imageParameters.pngBilevel, state == Qt::Checked, m_imageParamSettings);
     });
     connect(m_useBWCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-        m_imageParameters.useBWImages = state == Qt::Checked;
-        m_imageParamSettings.write();
+        writeSettingsParameter(m_imageParameters.useBWImages, state == Qt::Checked, m_imageParamSettings);
     });
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &BagToImagesWidget::okButtonPressed);
     connect(okShortCut, &QShortcut::activated, this, &BagToImagesWidget::okButtonPressed);
@@ -140,15 +138,13 @@ BagToImagesWidget::searchButtonPressed()
     }
 
     m_sourceLineEdit->setText(bagDirectory);
-    m_imageParameters.sourceDirectory = bagDirectory;
-    m_imageParamSettings.write();
+    writeSettingsParameter(m_imageParameters.sourceDirectory, bagDirectory, m_imageParamSettings);
 
     QDir bagDirectoryDir(bagDirectory);
     bagDirectoryDir.cdUp();
     if (const auto autoImageDirectory = bagDirectoryDir.path() + "/bag_images"; !std::filesystem::exists(autoImageDirectory.toStdString())) {
         m_imagesNameLineEdit->setText(autoImageDirectory);
-        m_imageParameters.targetDirectory = autoImageDirectory;
-        m_imageParamSettings.write();
+        writeSettingsParameter(m_imageParameters.targetDirectory, autoImageDirectory, m_imageParamSettings);
     }
 
     enableOkButton(!m_imageParameters.sourceDirectory.isEmpty() &&
@@ -166,8 +162,7 @@ BagToImagesWidget::imagesLocationButtonPressed()
 
     // Only enable if both line edits contain text
     m_fileDialogOpened = true;
-    m_imageParameters.targetDirectory = fileName;
-    m_imageParamSettings.write();
+    writeSettingsParameter(m_imageParameters.targetDirectory, fileName, m_imageParamSettings);
     m_imagesNameLineEdit->setText(fileName);
     enableOkButton(!m_imageParameters.sourceDirectory.isEmpty() &&
                    !m_imageParameters.topicName.isEmpty() && !m_imageParameters.targetDirectory.isEmpty());
@@ -177,8 +172,7 @@ BagToImagesWidget::imagesLocationButtonPressed()
 void
 BagToImagesWidget::adjustWidgetsToChangedFormat(const QString& text)
 {
-    m_imageParameters.format = text;
-    m_imageParamSettings.write();
+    writeSettingsParameter(m_imageParameters.format, text, m_imageParamSettings);
 
     if (m_optimizeOrBilevelCheckBox && m_slider) {
         m_advancedOptionsFormLayout->removeRow(m_optimizeOrBilevelCheckBox);

@@ -72,8 +72,7 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
 
     connect(m_findSourceButton, &QPushButton::clicked, this, &DummyBagWidget::bagDirectoryButtonPressed);
     connect(messageCountSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
-        m_dummyBagParameters.messageCount = value;
-        m_dummyBagParamSettings.write();
+        writeSettingsParameter(m_dummyBagParameters.messageCount, value, m_dummyBagParamSettings);
     });
     connect(m_minusButton, &QPushButton::clicked, this, &DummyBagWidget::removeDummyTopicWidget);
     connect(m_plusButton, &QPushButton::clicked, this, [addNewTopic] {
@@ -100,8 +99,7 @@ DummyBagWidget::bagDirectoryButtonPressed()
         return;
     }
 
-    m_dummyBagParameters.sourceDirectory = fileName;
-    m_dummyBagParamSettings.write();
+    writeSettingsParameter(m_dummyBagParameters.sourceDirectory, fileName, m_dummyBagParamSettings);
     m_sourceLineEdit->setText(fileName);
 }
 
@@ -125,12 +123,10 @@ DummyBagWidget::createNewDummyTopicWidget(int index, const Utils::UI::DummyBagTo
     auto* const dummyTopicWidget = new DummyTopicWidget(topic.type, topic.name);
 
     connect(dummyTopicWidget, &DummyTopicWidget::topicTypeChanged, this, [this, index] (const QString& text) {
-        m_dummyBagParameters.topics[index].type = text;
-        m_dummyBagParamSettings.write();
+        writeSettingsParameter(m_dummyBagParameters.topics[index].type, text, m_dummyBagParamSettings);
     });
     connect(dummyTopicWidget, &DummyTopicWidget::topicNameChanged, this, [this, index] (const QString& text) {
-        m_dummyBagParameters.topics[index].name = text;
-        m_dummyBagParamSettings.write();
+        writeSettingsParameter(m_dummyBagParameters.topics[index].name, text, m_dummyBagParamSettings);
     });
 
     m_formLayout->insertRow(m_formLayout->rowCount() - 2, "Topic " + QString::number(m_numberOfTopics + 1) + ":", dummyTopicWidget);

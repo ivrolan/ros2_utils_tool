@@ -111,8 +111,7 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     connect(m_findSourceButton, &QPushButton::clicked, this, &BagToVideoWidget::searchButtonPressed);
     connect(videoLocationButton, &QPushButton::clicked, this, &BagToVideoWidget::videoLocationButtonPressed);
     connect(m_topicNameComboBox, &QComboBox::currentTextChanged, this, [this] (const QString& text) {
-        m_videoParameters.topicName = text;
-        m_videoParamSettings.write();
+        writeSettingsParameter(m_videoParameters.topicName, text, m_videoParamSettings);
     });
     connect(m_formatComboBox, &QComboBox::currentTextChanged, this, &BagToVideoWidget::formatComboBoxTextChanged);
     connect(advancedOptionsCheckBox, &QCheckBox::stateChanged, this, [this, advancedOptionsWidget] (int state) {
@@ -120,16 +119,13 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
         advancedOptionsWidget->setVisible(state == Qt::Checked);
     });
     connect(fpsSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
-        m_videoParameters.fps = value;
-        m_videoParamSettings.write();
+        writeSettingsParameter(m_videoParameters.fps, value, m_videoParamSettings);
     });
     connect(useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-        m_videoParameters.useHardwareAcceleration = state == Qt::Checked;
-        m_videoParamSettings.write();
+        writeSettingsParameter(m_videoParameters.useHardwareAcceleration, state == Qt::Checked, m_videoParamSettings);
     });
     connect(useBWImagesCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-        m_videoParameters.useBWImages = state == Qt::Checked;
-        m_videoParamSettings.write();
+        writeSettingsParameter(m_videoParameters.useBWImages, state == Qt::Checked, m_videoParamSettings);
     });
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &BagToVideoWidget::okButtonPressed);
     connect(okShortCut, &QShortcut::activated, this, &BagToVideoWidget::okButtonPressed);
@@ -151,16 +147,14 @@ BagToVideoWidget::searchButtonPressed()
     }
 
     m_sourceLineEdit->setText(bagDirectory);
-    m_videoParameters.sourceDirectory = bagDirectory;
-    m_videoParamSettings.write();
+    writeSettingsParameter(m_videoParameters.sourceDirectory, bagDirectory, m_videoParamSettings);
 
     QDir bagDirectoryDir(bagDirectory);
     bagDirectoryDir.cdUp();
     if (const auto autoVideoDirectory = bagDirectoryDir.path() + "/bag_video." + m_formatComboBox->currentText();
         !std::filesystem::exists(autoVideoDirectory.toStdString())) {
         m_videoNameLineEdit->setText(autoVideoDirectory);
-        m_videoParameters.targetDirectory = autoVideoDirectory;
-        m_videoParamSettings.write();
+        writeSettingsParameter(m_videoParameters.targetDirectory, autoVideoDirectory, m_videoParamSettings);
     }
 
     // Only enable if both line edits contain text
@@ -180,8 +174,7 @@ BagToVideoWidget::videoLocationButtonPressed()
 
     // Only enable if both line edits contain text
     m_fileDialogOpened = true;
-    m_videoParameters.targetDirectory = fileName;
-    m_videoParamSettings.write();
+    writeSettingsParameter(m_videoParameters.targetDirectory, fileName, m_videoParamSettings);
     m_videoNameLineEdit->setText(fileName);
     enableOkButton(!m_videoParameters.sourceDirectory.isEmpty() &&
                    !m_videoParameters.topicName.isEmpty() && !m_videoParameters.targetDirectory.isEmpty());
@@ -191,8 +184,7 @@ BagToVideoWidget::videoLocationButtonPressed()
 void
 BagToVideoWidget::formatComboBoxTextChanged(const QString& text)
 {
-    m_videoParameters.format = text;
-    m_videoParamSettings.write();
+    writeSettingsParameter(m_videoParameters.format, text, m_videoParamSettings);
 
     if (m_useLosslessCheckBox) {
         m_advancedOptionsFormLayout->removeRow(m_useLosslessCheckBox);
@@ -220,8 +212,7 @@ BagToVideoWidget::formatComboBoxTextChanged(const QString& text)
     newLineEditText += "." + text;
     m_videoNameLineEdit->setText(newLineEditText);
 
-    m_videoParameters.targetDirectory = newLineEditText;
-    m_videoParamSettings.write();
+    writeSettingsParameter(m_videoParameters.targetDirectory, newLineEditText, m_videoParamSettings);
 }
 
 

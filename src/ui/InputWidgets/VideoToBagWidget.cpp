@@ -88,8 +88,7 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWid
     connect(m_findSourceButton, &QPushButton::clicked, this, &VideoToBagWidget::searchButtonPressed);
     connect(bagLocationButton, &QPushButton::clicked, this, &VideoToBagWidget::bagLocationButtonPressed);
     connect(topicNameLineEdit, &QLineEdit::textChanged, this, [this, topicNameLineEdit] {
-        m_bagParameters.topicName = topicNameLineEdit->text();
-        m_bagParamSettings.write();
+        writeSettingsParameter(m_bagParameters.topicName, topicNameLineEdit->text(), m_bagParamSettings);
         enableOkButton(!m_bagParameters.sourceDirectory.isEmpty() && !m_bagParameters.targetDirectory.isEmpty() && !m_bagParameters.topicName.isEmpty());
     });
     connect(advancedOptionsCheckBox, &QCheckBox::stateChanged, this, [this, advancedOptionsWidget] (int state) {
@@ -98,8 +97,7 @@ VideoToBagWidget::VideoToBagWidget(Utils::UI::BagParameters& bagParameters, QWid
     });
     connect(useCustomFPSCheckBox, &QCheckBox::stateChanged, this, &VideoToBagWidget::useCustomFPSCheckBoxPressed);
     connect(useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-        m_bagParameters.useHardwareAcceleration = state == Qt::Checked;
-        m_bagParamSettings.write();
+        writeSettingsParameter(m_bagParameters.useHardwareAcceleration, state == Qt::Checked, m_bagParamSettings);
     });
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &VideoToBagWidget::okButtonPressed);
     connect(okShortCut, &QShortcut::activated, this, &VideoToBagWidget::okButtonPressed);
@@ -125,16 +123,14 @@ VideoToBagWidget::searchButtonPressed()
         return;
     }
 
-    m_bagParameters.sourceDirectory = videoDir;
-    m_bagParamSettings.write();
+    writeSettingsParameter(m_bagParameters.sourceDirectory, videoDir, m_bagParamSettings);
     m_sourceLineEdit->setText(videoDir);
 
     QDir videoDirectoryDir(videoDir);
     videoDirectoryDir.cdUp();
     if (const auto autoBagDirectory = videoDirectoryDir.path() + "/video_bag"; !std::filesystem::exists(autoBagDirectory.toStdString())) {
         m_bagNameLineEdit->setText(autoBagDirectory);
-        m_bagParameters.targetDirectory = autoBagDirectory;
-        m_bagParamSettings.write();
+        writeSettingsParameter(m_bagParameters.targetDirectory, autoBagDirectory, m_bagParamSettings);
     }
 
     enableOkButton(!m_bagParameters.sourceDirectory.isEmpty() && !m_bagParameters.targetDirectory.isEmpty() && !m_bagParameters.topicName.isEmpty());
@@ -149,8 +145,7 @@ VideoToBagWidget::bagLocationButtonPressed()
         return;
     }
 
-    m_bagParameters.targetDirectory = fileName;
-    m_bagParamSettings.write();
+    writeSettingsParameter(m_bagParameters.targetDirectory, fileName, m_bagParamSettings);
     m_bagNameLineEdit->setText(fileName);
     enableOkButton(!m_bagParameters.sourceDirectory.isEmpty() && !m_bagParameters.targetDirectory.isEmpty() && !m_bagParameters.topicName.isEmpty());
 }
@@ -160,8 +155,7 @@ void
 VideoToBagWidget::useCustomFPSCheckBoxPressed(int state)
 {
     // Partially checked value can still count for this case
-    m_bagParameters.useCustomFPS = state != Qt::Unchecked;
-    m_bagParamSettings.write();
+    writeSettingsParameter(m_bagParameters.useCustomFPS, state != Qt::Unchecked, m_bagParamSettings);
 
     if (state != Qt::Unchecked) {
         m_fpsSpinBox = new QSpinBox;
@@ -172,8 +166,7 @@ VideoToBagWidget::useCustomFPSCheckBoxPressed(int state)
         m_advancedOptionsFormLayout->insertRow(1, "", m_fpsSpinBox);
 
         connect(m_fpsSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
-            m_bagParameters.fps = value;
-            m_bagParamSettings.write();
+            writeSettingsParameter(m_bagParameters.fps, value, m_bagParamSettings);
         });
     } else if (m_fpsSpinBox) {
         m_advancedOptionsFormLayout->removeRow(m_fpsSpinBox);

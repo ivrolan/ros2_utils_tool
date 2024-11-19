@@ -2,8 +2,6 @@
 
 #include "UtilsUI.hpp"
 
-#include <QSettings>
-
 // Util functions for all settings related stuff
 namespace Utils::Settings
 {
