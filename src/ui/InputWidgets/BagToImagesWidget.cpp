@@ -107,14 +107,6 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
         m_imageParameters.showAdvancedOptions = state == Qt::Checked;
         advancedOptionsWidget->setVisible(state == Qt::Checked);
     });
-    connect(m_slider, &QSlider::valueChanged, this, [this] (int value) {
-        writeSettingsParameter(m_imageParameters.quality, value, m_imageParamSettings);
-    });
-    connect(m_optimizeOrBilevelCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-        m_imageParameters.format == "jpg" ?
-        writeSettingsParameter(m_imageParameters.jpgOptimize, state == Qt::Checked, m_imageParamSettings) :
-        writeSettingsParameter(m_imageParameters.pngBilevel, state == Qt::Checked, m_imageParamSettings);
-    });
     connect(m_useBWCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         writeSettingsParameter(m_imageParameters.useBWImages, state == Qt::Checked, m_imageParamSettings);
     });
@@ -197,6 +189,15 @@ BagToImagesWidget::adjustWidgetsToChangedFormat(const QString& text)
 
     m_advancedOptionsFormLayout->insertRow(0, text == "jpg" ? "Quality:" : "Level of Compression:", m_slider);
     m_advancedOptionsFormLayout->insertRow(1, text == "jpg" ? "Optimize Size" : "Binary Image", m_optimizeOrBilevelCheckBox);
+
+    connect(m_slider, &QSlider::valueChanged, this, [this] (int value) {
+        writeSettingsParameter(m_imageParameters.quality, value, m_imageParamSettings);
+    });
+    connect(m_optimizeOrBilevelCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
+        m_imageParameters.format == "jpg" ?
+        writeSettingsParameter(m_imageParameters.jpgOptimize, state == Qt::Checked, m_imageParamSettings) :
+        writeSettingsParameter(m_imageParameters.pngBilevel, state == Qt::Checked, m_imageParamSettings);
+    });
 }
 
 
