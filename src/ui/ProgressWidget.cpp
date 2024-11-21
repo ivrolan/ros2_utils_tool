@@ -20,35 +20,35 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
 {
     const auto isDarkMode = Utils::UI::isDarkMode();
 
-    m_headerPixmapLabel = new QLabel;
-    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? headerPixmapLabelTextWhite : headerPixmapLabelTextBlack).pixmap(QSize(100, 45)));
-    m_headerPixmapLabel->setAlignment(Qt::AlignHCenter);
+    auto* const headerPixmapLabel = new QLabel;
+    headerPixmapLabel->setPixmap(QIcon(isDarkMode ? headerPixmapLabelTextWhite : headerPixmapLabelTextBlack).pixmap(QSize(100, 45)));
+    headerPixmapLabel->setAlignment(Qt::AlignHCenter);
 
-    m_headerLabel = new QLabel(headerLabelText);
-    Utils::UI::setWidgetFontSize(m_headerLabel);
-    m_headerLabel->setAlignment(Qt::AlignHCenter);
+    auto* const headerLabel = new QLabel(headerLabelText);
+    Utils::UI::setWidgetFontSize(headerLabel);
+    headerLabel->setAlignment(Qt::AlignHCenter);
 
-    m_progressBar = new QProgressBar;
+    auto* const progressBar = new QProgressBar;
 
-    m_progressLabel = new QLabel;
-    m_progressLabel->setAlignment(Qt::AlignHCenter);
+    auto* const progressLabel = new QLabel;
+    progressLabel->setAlignment(Qt::AlignHCenter);
 
-    m_cancelButton = new QPushButton("Cancel");
-    m_finishedButton = new QPushButton("Done");
-    m_finishedButton->setVisible(false);
+    auto* const cancelButton = new QPushButton("Cancel");
+    auto* const finishedButton = new QPushButton("Done");
+    finishedButton->setVisible(false);
 
     auto* const buttonLayout = new QHBoxLayout;
-    buttonLayout->addWidget(m_cancelButton);
+    buttonLayout->addWidget(cancelButton);
     buttonLayout->addStretch();
-    buttonLayout->addWidget(m_finishedButton);
+    buttonLayout->addWidget(finishedButton);
 
     auto* const uiLayout = new QVBoxLayout;
     uiLayout->addStretch();
-    uiLayout->addWidget(m_headerPixmapLabel);
-    uiLayout->addWidget(m_headerLabel);
+    uiLayout->addWidget(headerPixmapLabel);
+    uiLayout->addWidget(headerLabel);
     uiLayout->addSpacing(30);
-    uiLayout->addWidget(m_progressBar);
-    uiLayout->addWidget(m_progressLabel);
+    uiLayout->addWidget(progressBar);
+    uiLayout->addWidget(progressLabel);
     uiLayout->addStretch();
 
     auto* const uiLayoutStretched = new QHBoxLayout;
@@ -65,46 +65,52 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
 
     switch (threadTypeId) {
     case 0:
-    {
-        auto& bagToVideoParameters = dynamic_cast<Utils::UI::VideoParameters&>(parameters);
-        m_thread = new EncodingThread(bagToVideoParameters, this);
+        m_thread = new EncodingThread(dynamic_cast<Utils::UI::VideoParameters&>(parameters), this);
         break;
-    }
     case 1:
-    {
-        auto& imageParameters = dynamic_cast<Utils::UI::ImageParameters&>(parameters);
-        m_thread = new WriteToImageThread(imageParameters, this);
+        m_thread = new WriteToImageThread(dynamic_cast<Utils::UI::ImageParameters&>(parameters), this);
         break;
-    }
     case 2:
-    {
-        auto& bagParameters = dynamic_cast<Utils::UI::BagParameters&>(parameters);
-        m_thread = new WriteToBagThread(bagParameters, this);
+        m_thread = new WriteToBagThread(dynamic_cast<Utils::UI::BagParameters&>(parameters), this);
         break;
-    }
     case 3:
-    {
-        auto& dummyBagParameters = dynamic_cast<Utils::UI::DummyBagParameters&>(parameters);
-        m_thread = new DummyBagThread(dummyBagParameters, this);
+        m_thread = new DummyBagThread(dynamic_cast<Utils::UI::DummyBagParameters&>(parameters), this);
         break;
     }
-    }
-    connectThread();
 
-    connect(m_cancelButton, &QPushButton::clicked, this, [this] {
+    connect(cancelButton, &QPushButton::clicked, this, [this] {
         if (m_thread->isRunning()) {
             m_thread->requestInterruption();
         }
         emit progressStopped();
     });
-    connect(m_finishedButton, &QPushButton::clicked, this, [this] {
+    connect(finishedButton, &QPushButton::clicked, this, [this] {
         emit finished();
     });
-    connect(doneShortCut, &QShortcut::activated, this, [this] {
-        if (!m_finishedButton->isVisible()) {
+    connect(doneShortCut, &QShortcut::activated, this, [this, finishedButton] {
+        if (!finishedButton->isVisible()) {
             return;
         }
         emit finished();
+    });
+
+    connect(m_thread, &BasicThread::calculatedMaximumInstances, this, [this](int count) {
+        m_maximumCount = count;
+    });
+    connect(m_thread, &BasicThread::openingCVInstanceFailed, this, [this] {
+        auto* const messageBox = new QMessageBox(QMessageBox::Warning, "Failed writing file!",
+                                                 "The video writing failed. Please make sure that all parameters are set correctly "
+                                                 "and disable the hardware acceleration, if necessary.");
+        messageBox->exec();
+        emit progressStopped();
+    });
+    connect(m_thread, &BasicThread::progressChanged, this, [this, progressLabel, progressBar] (int iteration, int progress) {
+        progressLabel->setText("Frame " + QString::number(iteration) + " of " + QString::number(m_maximumCount) + "...");
+        progressBar->setValue(progress);
+    });
+    connect(m_thread, &BasicThread::finished, this, [cancelButton, finishedButton] {
+        cancelButton->setVisible(false);
+        finishedButton->setVisible(true);
     });
 }
 
@@ -120,32 +126,4 @@ void
 ProgressWidget::startThread()
 {
     m_thread->start();
-}
-
-
-void
-ProgressWidget::connectThread()
-{
-    if (!m_thread) {
-        return;
-    }
-
-    connect(m_thread, &BasicThread::calculatedMaximumInstances, this, [this](int count) {
-        m_maximumCount = count;
-    });
-    connect(m_thread, &BasicThread::openingCVInstanceFailed, this, [this] {
-        auto* const messageBox = new QMessageBox(QMessageBox::Warning, "Failed writing file!",
-                                                 "The video writing failed. Please make sure that all parameters are set correctly "
-                                                 "and disable the hardware acceleration, if necessary.");
-        messageBox->exec();
-        emit progressStopped();
-    });
-    connect(m_thread, &BasicThread::progressChanged, this, [this] (int iteration, int progress) {
-        m_progressLabel->setText("Frame " + QString::number(iteration) + " of " + QString::number(m_maximumCount) + "...");
-        m_progressBar->setValue(progress);
-    });
-    connect(m_thread, &BasicThread::finished, this, [this] {
-        m_cancelButton->setVisible(false);
-        m_finishedButton->setVisible(true);
-    });
 }

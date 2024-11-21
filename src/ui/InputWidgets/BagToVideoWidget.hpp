@@ -7,7 +7,9 @@
 #include <QPointer>
 #include <QWidget>
 
+class QCheckBox;
 class QComboBox;
+class QFormLayout;
 class QLineEdit;
 
 /**
@@ -19,7 +21,6 @@ class BagToVideoWidget : public BasicInputWidget
 
 public:
     BagToVideoWidget(Utils::UI::VideoParameters& videoParameters,
-                     QString&                    encodingFormat,
                      QWidget*                    parent = 0);
 
 private slots:
@@ -39,6 +40,8 @@ private:
     QPointer<QComboBox> m_topicNameComboBox;
     QPointer<QLineEdit> m_videoNameLineEdit;
     QPointer<QComboBox> m_formatComboBox;
+    QPointer<QFormLayout> m_advancedOptionsFormLayout;
+    QPointer<QCheckBox> m_useLosslessCheckBox;
 
     Utils::UI::VideoParameters& m_videoParameters;
 

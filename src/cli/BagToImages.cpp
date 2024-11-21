@@ -17,11 +17,11 @@ void
 showHelp()
 {
     std::cout << "Usage: ros2 run mediassist4_ros_tools tool_bag_to_images path/to/ROSBag topic_name path/to/target/image/dir --format format" << std::endl;
-    std::cout << "-f or --format: Must be jpg or png.\n" << std::endl;
+    std::cout << "-f or --format: Must be jpg, png or bmp.\n" << std::endl;
     std::cout << "Additional parameters:" << std::endl;
-    std::cout << "-q 0-9 or --quality 0-9: Image quality, must be between 0 and 9 (9 is highest)." << std::endl;
     std::cout << "-c or --colorless: Encode images without color." << std::endl;
-    std::cout << "-o or --optimize (jpg only): Optimize jpeg file size." << std::endl;
+    std::cout << "-q 0-9 or --quality 0-9 (jpg and png only): Image quality, must be between 0 and 9 (9 is highest)." << std::endl;
+    std::cout << "-o or --optimize (jpg only): Optimize jpg file size." << std::endl;
     std::cout << "-b or --binary (png only): Write images with only black and white pixels." << std::endl;
     std::cout << "-h or --help: Show this help." << std::endl;
 }
@@ -33,7 +33,7 @@ main(int argc, char* argv[])
     // Create application
     QCoreApplication app(argc, argv);
     const auto& arguments = app.arguments();
-    if (arguments.size() < 6 || arguments.contains("--help") || arguments.contains("-h") || (!arguments.contains("-f") && !arguments.contains("--format"))) {
+    if (arguments.size() < 5 || arguments.contains("--help") || arguments.contains("-h") || (!arguments.contains("-f") && !arguments.contains("--format"))) {
         showHelp();
         return 0;
     }
@@ -67,8 +67,8 @@ main(int argc, char* argv[])
 
     // Format
     imageParameters.format = arguments.at(5);
-    if (imageParameters.format != "jpg" && imageParameters.format != "png") {
-        std::cerr << "Please enter either 'jpg' or 'png' for the format!" << std::endl;
+    if (imageParameters.format != "jpg" && imageParameters.format != "png" && imageParameters.format != "bmp") {
+        std::cerr << "Please enter either 'jpg', 'png' or 'bmp' for the format!" << std::endl;
         return 0;
     }
 

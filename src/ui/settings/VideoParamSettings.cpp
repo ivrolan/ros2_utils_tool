@@ -16,9 +16,11 @@ VideoParamSettings::write()
 
     QSettings settings;
     settings.beginGroup(m_groupName);
+    setSettingsParameter(settings, m_videoParameters.format, "format");
     setSettingsParameter(settings, m_videoParameters.fps, "fps");
     setSettingsParameter(settings, m_videoParameters.useHardwareAcceleration, "hw_acc");
     setSettingsParameter(settings, m_videoParameters.useBWImages, "bw_images");
+    setSettingsParameter(settings, m_videoParameters.lossless, "lossless_images");
     settings.endGroup();
 
     return true;
@@ -34,9 +36,11 @@ VideoParamSettings::read()
 
     QSettings settings;
     settings.beginGroup(m_groupName);
+    m_videoParameters.format = settings.value("format").isValid() ? settings.value("format").toString() : "mp4";
     m_videoParameters.fps = settings.value("fps").isValid() ? settings.value("fps").toInt() : 30;
     m_videoParameters.useHardwareAcceleration = settings.value("hw_acc").isValid() ? settings.value("hw_acc").toBool() : false;
     m_videoParameters.useBWImages = settings.value("bw_images").isValid() ? settings.value("bw_images").toBool() : false;
+    m_videoParameters.lossless = settings.value("lossless_images").isValid() ? settings.value("lossless_images").toBool() : false;
     settings.endGroup();
 
     return true;

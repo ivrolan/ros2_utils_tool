@@ -61,7 +61,7 @@ BasicInputWidget::setPixmapLabelIcon()
 bool
 BasicInputWidget::event(QEvent *event)
 {
-    if (event->type() == QEvent::ApplicationPaletteChange || event->type() == QEvent::PaletteChange) {
+    [[unlikely]] if (event->type() == QEvent::ApplicationPaletteChange || event->type() == QEvent::PaletteChange) {
         setPixmapLabelIcon();
     }
     return QWidget::event(event);

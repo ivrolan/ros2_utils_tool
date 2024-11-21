@@ -2,7 +2,6 @@
 
 #include <QRegularExpression>
 
-#include "rclcpp/rclcpp.hpp"
 #include "rosbag2_cpp/reader.hpp"
 
 namespace Utils::ROS
@@ -98,8 +97,7 @@ getBagVideoTopics(const QString& bagDirectory)
     rosbag2_cpp::Reader reader;
     reader.open(bagDirectory.toStdString());
 
-    const auto topicsAndTypes = reader.get_all_topics_and_types();
-    for (const auto& topicAndType : topicsAndTypes) {
+    for (const auto topicsAndTypes = reader.get_all_topics_and_types(); const auto& topicAndType : topicsAndTypes) {
         if (topicAndType.type == "sensor_msgs/msg/Image") {
             videoTopics.push_back(QString::fromStdString(topicAndType.name));
         }

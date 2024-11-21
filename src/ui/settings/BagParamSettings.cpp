@@ -2,7 +2,7 @@
 
 BagParamSettings::BagParamSettings(Utils::UI::BagParameters& bagParameters,
                                    const QString&            groupName) :
-    VideoParamSettings(bagParameters, groupName), m_bagParameters(bagParameters)
+    AdvancedParamSettings(bagParameters, groupName), m_bagParameters(bagParameters)
 {
     read();
 }
@@ -11,13 +11,15 @@ BagParamSettings::BagParamSettings(Utils::UI::BagParameters& bagParameters,
 bool
 BagParamSettings::write()
 {
-    if (!VideoParamSettings::write()) {
+    if (!AdvancedParamSettings::write()) {
         return false;
     }
 
     QSettings settings;
     settings.beginGroup(m_groupName);
-    setSettingsParameter(settings, m_bagParameters.useCDRForSerialization, "cdr");
+    setSettingsParameter(settings, m_bagParameters.fps, "fps");
+    setSettingsParameter(settings, m_bagParameters.useCustomFPS, "custom_fps");
+    setSettingsParameter(settings, m_bagParameters.useHardwareAcceleration, "hw_acc");
     settings.endGroup();
 
     return true;
@@ -27,13 +29,15 @@ BagParamSettings::write()
 bool
 BagParamSettings::read()
 {
-    if (!VideoParamSettings::read()) {
+    if (!AdvancedParamSettings::read()) {
         return false;
     }
 
     QSettings settings;
     settings.beginGroup(m_groupName);
-    m_bagParameters.useCDRForSerialization = settings.value("cdr").isValid() ? settings.value("cdr").toBool() : false;
+    m_bagParameters.fps = settings.value("fps").isValid() ? settings.value("fps").toInt() : 30;
+    m_bagParameters.useCustomFPS = settings.value("custom_fps").isValid() ? settings.value("custom_fps").toBool() : false;
+    m_bagParameters.useHardwareAcceleration = settings.value("hw_acc").isValid() ? settings.value("hw_acc").toBool() : false;
     settings.endGroup();
 
     return true;

@@ -37,7 +37,7 @@ MainWindow::setConfigWidget(int mode)
     QPointer<BasicInputWidget> basicInputWidget;
     switch (mode) {
     case 0:
-        basicInputWidget = new BagToVideoWidget(m_parametersBagToVideo, m_encodingFormat);
+        basicInputWidget = new BagToVideoWidget(m_parametersBagToVideo);
         break;
     case 1:
         basicInputWidget = new BagToImagesWidget(m_parametersBagToImages);

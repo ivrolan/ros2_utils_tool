@@ -6,6 +6,7 @@ As of now, the tool provides the following functionalities:
 - Encode a video out of a ROSBag video topic to mp4 or mkv
 - Write images of of a ROSBag video topic, either using jpg or png format
 - Write an mp4 or mkv video file to a ROSBag.
+- Create a dummy bag file, containing either string, int or image messages
 
 NOTE: The package is still under active development, so more tools might be added later in the future.
 
@@ -74,25 +75,35 @@ ros2 run mediassist4_ros_tools tool_ui
 
 **Bag-to-Video-Tool**:
 ```
-ros2 run mediassist4_ros_tools tool_bag_to_video /path/to/bag_file topic_name_of_video_topic /path/where/video/should/be/stored use_hardware_acceleration
+ros2 run mediassist4_ros_tools tool_bag_to_video /path/to/bag_file topic_name_of_video_topic /path/where/video/should/be/stored
 ```
-(The video needs to have an .mp4 or .mkv appendix, the hardware acceleration parameter needs to be `true` or `false`).
+(The video needs to have an .mp4 or .mkv appendix).
 
 **Bag-to-Images-Tool**:
 ```
-ros2 run mediassist4_ros_tools tool_bag_to_images /path/to/bag_file topic_name_of_video_topic /path/where/images/should/be/stored format quality
+ros2 run mediassist4_ros_tools tool_bag_to_images /path/to/bag_file topic_name_of_video_topic /path/where/images/should/be/stored --format image_format
 ```
-(format needs to be either `jpg` or `png`, quality a value between `0` and `9`).
+(`image_format` needs to be either `jpg`, `png` or `bmp`).
 
 **Video-to-Bag-Tool**:
 ```
-ros2 run mediassist4_ros_tools tool_video_to_bag /path/to/video_file topic_name_in_bag /path/where/bag/should/be/stored use_hardware_acceleration
+ros2 run mediassist4_ros_tools tool_video_to_bag /path/to/video_file topic_name_in_bag /path/where/bag/should/be/stored
 ```
-(The video needs to have an .mp4 or .mkv appendix, the hardware acceleration parameter needs to be `true` or `false`).
+(The video needs to have an .mp4 or .mkv appendix).
+
+**Dummy-Bag-Tool**:
+```
+ros2 run mediassist4_ros_tools tool_dummy_bag path/to/ROSBag topic_type_1 topic_name_1 ... message_count
+```
+(Topic type needs to be `String`, `Integer` or `Image`, up to three topics can be written, `message_count` needs to be a value from 1 to 1000).
 
 **Unit tests**:
 ```
 ros2 run mediassist4_ros_tools tool_tests
 ```
+
+## License
+
+The mediassist4_ros_tools package is licensed under [EUPLv1.2](https://interoperable-europe.ec.europa.eu/sites/default/files/custom-page/attachment/2020-03/EUPL-1.2%20EN.txt).
 
 [1] https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html

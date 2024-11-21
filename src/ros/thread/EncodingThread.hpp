@@ -15,10 +15,5 @@ public:
     run() override;
 
 private:
-    const std::string m_targetDirectory;
-
-    const int m_fps;
-
-    const bool m_useHardwareAcceleration;
-    const bool m_useBWImages;
+    const Utils::UI::VideoParameters& m_videoParameters;
 };

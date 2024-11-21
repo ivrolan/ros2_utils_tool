@@ -3,13 +3,36 @@
 #include <QString>
 #include <QVector>
 
+#include "rclcpp/rclcpp.hpp"
+#include "rosbag2_cpp/writer.hpp"
 #include "rosbag2_storage/bag_metadata.hpp"
 
+#include "std_msgs/msg/int32.hpp"
+#include "std_msgs/msg/string.hpp"
+
 #include <string>
+
+template<typename T, typename U>
+concept WriteMessageParameter = (std::same_as<T, std_msgs::msg::String> && std::same_as<U, std::string>) ||
+                                (std::same_as<T, std_msgs::msg::Int32> && std::same_as<U, int>);
 
 // ROS related util functions
 namespace Utils::ROS
 {
+template<typename T, typename U>
+requires WriteMessageParameter<T, U>
+void
+writeMessage(T                    message,
+             const U              messageData,
+             rosbag2_cpp::Writer& writer,
+             const QString&       topicName,
+             const rclcpp::Time&  timeStamp)
+{
+    message.data = messageData;
+    writer.write(message, topicName.toStdString(), timeStamp);
+}
+
+
 // Returns if a directory contains a ROSBag
 [[nodiscard]] bool
 doesDirectoryContainBagFile(const QString& bagDirectory);

@@ -31,13 +31,16 @@ struct ImageParameters : AdvancedParameters {
     bool    pngBilevel = false;
 };
 struct VideoParameters : AdvancedParameters {
-    int  fps = 30;
-    bool useHardwareAcceleration = false;
-    bool useBWImages = false;
+    QString format = "mp4";
+    int     fps = 30;
+    bool    useHardwareAcceleration = false;
+    bool    useBWImages = false;
+    bool    lossless = false;
 };
-
-struct BagParameters : VideoParameters {
-    bool useCDRForSerialization = false;
+struct BagParameters : AdvancedParameters {
+    int  fps = 30;
+    bool useCustomFPS = false;
+    bool useHardwareAcceleration = false;
 };
 
 struct DummyBagTopic {

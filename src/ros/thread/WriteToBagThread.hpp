@@ -16,9 +16,5 @@ public:
     run() override;
 
 private:
-    const std::string m_targetDirectory;
-
-    const int m_fps;
-    const bool m_useHardwareAcceleration;
-    const bool m_useCDRForSerialization;
+    const Utils::UI::BagParameters& m_bagParameters;
 };

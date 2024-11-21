@@ -17,8 +17,7 @@ showHelp()
     std::cout << "Usage: ros2 run mediassist4_ros_tools tool_video_to_bag path/to/video topic_name path/of/stored/ros_bag" << std::endl;
     std::cout << "The video must have an ending of .mp4 or .mkv.\n" << std::endl;
     std::cout << "Additional parameters:" << std::endl;
-    std::cout << "-f or --format: Specify the format used to serialize the video images. Must be 'sqlite3' or 'cdr'." << std::endl;
-    std::cout << "-r or --rate: Framerate for the image stream. Must be from 10 to 60." << std::endl;
+    std::cout << "-r or --rate: Framerate for the image stream. Must be from 10 to 60. If no rate is specified, the video's rate will be taken." << std::endl;
     std::cout << "-a or --accelerate: Use hardware acceleration." << std::endl;
     std::cout << "-h or --help: Show this help." << std::endl;
 }
@@ -69,24 +68,10 @@ main(int argc, char* argv[])
 
     // Check for optional arguments
     if (arguments.size() > 4) {
-        // Format
-        if (Utils::CLI::containsArguments(arguments, "-f", "--format")) {
-            const auto formatArgumentIndex = Utils::CLI::getArgumentsIndex(arguments, "-f", "--format");
-            if (arguments.at(formatArgumentIndex) == arguments.last()) {
-                std::cerr << "Please specify a format type!" << std::endl;
-                return 0;
-            }
-
-            const auto formatString = arguments.at(formatArgumentIndex + 1);
-            if (formatString != "sqlite3" && formatString != "cdr") {
-                std::cerr << "Please enter a correct format type ('sqlite3' or 'cdr')!" << std::endl;
-                return 0;
-            }
-            bagParameters.useCDRForSerialization = formatString == "cdr";
-        }
-
         // Framerate
         if (Utils::CLI::containsArguments(arguments, "-r", "--rate")) {
+            bagParameters.useCustomFPS = true;
+
             const auto framerateArgumentIndex = Utils::CLI::getArgumentsIndex(arguments, "-r", "--rate");
             if (arguments.at(framerateArgumentIndex) == arguments.last()) {
                 std::cerr << "Please specify a framerate!" << std::endl;

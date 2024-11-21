@@ -49,8 +49,8 @@ StartWidget::StartWidget(QWidget *parent) :
     lowerButtonLayout->addWidget(m_bagInfoButton);
     lowerButtonLayout->addStretch();
 
-    auto* const versionLabel = new QLabel("v0.4.0");
-    versionLabel->setToolTip("Advanced options and a setting to save your parameters!");
+    auto* const versionLabel = new QLabel("v0.5.0");
+    versionLabel->setToolTip("Lossless bag-to-video export, bmp bag-to-image support and various bugfixes.");
 
     auto* const versionLayout = new QHBoxLayout;
     versionLayout->addStretch();
@@ -91,8 +91,8 @@ StartWidget::StartWidget(QWidget *parent) :
 void
 StartWidget::openSettingsDialog()
 {
-    if (auto* const settingsDialog = new SettingsDialog; settingsDialog->exec() == QDialog::Accepted) {
-    }
+    auto* const settingsDialog = new SettingsDialog;
+    settingsDialog->exec();
 }
 
 

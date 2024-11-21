@@ -7,7 +7,6 @@
 class QCheckBox;
 class QComboBox;
 class QFormLayout;
-class QLabel;
 class QLineEdit;
 class QSlider;
 
@@ -39,9 +38,8 @@ private:
     QPointer<QComboBox> m_topicNameComboBox;
     QPointer<QLineEdit> m_imagesNameLineEdit;
     QPointer<QSlider> m_slider;
-    QPointer<QLabel> m_formLayoutSliderLabel;
     QPointer<QCheckBox> m_useBWCheckBox;
-    QPointer<QCheckBox> m_optimizeBilevelCheckBox;
+    QPointer<QCheckBox> m_optimizeOrBilevelCheckBox;
 
     QPointer<QFormLayout> m_advancedOptionsFormLayout;
 

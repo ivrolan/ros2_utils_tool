@@ -3,7 +3,6 @@
 #include <opencv2/videoio.hpp>
 
 #include "rosbag2_cpp/writer.hpp"
-
 #include "sensor_msgs/msg/image.hpp"
 
 #include <filesystem>
@@ -17,9 +16,7 @@
 WriteToBagThread::WriteToBagThread(const Utils::UI::BagParameters& bagParameters,
                                    QObject*                        parent) :
     BasicThread(bagParameters.sourceDirectory, bagParameters.topicName, parent),
-    m_targetDirectory(bagParameters.targetDirectory.toStdString()),
-    m_fps(bagParameters.fps), m_useHardwareAcceleration(bagParameters.useHardwareAcceleration),
-    m_useCDRForSerialization(bagParameters.useCDRForSerialization)
+    m_bagParameters(bagParameters)
 {
 }
 
@@ -28,29 +25,26 @@ void
 WriteToBagThread::run()
 {
     auto videoCapture = cv::VideoCapture(m_sourceDirectory, cv::CAP_ANY, {
-        cv::CAP_PROP_HW_ACCELERATION, m_useHardwareAcceleration ? cv::VIDEO_ACCELERATION_ANY : cv::VIDEO_ACCELERATION_NONE
+        cv::CAP_PROP_HW_ACCELERATION, m_bagParameters.useHardwareAcceleration ? cv::VIDEO_ACCELERATION_ANY : cv::VIDEO_ACCELERATION_NONE
     });
     if (!videoCapture.isOpened()) {
         emit openingCVInstanceFailed();
         return;
     }
 
-    if (std::filesystem::exists(m_targetDirectory)) {
-        std::filesystem::remove_all(m_targetDirectory);
+    const auto targetDirectoryStd = m_bagParameters.targetDirectory.toStdString();
+    if (std::filesystem::exists(targetDirectoryStd)) {
+        std::filesystem::remove_all(targetDirectoryStd);
     }
 
     const auto frameCount = videoCapture.get(cv::CAP_PROP_FRAME_COUNT);
     emit calculatedMaximumInstances(frameCount);
 
-    rosbag2_cpp::Writer writer;
-    writer.open(m_targetDirectory);
-    auto iterationCount = 0;
+    const auto finalFPS = m_bagParameters.useCustomFPS ? m_bagParameters.fps : videoCapture.get(cv::CAP_PROP_FPS);
 
-    rosbag2_storage::TopicMetadata topicMetadata;
-    topicMetadata.name = m_topicName;
-    topicMetadata.type = "sensor_msgs/msg/Image";
-    topicMetadata.serialization_format = m_useCDRForSerialization ? "cdr" : "sqlite3";
-    writer.create_topic(topicMetadata);
+    rosbag2_cpp::Writer writer;
+    writer.open(targetDirectoryStd);
+    auto iterationCount = 0;
 
     while (true) {
         if (isInterruptionRequested()) {
@@ -69,7 +63,7 @@ WriteToBagThread::run()
         // Create empty sensor message
         sensor_msgs::msg::Image message;
         std_msgs::msg::Header header;
-        const auto seconds = (float) iterationCount / m_fps;
+        const auto seconds = (float) iterationCount / finalFPS;
         const auto time = rclcpp::Time(seconds, seconds * 1000000000);
         header.stamp = time;
 

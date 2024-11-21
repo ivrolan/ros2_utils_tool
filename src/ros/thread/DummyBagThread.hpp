@@ -15,8 +15,5 @@ public:
     run() override;
 
 private:
-    std::vector<std::string> m_topicTypes;
-    std::vector<std::string> m_topicNames;
-
-    const int m_messageCount;
+    const Utils::UI::DummyBagParameters& m_dummyBagParameters;
 };
