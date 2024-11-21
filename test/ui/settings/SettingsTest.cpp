@@ -146,12 +146,18 @@ TEST_CASE("Settings Testing", "[ui]") {
             Utils::UI::BagParameters bagParameters;
             BagParamSettings bagParamSettings(bagParameters, "bag");
 
+            bagParameters.fps = 40;
             bagParameters.useCustomFPS = true;
+            bagParameters.useHardwareAcceleration = true;
             bagParamSettings.write();
 
             settings.beginGroup("bag");
+            REQUIRE(settings.value("fps").isValid());
+            REQUIRE(settings.value("fps").toInt() == 40);
             REQUIRE(settings.value("custom_fps").isValid());
             REQUIRE(settings.value("custom_fps").toBool() == true);
+            REQUIRE(settings.value("hw_acc").isValid());
+            REQUIRE(settings.value("hw_acc").toBool() == true);
             settings.endGroup();
         }
     }
