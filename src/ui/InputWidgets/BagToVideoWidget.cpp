@@ -33,6 +33,10 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
                                     "If the Bag contains multiple video topics, you can choose one of them.");
     if (!m_videoParameters.sourceDirectory.isEmpty()) {
         Utils::UI::fillComboBoxWithTopics(m_topicNameComboBox, m_videoParameters.sourceDirectory);
+
+        if (!m_videoParameters.topicName.isEmpty()) {
+            m_topicNameComboBox->setCurrentText(m_videoParameters.topicName);
+        }
     }
 
     m_videoNameLineEdit = new QLineEdit(m_videoParameters.targetDirectory);

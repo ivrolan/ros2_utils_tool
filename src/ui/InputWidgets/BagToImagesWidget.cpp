@@ -32,6 +32,10 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
                                     "If the Bag contains multiple video topics, you can choose one of them.");
     if (!m_imageParameters.sourceDirectory.isEmpty()) {
         Utils::UI::fillComboBoxWithTopics(m_topicNameComboBox, m_imageParameters.sourceDirectory);
+
+        if (!m_imageParameters.topicName.isEmpty()) {
+            m_topicNameComboBox->setCurrentText(m_imageParameters.topicName);
+        }
     }
 
     m_imagesNameLineEdit = new QLineEdit(m_imageParameters.targetDirectory);
@@ -99,7 +103,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
 
     connect(m_findSourceButton, &QPushButton::clicked, this, &BagToImagesWidget::searchButtonPressed);
     connect(m_topicNameComboBox, &QComboBox::currentTextChanged, this, [this] (const QString& text) {
-        m_imageParameters.topicName = text;
+        writeSettingsParameter(m_imageParameters.topicName, text, m_imageParamSettings);
     });
     connect(imagesLocationButton, &QPushButton::clicked, this, &BagToImagesWidget::imagesLocationButtonPressed);
     connect(formatComboBox, &QComboBox::currentTextChanged, this, &BagToImagesWidget::adjustWidgetsToChangedFormat);
