@@ -17,4 +17,13 @@ int
 getArgumentsIndex(const QStringList& stringList,
                   const QString&     shortArg,
                   const QString&     longArg);
+
+// Check if an argument is correctly called
+bool
+checkArgumentValidity(const QStringList& stringList,
+                      const QString&     shortArg,
+                      const QString&     longArg,
+                      int&               parameter,
+                      int                lowerRange,
+                      int                higherRange);
 }

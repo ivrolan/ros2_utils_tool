@@ -77,18 +77,9 @@ main(int argc, char* argv[])
     // Check for optional arguments
     if (arguments.size() > 4) {
         // Framerate
-        if (Utils::CLI::containsArguments(arguments, "-r", "--rate")) {
-            const auto framerateArgumentIndex = Utils::CLI::getArgumentsIndex(arguments, "-r", "--rate");
-            if (arguments.at(framerateArgumentIndex) == arguments.last()) {
-                std::cerr << "Please specify a framerate!" << std::endl;
-                return 0;
-            }
-
-            videoParameters.fps = arguments.at(framerateArgumentIndex + 1).toInt();
-            if (videoParameters.fps < 10 || videoParameters.fps > 60) {
-                std::cerr << "Please enter a framerate in the range of 10 to 60!" << std::endl;
-                return 0;
-            }
+        if (!Utils::CLI::checkArgumentValidity(arguments, "-r", "--rate", videoParameters.fps, 10, 60)) {
+            std::cerr << "Please enter a framerate in the range of 10 to 60!" << std::endl;
+            return 0;
         }
 
         // Hardware acceleration

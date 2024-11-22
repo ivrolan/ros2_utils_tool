@@ -67,31 +67,18 @@ main(int argc, char* argv[])
 
     // Check for optional arguments
     if (arguments.size() > 4) {
-        if (Utils::CLI::containsArguments(arguments, "-q", "--quality")) {
-            const auto qualityArgumentIndex = Utils::CLI::getArgumentsIndex(arguments, "-q", "--quality");
-            if (arguments.at(qualityArgumentIndex) == arguments.last()) {
-                std::cerr << "Please specify a quality value!" << std::endl;
-                return 0;
-            }
-
-            imageParameters.quality = arguments.at(qualityArgumentIndex + 1).toInt();
-            if (imageParameters.quality < 0 || imageParameters.quality > 9) {
-                std::cerr << "Please enter a framerate in the range of 10 to 60!" << std::endl;
-                return 0;
-            }
+        if (!Utils::CLI::checkArgumentValidity(arguments, "-q", "--quality", imageParameters.quality, 0, 9)) {
+            std::cerr << "Please enter a quality value in the range of 0 to 9!" << std::endl;
+            return 0;
         }
         if (Utils::CLI::containsArguments(arguments, "-f", "--format")) {
             const auto qualityFormatIndex = Utils::CLI::getArgumentsIndex(arguments, "-f", "--format");
-            if (arguments.at(qualityFormatIndex) == arguments.last()) {
-                std::cerr << "Please specify a format!" << std::endl;
-                return 0;
-            }
-
-            imageParameters.format = arguments.at(qualityFormatIndex + 1);
-            if (imageParameters.format != "jpg" && imageParameters.format != "png" && imageParameters.format != "bmp") {
+            if (arguments.at(qualityFormatIndex) == arguments.last() ||
+                (arguments.at(qualityFormatIndex + 1) != "jpg" && arguments.at(qualityFormatIndex + 1) != "png" && arguments.at(qualityFormatIndex + 1) != "bmp")) {
                 std::cerr << "Please enter either 'jpg', 'png' or 'bmp' for the format!" << std::endl;
                 return 0;
             }
+            imageParameters.format = arguments.at(qualityFormatIndex + 1);
         }
 
         imageParameters.useBWImages = Utils::CLI::containsArguments(arguments, "-c", "--colorless");
