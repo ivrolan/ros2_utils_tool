@@ -16,11 +16,11 @@
 void
 showHelp()
 {
-    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_bag_to_images path/to/ROSBag topic_name path/to/target/image/dir --format format" << std::endl;
-    std::cout << "-f or --format: Must be jpg, png or bmp.\n" << std::endl;
+    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_bag_to_images path/to/ROSBag topic_name path/to/target/image/dir" << std::endl;
     std::cout << "Additional parameters:" << std::endl;
+    std::cout << "-f or --format: Must be jpg, png or bmp (jpg is default).\n" << std::endl;
+    std::cout << "-q 0-9 or --quality 0-9 (jpg and png only): Image quality, must be between 0 and 9 (9 is highest, 8 is default)." << std::endl;
     std::cout << "-c or --colorless: Encode images without color." << std::endl;
-    std::cout << "-q 0-9 or --quality 0-9 (jpg and png only): Image quality, must be between 0 and 9 (9 is highest)." << std::endl;
     std::cout << "-o or --optimize (jpg only): Optimize jpg file size." << std::endl;
     std::cout << "-b or --binary (png only): Write images with only black and white pixels." << std::endl;
     std::cout << "-h or --help: Show this help." << std::endl;
@@ -33,7 +33,7 @@ main(int argc, char* argv[])
     // Create application
     QCoreApplication app(argc, argv);
     const auto& arguments = app.arguments();
-    if (arguments.size() < 5 || arguments.contains("--help") || arguments.contains("-h") || (!arguments.contains("-f") && !arguments.contains("--format"))) {
+    if (arguments.size() < 3 || arguments.contains("--help") || arguments.contains("-h")) {
         showHelp();
         return 0;
     }
@@ -65,15 +65,8 @@ main(int argc, char* argv[])
     // Images directory
     imageParameters.targetDirectory = arguments.at(3);
 
-    // Format
-    imageParameters.format = arguments.at(5);
-    if (imageParameters.format != "jpg" && imageParameters.format != "png" && imageParameters.format != "bmp") {
-        std::cerr << "Please enter either 'jpg', 'png' or 'bmp' for the format!" << std::endl;
-        return 0;
-    }
-
     // Check for optional arguments
-    if (arguments.size() > 6) {
+    if (arguments.size() > 4) {
         if (Utils::CLI::containsArguments(arguments, "-q", "--quality")) {
             const auto qualityArgumentIndex = Utils::CLI::getArgumentsIndex(arguments, "-q", "--quality");
             if (arguments.at(qualityArgumentIndex) == arguments.last()) {
@@ -84,6 +77,19 @@ main(int argc, char* argv[])
             imageParameters.quality = arguments.at(qualityArgumentIndex + 1).toInt();
             if (imageParameters.quality < 0 || imageParameters.quality > 9) {
                 std::cerr << "Please enter a framerate in the range of 10 to 60!" << std::endl;
+                return 0;
+            }
+        }
+        if (Utils::CLI::containsArguments(arguments, "-f", "--format")) {
+            const auto qualityFormatIndex = Utils::CLI::getArgumentsIndex(arguments, "-f", "--format");
+            if (arguments.at(qualityFormatIndex) == arguments.last()) {
+                std::cerr << "Please specify a format!" << std::endl;
+                return 0;
+            }
+
+            imageParameters.format = arguments.at(qualityFormatIndex + 1);
+            if (imageParameters.format != "jpg" && imageParameters.format != "png" && imageParameters.format != "bmp") {
+                std::cerr << "Please enter either 'jpg', 'png' or 'bmp' for the format!" << std::endl;
                 return 0;
             }
         }
