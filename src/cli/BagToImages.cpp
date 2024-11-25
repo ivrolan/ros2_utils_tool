@@ -93,6 +93,9 @@ main(int argc, char* argv[])
     QObject::connect(writeToImageThread, &WriteToImageThread::calculatedMaximumInstances, [&thisMessageCount](int count) {
         thisMessageCount = count;
     });
+    QObject::connect(writeToImageThread, &WriteToImageThread::startingDataCollection, [] {
+        std::cout << "Starting, gathering necessery data..." << std::endl;
+    });
     QObject::connect(writeToImageThread, &WriteToImageThread::progressChanged, [&thisMessageCount] (int iteration, int progress) {
         const auto progressString = Utils::General::drawProgressString(progress);
         // Always clear the last line for a nice "progress bar" feeling in the terminal
@@ -104,7 +107,6 @@ main(int argc, char* argv[])
     });
     QObject::connect(writeToImageThread, &WriteToImageThread::finished, writeToImageThread, &QObject::deleteLater);
 
-    std::cout << "Writing images. Please wait..." << std::endl;
     writeToImageThread->start();
     // Wait until the thread is finished
     while (!writeToImageThread->isFinished()) {

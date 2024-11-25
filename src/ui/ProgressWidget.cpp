@@ -29,6 +29,7 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
     headerLabel->setAlignment(Qt::AlignHCenter);
 
     auto* const progressBar = new QProgressBar;
+    progressBar->setVisible(false);
 
     auto* const progressLabel = new QLabel;
     progressLabel->setAlignment(Qt::AlignHCenter);
@@ -97,6 +98,9 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
     connect(m_thread, &BasicThread::calculatedMaximumInstances, this, [this](int count) {
         m_maximumCount = count;
     });
+    connect(m_thread, &BasicThread::startingDataCollection, this, [progressLabel] {
+        progressLabel->setText("Collecting necessary data...");
+    });
     connect(m_thread, &BasicThread::openingCVInstanceFailed, this, [this] {
         auto* const messageBox = new QMessageBox(QMessageBox::Warning, "Failed writing file!",
                                                  "The video writing failed. Please make sure that all parameters are set correctly "
@@ -105,8 +109,11 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
         emit progressStopped();
     });
     connect(m_thread, &BasicThread::progressChanged, this, [this, progressLabel, progressBar] (int iteration, int progress) {
-        progressLabel->setText("Frame " + QString::number(iteration) + " of " + QString::number(m_maximumCount) + "...");
+        if (!progressBar->isVisible()) {
+            progressBar->setVisible(true);
+        }
         progressBar->setValue(progress);
+        progressLabel->setText("Frame " + QString::number(iteration) + " of " + QString::number(m_maximumCount) + "...");
     });
     connect(m_thread, &BasicThread::finished, this, [cancelButton, finishedButton] {
         cancelButton->setVisible(false);

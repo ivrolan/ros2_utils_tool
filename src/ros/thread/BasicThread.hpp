@@ -16,6 +16,9 @@ signals:
     void
     calculatedMaximumInstances(int count);
 
+    void
+    startingDataCollection();
+
     // OpenCV video writer or capture opening might fail
     void
     openingCVInstanceFailed();
