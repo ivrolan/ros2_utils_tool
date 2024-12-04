@@ -1,7 +1,6 @@
 #include "EncodingThread.hpp"
 
 #include "UtilsCLI.hpp"
-#include "UtilsGeneral.hpp"
 #include "UtilsROS.hpp"
 #include "UtilsUI.hpp"
 
@@ -101,7 +100,7 @@ main(int argc, char* argv[])
         return 0;
     });
     QObject::connect(encodingThread, &EncodingThread::progressChanged, [&thisMessageCount] (int iteration, int progress) {
-        const auto progressString = Utils::General::drawProgressString(progress);
+        const auto progressString = Utils::CLI::drawProgressString(progress);
         // Always clear the last line for a nice "progress bar" feeling
         std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << thisMessageCount << ")\r" << std::flush;
     });

@@ -6,7 +6,6 @@ add_executable(tool_tests
     ${CMAKE_CURRENT_LIST_DIR}/ui/settings/SettingsTest.cpp
 
     ${CMAKE_CURRENT_LIST_DIR}/utils/UtilsCLITest.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/utils/UtilsGeneralTest.cpp
     ${CMAKE_CURRENT_LIST_DIR}/utils/UtilsROSTest.cpp
     ${CMAKE_CURRENT_LIST_DIR}/utils/UtilsSettingsTest.cpp
     ${CMAKE_CURRENT_LIST_DIR}/utils/UtilsUITest.cpp

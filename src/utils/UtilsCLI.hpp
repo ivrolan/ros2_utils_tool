@@ -3,6 +3,8 @@
 #include <QString>
 #include <QStringList>
 
+#include <string>
+
 // Util functions for the cli tools
 namespace Utils::CLI
 {
@@ -26,4 +28,10 @@ checkArgumentValidity(const QStringList& stringList,
                       int&               parameter,
                       int                lowerRange,
                       int                higherRange);
+
+// Draws a small progress string in the following format:
+// ############################--------------------
+// 50 charactes, # shows the progress
+[[nodiscard]] std::string
+drawProgressString(int progress);
 }

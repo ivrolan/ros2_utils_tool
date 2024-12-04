@@ -31,4 +31,14 @@ TEST_CASE("Utils CLI Testing", "[utils]") {
         arguments.insert(2, "--test");
         REQUIRE(Utils::CLI::getArgumentsIndex(arguments, "-t", "--test") == 2);
     }
+    SECTION("Progress string test") {
+        auto progressString = Utils::CLI::drawProgressString(0);
+        REQUIRE(progressString == "--------------------------------------------------");
+        progressString = Utils::CLI::drawProgressString(10);
+        REQUIRE(progressString == "#####---------------------------------------------");
+        progressString = Utils::CLI::drawProgressString(25);
+        REQUIRE(progressString == "############--------------------------------------");
+        progressString = Utils::CLI::drawProgressString(100);
+        REQUIRE(progressString == "##################################################");
+    }
 }

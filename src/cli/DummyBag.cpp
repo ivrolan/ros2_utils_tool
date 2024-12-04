@@ -1,6 +1,6 @@
 #include "DummyBagThread.hpp"
 
-#include "UtilsGeneral.hpp"
+#include "UtilsCLI.hpp"
 #include "UtilsROS.hpp"
 #include "UtilsUI.hpp"
 
@@ -101,7 +101,7 @@ main(int argc, char* argv[])
         thisMessageCount = count;
     });
     QObject::connect(dummyBagThread, &DummyBagThread::progressChanged, [&thisMessageCount] (int iteration, int progress) {
-        const auto progressString = Utils::General::drawProgressString(progress);
+        const auto progressString = Utils::CLI::drawProgressString(progress);
         // Clear the last line for a nice "progress bar" feeling
         std::cout << progressString << " " << progress << "% (Message " << iteration << " of " << thisMessageCount << ")\r" << std::flush;
     });
