@@ -87,6 +87,12 @@ main(int argc, char* argv[])
         videoParameters.lossless = Utils::CLI::containsArguments(arguments, "-l", "--lossless");
     }
 
+    if (std::filesystem::exists(videoParameters.targetDirectory.toStdString())) {
+        if (!Utils::CLI::continueForExistingSourceDir("The video already exists. Continue? [y/n]")) {
+            return 0;
+        }
+    }
+
     auto thisMessageCount = 0;
 
     // Create encoding thread and connect to its informations

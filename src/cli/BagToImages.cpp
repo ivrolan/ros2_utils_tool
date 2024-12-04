@@ -85,6 +85,12 @@ main(int argc, char* argv[])
         imageParameters.pngBilevel = imageParameters.format == "png" && Utils::CLI::containsArguments(arguments, "-b", "--binary");
     }
 
+    if (std::filesystem::exists(imageParameters.targetDirectory.toStdString())) {
+        if (!Utils::CLI::continueForExistingSourceDir("The image directory already exists. Continue? [y/n]")) {
+            return 0;
+        }
+    }
+
     auto thisMessageCount = 0;
 
     // Create thread and connect to its informations

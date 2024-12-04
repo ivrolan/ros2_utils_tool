@@ -29,6 +29,9 @@ checkArgumentValidity(const QStringList& stringList,
                       int                lowerRange,
                       int                higherRange);
 
+bool
+continueForExistingSourceDir(const std::string& message);
+
 // Draws a small progress string in the following format:
 // ############################--------------------
 // 50 charactes, # shows the progress

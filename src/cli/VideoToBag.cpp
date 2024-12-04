@@ -77,6 +77,12 @@ main(int argc, char* argv[])
         bagParameters.useHardwareAcceleration = Utils::CLI::containsArguments(arguments, "-a", "--accelerate");
     }
 
+    if (std::filesystem::exists(bagParameters.targetDirectory.toStdString())) {
+        if (!Utils::CLI::continueForExistingSourceDir("The bag file already exists. Continue? [y/n]")) {
+            return 0;
+        }
+    }
+
     auto thisMessageCount = 0;
 
     // Create thread and connect to its informations

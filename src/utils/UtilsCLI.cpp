@@ -1,5 +1,7 @@
 #include "UtilsCLI.hpp"
 
+#include <iostream>
+
 namespace Utils::CLI
 {
 bool
@@ -32,6 +34,24 @@ checkArgumentValidity(const QStringList& stringList, const QString& shortArg, co
     }
 
     return true;
+}
+
+
+bool
+continueForExistingSourceDir(const std::string& message)
+{
+    std::string input;
+
+    while (true) {
+        std::cout << message << std::endl;
+        std::cin >> input;
+
+        if (input == "y") {
+            return true;
+        } else if (input == "n") {
+            return false;
+        }
+    }
 }
 
 

@@ -213,11 +213,10 @@ BagToImagesWidget::okButtonPressed()
     }
 
     // Only ask if exists and the file dialog has not been called
-    if (std::filesystem::exists(m_imagesNameLineEdit->text().toStdString()) &&
-        !std::filesystem::is_empty(m_imagesNameLineEdit->text().toStdString())) {
-        auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Images already exist!",
-                                             "Images already exist under the specified directory! Are you sure you want to continue? "
-                                             "This will overwrite all existing files.",
+    if (std::filesystem::exists(m_imagesNameLineEdit->text().toStdString())) {
+        auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Directory already exists!",
+                                             "The specified directory already exists! Are you sure you want to continue? "
+                                             "This will overwrite all potentially existing images.",
                                              QMessageBox::Yes | QMessageBox::No);
         if (const auto ret = msgBox->exec(); ret == QMessageBox::No) {
             return;

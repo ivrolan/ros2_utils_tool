@@ -92,10 +92,16 @@ main(int argc, char* argv[])
         dummyBagParameters.topics.push_back({ topicTypes.at(i), topicNames.at(i) });
     }
 
-    // Create thread and connect to its informations
-    auto* const dummyBagThread = new DummyBagThread(dummyBagParameters);
+    if (std::filesystem::exists(dummyBagParameters.sourceDirectory.toStdString())) {
+        if (!Utils::CLI::continueForExistingSourceDir("The dummy bag file already exists. Continue? [y/n]")) {
+            return 0;
+        }
+    }
 
     auto thisMessageCount = 0;
+
+    // Create thread and connect to its informations
+    auto* const dummyBagThread = new DummyBagThread(dummyBagParameters);
 
     QObject::connect(dummyBagThread, &DummyBagThread::calculatedMaximumInstances, [&thisMessageCount](int count) {
         thisMessageCount = count;
