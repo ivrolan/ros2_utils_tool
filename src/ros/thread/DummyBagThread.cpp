@@ -4,6 +4,8 @@
 
 #include "sensor_msgs/msg/image.hpp"
 
+#include <filesystem>
+
 #ifdef ROS_JAZZY
 #include <cv_bridge/cv_bridge.hpp>
 #else
@@ -22,6 +24,10 @@ void
 DummyBagThread::run()
 {
     emit calculatedMaximumInstances(m_dummyBagParameters.messageCount);
+
+    if (std::filesystem::exists(m_sourceDirectory)) {
+        std::filesystem::remove_all(m_sourceDirectory);
+    }
 
     rosbag2_cpp::Writer writer;
     writer.open(m_sourceDirectory);

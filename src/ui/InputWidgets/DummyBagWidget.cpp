@@ -16,6 +16,8 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 
+#include <filesystem>
+
 DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters, QWidget *parent) :
     BasicInputWidget("Create Dummy ROSBag", ":/icons/dummy_bag", parent),
     m_dummyBagParameters(dummyBagParameters), m_dummyBagParamSettings(dummyBagParameters, "dummy_bag")
@@ -165,6 +167,15 @@ DummyBagWidget::okButtonPressed()
     if (topicNameSet.size() != m_dummyTopicWidgets.size()) {
         Utils::UI::createCriticalMessageBox("Duplicate topic names!", "Please make sure that no duplicate topic names are used!");
         return;
+    }
+    if (std::filesystem::exists(m_dummyBagParameters.sourceDirectory.toStdString())) {
+        auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Bagfile already exists!",
+                                             "A bag file already exists under the specified directory! Are you sure you want to continue? "
+                                             "This will overwrite the existing file.",
+                                             QMessageBox::Yes | QMessageBox::No);
+        if (const auto ret = msgBox->exec(); ret == QMessageBox::No) {
+            return;
+        }
     }
 
     emit okPressed();
