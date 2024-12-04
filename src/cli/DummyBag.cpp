@@ -102,11 +102,12 @@ main(int argc, char* argv[])
     });
     QObject::connect(dummyBagThread, &DummyBagThread::progressChanged, [&thisMessageCount] (int iteration, int progress) {
         const auto progressString = Utils::General::drawProgressString(progress);
-        // Always clear the last line for a nice "progress bar" feeling in the terminal
-        std::cout << progressString << " " << progress << "% (Message " << iteration << " of " << thisMessageCount << ")\r";
+        // Clear the last line for a nice "progress bar" feeling
+        std::cout << progressString << " " << progress << "% (Message " << iteration << " of " << thisMessageCount << ")\r" << std::flush;
     });
     QObject::connect(dummyBagThread, &DummyBagThread::finished, [] {
-        std::cout << "Creating bag finished! \r" << std::endl;
+        std::cout << "" << std::endl; // Extra line to stop flushing
+        std::cout << "Creating bag finished!" << std::endl;
         return EXIT_SUCCESS;
     });
     QObject::connect(dummyBagThread, &DummyBagThread::finished, dummyBagThread, &QObject::deleteLater);

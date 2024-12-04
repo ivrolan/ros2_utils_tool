@@ -98,11 +98,12 @@ main(int argc, char* argv[])
     });
     QObject::connect(writeToImageThread, &WriteToImageThread::progressChanged, [&thisMessageCount] (int iteration, int progress) {
         const auto progressString = Utils::General::drawProgressString(progress);
-        // Always clear the last line for a nice "progress bar" feeling in the terminal
-        std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << thisMessageCount << ")\r";
+        // Always clear the last line for a nice "progress bar" feeling
+        std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << thisMessageCount << ")\r" << std::flush;
     });
     QObject::connect(writeToImageThread, &WriteToImageThread::finished, [] {
-        std::cout << "Writing images finished! \r" << std::endl;
+        std::cout << "" << std::endl; // Extra line to stop flushing
+        std::cout << "Writing images finished!" << std::endl;
         return EXIT_SUCCESS;
     });
     QObject::connect(writeToImageThread, &WriteToImageThread::finished, writeToImageThread, &QObject::deleteLater);

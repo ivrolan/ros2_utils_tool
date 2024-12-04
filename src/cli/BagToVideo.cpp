@@ -88,25 +88,26 @@ main(int argc, char* argv[])
         videoParameters.lossless = Utils::CLI::containsArguments(arguments, "-l", "--lossless");
     }
 
-    auto this_messageCount = 0;
+    auto thisMessageCount = 0;
 
     // Create encoding thread and connect to its informations
     auto* const encodingThread = new EncodingThread(videoParameters);
 
-    QObject::connect(encodingThread, &EncodingThread::calculatedMaximumInstances, [&this_messageCount](int count) {
-        this_messageCount = count;
+    QObject::connect(encodingThread, &EncodingThread::calculatedMaximumInstances, [&thisMessageCount](int count) {
+        thisMessageCount = count;
     });
     QObject::connect(encodingThread, &EncodingThread::openingCVInstanceFailed, [] {
         std::cerr << "The video writing failed. Please make sure that all parameters are set correctly and disable the hardware acceleration, if necessary." << std::endl;
         return 0;
     });
-    QObject::connect(encodingThread, &EncodingThread::progressChanged, [&this_messageCount] (int iteration, int progress) {
+    QObject::connect(encodingThread, &EncodingThread::progressChanged, [&thisMessageCount] (int iteration, int progress) {
         const auto progressString = Utils::General::drawProgressString(progress);
-        // Always clear the last line for a nice "progress bar" feeling in the terminal
-        std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << this_messageCount << ")\r";
+        // Always clear the last line for a nice "progress bar" feeling
+        std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << thisMessageCount << ")\r" << std::flush;
     });
     QObject::connect(encodingThread, &EncodingThread::finished, [] {
-        std::cout << "Encoding finished! \r" << std::endl;
+        std::cout << "" << std::endl; // Extra line to stop flushing
+        std::cout << "Encoding finished!" << std::endl;
         return EXIT_SUCCESS;
     });
     QObject::connect(encodingThread, &EncodingThread::finished, encodingThread, &QObject::deleteLater);

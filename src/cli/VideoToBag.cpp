@@ -78,26 +78,27 @@ main(int argc, char* argv[])
         bagParameters.useHardwareAcceleration = Utils::CLI::containsArguments(arguments, "-a", "--accelerate");
     }
 
-    auto this_messageCount = 0;
+    auto thisMessageCount = 0;
 
     // Create thread and connect to its informations
     auto* const writeToBagThread = new WriteToBagThread(bagParameters);
 
-    QObject::connect(writeToBagThread, &WriteToBagThread::calculatedMaximumInstances, [&this_messageCount](int count) {
-        this_messageCount = count;
+    QObject::connect(writeToBagThread, &WriteToBagThread::calculatedMaximumInstances, [&thisMessageCount](int count) {
+        thisMessageCount = count;
     });
     QObject::connect(writeToBagThread, &WriteToBagThread::openingCVInstanceFailed, [] {
         std::cerr << "The video writing failed. Please make sure that all parameters are set correctly "
             "and disable the hardware acceleration, if necessary." << std::endl;
         return 0;
     });
-    QObject::connect(writeToBagThread, &WriteToBagThread::progressChanged, [&this_messageCount] (int iteration, int progress) {
+    QObject::connect(writeToBagThread, &WriteToBagThread::progressChanged, [&thisMessageCount] (int iteration, int progress) {
         const auto progressString = Utils::General::drawProgressString(progress);
-        // Always clear the last line for a nice "progress bar" feeling in the terminal
-        std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << this_messageCount << ")\r";
+        // Always clear the last line for a nice "progress bar" feeling
+        std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << thisMessageCount << ")\r" << std::flush;
     });
     QObject::connect(writeToBagThread, &WriteToBagThread::finished, [] {
-        std::cout << "Writing finished! \r" << std::endl;
+        std::cout << "" << std::endl; // Extra line to stop flushing
+        std::cout << "Writing finished!" << std::endl;
         return EXIT_SUCCESS;
     });
     QObject::connect(writeToBagThread, &WriteToBagThread::finished, writeToBagThread, &QObject::deleteLater);
