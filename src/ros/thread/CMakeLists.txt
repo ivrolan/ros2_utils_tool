@@ -7,6 +7,8 @@ target_include_directories (rt_thread
 target_sources(rt_thread INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/BasicThread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/BasicThread.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/EditBagThread.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/EditBagThread.hpp
     ${CMAKE_CURRENT_LIST_DIR}/EncodingThread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/EncodingThread.hpp
     ${CMAKE_CURRENT_LIST_DIR}/DummyBagThread.cpp

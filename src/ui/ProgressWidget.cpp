@@ -2,6 +2,7 @@
 
 #include "BasicThread.hpp"
 #include "DummyBagThread.hpp"
+#include "EditBagThread.hpp"
 #include "EncodingThread.hpp"
 #include "WriteToBagThread.hpp"
 #include "WriteToImageThread.hpp"
@@ -77,6 +78,9 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
     case 3:
         m_thread = new DummyBagThread(dynamic_cast<Utils::UI::DummyBagParameters&>(parameters), this);
         break;
+    case 4:
+        m_thread = new EditBagThread(dynamic_cast<Utils::UI::EditBagParameters&>(parameters), this);
+        break;
     }
 
     connect(cancelButton, &QPushButton::clicked, this, [this] {
@@ -113,7 +117,7 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
             progressBar->setVisible(true);
         }
         progressBar->setValue(progress);
-        progressLabel->setText("Frame " + QString::number(iteration) + " of " + QString::number(m_maximumCount) + "...");
+        progressLabel->setText(QString::number(iteration) + " of " + QString::number(m_maximumCount) + "...");
     });
     connect(m_thread, &BasicThread::finished, this, [cancelButton, finishedButton] {
         cancelButton->setVisible(false);

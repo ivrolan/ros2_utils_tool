@@ -24,6 +24,7 @@ StartWidget::StartWidget(QWidget *parent) :
     m_bagToImagesPushButton = createToolButton("Write Images\nfrom ROSBag");
     m_videoToBagPushButton = createToolButton("Write Video\nto ROSBag");
     m_dummyBagButton = createToolButton("Create Dummy\nROSBag");
+    m_editROSBagButton = createToolButton("Edit\nROSBag");
     m_bagInfoButton = createToolButton("Get Infos\nfrom ROSBag");
 
     setButtonIcons();
@@ -47,6 +48,7 @@ StartWidget::StartWidget(QWidget *parent) :
     auto* const lowerButtonLayout = new QHBoxLayout;
     lowerButtonLayout->addStretch();
     lowerButtonLayout->addWidget(m_bagInfoButton);
+    lowerButtonLayout->addWidget(m_editROSBagButton);
     lowerButtonLayout->addStretch();
 
     auto* const versionLabel = new QLabel("v0.5.0");
@@ -82,8 +84,11 @@ StartWidget::StartWidget(QWidget *parent) :
     connect(m_dummyBagButton, &QPushButton::clicked, this, [this] {
         emit functionRequested(3);
     });
-    connect(m_bagInfoButton, &QPushButton::clicked, this, [this] {
+    connect(m_editROSBagButton, &QPushButton::clicked, this, [this] {
         emit functionRequested(4);
+    });
+    connect(m_bagInfoButton, &QPushButton::clicked, this, [this] {
+        emit functionRequested(5);
     });
 }
 
@@ -120,6 +125,7 @@ StartWidget::setButtonIcons()
     m_bagToImagesPushButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_to_images_white.svg" : ":/icons/bag_to_images_black.svg"));
     m_videoToBagPushButton->setIcon(QIcon(isDarkMode ? ":/icons/video_to_bag_white.svg" : ":/icons/video_to_bag_black.svg"));
     m_dummyBagButton->setIcon(QIcon(isDarkMode ? ":/icons/dummy_bag_white.svg" : ":/icons/dummy_bag_black.svg"));
+    m_editROSBagButton->setIcon(QIcon(isDarkMode ? ":/icons/edit_bag_white.svg" : ":/icons/edit_bag_black.svg"));
     m_bagInfoButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_info_white.svg" : ":/icons/bag_info_black.svg"));
 }
 
@@ -127,7 +133,7 @@ StartWidget::setButtonIcons()
 bool
 StartWidget::event(QEvent *event)
 {
-    if (event->type() == QEvent::ApplicationPaletteChange || event->type() == QEvent::PaletteChange) {
+    [[unlikely]] if (event->type() == QEvent::ApplicationPaletteChange || event->type() == QEvent::PaletteChange) {
         setButtonIcons();
     }
     return QWidget::event(event);

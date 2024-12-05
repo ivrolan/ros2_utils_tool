@@ -4,6 +4,7 @@
 #include "BagToImagesWidget.hpp"
 #include "BagToVideoWidget.hpp"
 #include "DummyBagWidget.hpp"
+#include "EditBagWidget.hpp"
 #include "ProgressWidget.hpp"
 #include "StartWidget.hpp"
 #include "VideoToBagWidget.hpp"
@@ -17,8 +18,6 @@ MainWindow::MainWindow()
     setWindowTitle("ROS Tools");
 
     setStartWidget();
-
-    resize(450, 450);
 }
 
 
@@ -26,8 +25,9 @@ void
 MainWindow::setStartWidget()
 {
     auto* const startWidget = new StartWidget;
-    connect(startWidget, &StartWidget::functionRequested, this, &MainWindow::setConfigWidget);
+    resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     setCentralWidget(startWidget);
+    connect(startWidget, &StartWidget::functionRequested, this, &MainWindow::setConfigWidget);
 }
 
 
@@ -49,9 +49,14 @@ MainWindow::setConfigWidget(int mode)
         basicInputWidget = new DummyBagWidget(m_dummyBagParameters);
         break;
     case 4:
+        basicInputWidget = new EditBagWidget(m_editBagParameters);
+        break;
+    case 5:
         basicInputWidget = new BagInfoWidget(m_basicInfoParameters);
         break;
     }
+    resize(mode == 4 ? basicInputWidget->width() : DEFAULT_WIDTH,
+           mode == 4 ? basicInputWidget->height() : DEFAULT_HEIGHT);
     setCentralWidget(basicInputWidget);
 
     connect(basicInputWidget, &BasicInputWidget::back, this, &MainWindow::setStartWidget);
@@ -82,7 +87,12 @@ MainWindow::setProgressWidget(int mode)
         progressWidget = new ProgressWidget(":/icons/dummy_bag_black.svg", ":/icons/dummy_bag_white.svg",
                                             "Creating ROSBag...", m_dummyBagParameters, mode);
         break;
+    case 4:
+        progressWidget = new ProgressWidget(":/icons/edit_bag_black.svg", ":/icons/edit_bag_white.svg",
+                                            "Writing to edited ROSBag...", m_editBagParameters, mode);
+        break;
     }
+    resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     setCentralWidget(progressWidget);
 
     connect(progressWidget, &ProgressWidget::progressStopped, this, [this, mode] {

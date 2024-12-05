@@ -33,7 +33,11 @@ private:
     Utils::UI::BagParameters m_parametersVideoToBag;
     Utils::UI::ImageParameters m_parametersBagToImages;
     Utils::UI::DummyBagParameters m_dummyBagParameters;
+    Utils::UI::EditBagParameters m_editBagParameters;
     Utils::UI::BasicParameters m_basicInfoParameters;
 
     bool m_saveParametersOnChange;
+
+    static constexpr int DEFAULT_WIDTH = 450;
+    static constexpr int DEFAULT_HEIGHT = 600;
 };

@@ -13,7 +13,9 @@ class QPushButton;
 class QToolButton;
 
 template<typename T, typename U>
-concept WriteSettingsParameter = (std::same_as<T, U> && (std::same_as<T, QString> || std::same_as<T, int> || std::same_as<T, bool>));
+concept WriteSettingsParameter = (std::same_as<T, U> &&
+                                  (std::same_as<T, QString> || std::same_as<T, int> ||
+                                   std::same_as<T, size_t> || std::same_as<T, bool>));
 
 /**
  * @brief The basic input widget, which is used to input all sorts of information for the different functions

@@ -13,6 +13,8 @@ target_sources(rt_settings INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/BasicParamSettings.hpp
     ${CMAKE_CURRENT_LIST_DIR}/DummyBagParamSettings.cpp
     ${CMAKE_CURRENT_LIST_DIR}/DummyBagParamSettings.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/EditBagParamSettings.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/EditBagParamSettings.hpp
     ${CMAKE_CURRENT_LIST_DIR}/ImageParamSettings.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ImageParamSettings.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VideoParamSettings.cpp

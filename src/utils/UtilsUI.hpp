@@ -52,6 +52,17 @@ struct DummyBagParameters : BasicParameters {
     int                    messageCount = 100;
 };
 
+struct EditBagTopic {
+    QString renamedTopicName = "";
+    QString originalTopicName;
+    size_t  lowerBoundary = 0;
+    size_t  upperBoundary;
+    bool    isSelected = true;
+};
+struct EditBagParameters : AdvancedParameters {
+    QVector<EditBagTopic> topics = {};
+};
+
 // Create a larger font for a certain widget
 void
 setWidgetFontSize(QWidget* widget,

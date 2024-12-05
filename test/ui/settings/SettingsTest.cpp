@@ -4,6 +4,7 @@
 #include "BagParamSettings.hpp"
 #include "BasicParamSettings.hpp"
 #include "DummyBagParamSettings.hpp"
+#include "EditBagParamSettings.hpp"
 #include "ImageParamSettings.hpp"
 #include "UtilsUI.hpp"
 #include "VideoParamSettings.hpp"
@@ -187,6 +188,40 @@ TEST_CASE("Settings Testing", "[ui]") {
                 REQUIRE(settings.value("type").toString() == "string");
                 REQUIRE(settings.value("name").isValid());
                 REQUIRE(settings.value("name").toString() == "example_name");
+            }
+            REQUIRE(size == 1);
+            settings.endArray();
+
+            settings.endGroup();
+        }
+    }
+    SECTION("Edit Bag Params Test") {
+        SECTION("Read") {
+            settings.beginGroup("dummy");
+            REQUIRE(!settings.value("topics").isValid());
+            settings.endGroup();
+        }
+        SECTION("Write") {
+            Utils::UI::EditBagParameters editBagParameters;
+            EditBagParamSettings editBagParamSettings(editBagParameters, "edit");
+
+            editBagParameters.topics.push_back({ "renamed_topic", "original_topic", 42, 1337, true });
+            editBagParamSettings.write();
+
+            settings.beginGroup("edit");
+            const auto size = settings.beginReadArray("topics");
+            for (auto i = 0; i < size; ++i) {
+                settings.setArrayIndex(i);
+                REQUIRE(settings.value("renamed_name").isValid());
+                REQUIRE(settings.value("renamed_name").toString() == "renamed_topic");
+                REQUIRE(settings.value("original_name").isValid());
+                REQUIRE(settings.value("original_name").toString() == "original_topic");
+                REQUIRE(settings.value("lower_boundary").isValid());
+                REQUIRE(settings.value("lower_boundary").toInt() == 42);
+                REQUIRE(settings.value("upper_boundary").isValid());
+                REQUIRE(settings.value("upper_boundary").toInt() == 1337);
+                REQUIRE(settings.value("is_selected").isValid());
+                REQUIRE(settings.value("is_selected").toBool() == true);
             }
             REQUIRE(size == 1);
             settings.endArray();

@@ -15,6 +15,8 @@ target_sources(rt_input_widgets INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/BasicInputWidget.hpp
     ${CMAKE_CURRENT_LIST_DIR}/DummyBagWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/DummyBagWidget.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/EditBagWidget.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/EditBagWidget.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VideoToBagWidget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/VideoToBagWidget.hpp
 )
