@@ -5,6 +5,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QToolButton>
 #include <QTreeWidget>
@@ -67,6 +68,12 @@ BagInfoWidget::displayBagInfo()
     const auto bagDirectory = QFileDialog::getExistingDirectory(this, "Open ROSBag", "",
                                                                 QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     if (bagDirectory.isEmpty()) {
+        return;
+    }
+    if (!Utils::ROS::doesDirectoryContainBagFile(bagDirectory)) {
+        auto *const msgBox = new QMessageBox(QMessageBox::Critical, "No ROS bag detected!",
+                                             "The specified directory contains no ROS bag file!", QMessageBox::Ok);
+        msgBox->exec();
         return;
     }
 
