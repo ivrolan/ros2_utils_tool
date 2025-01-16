@@ -34,7 +34,6 @@ private:
     Utils::UI::ImageParameters m_parametersBagToImages;
     Utils::UI::DummyBagParameters m_dummyBagParameters;
     Utils::UI::EditBagParameters m_editBagParameters;
-    Utils::UI::BasicParameters m_basicInfoParameters;
 
     bool m_saveParametersOnChange;
 

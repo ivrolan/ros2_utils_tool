@@ -52,7 +52,7 @@ MainWindow::setConfigWidget(int mode)
         basicInputWidget = new EditBagWidget(m_editBagParameters);
         break;
     case 5:
-        basicInputWidget = new BagInfoWidget(m_basicInfoParameters);
+        basicInputWidget = new BagInfoWidget;
         break;
     }
     resize(mode == 4 ? basicInputWidget->width() : DEFAULT_WIDTH,

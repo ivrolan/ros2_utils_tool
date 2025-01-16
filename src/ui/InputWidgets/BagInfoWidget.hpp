@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BasicInputWidget.hpp"
-#include "UtilsUI.hpp"
 
 #include <QPointer>
 #include <QWidget>
@@ -14,8 +13,7 @@ class BagInfoWidget : public BasicInputWidget
     Q_OBJECT
 public:
     explicit
-    BagInfoWidget(Utils::UI::BasicParameters& bagInfoParameters,
-                  QWidget*                    parent = 0);
+    BagInfoWidget(QWidget* parent = 0);
 
 private slots:
     void
@@ -23,8 +21,6 @@ private slots:
 
 private:
     QPointer<QTreeWidget> m_infoTreeWidget;
-
-    Utils::UI::BasicParameters& m_bagInfoParameters;
 
     static constexpr int COL_DESCRIPTION = 0;
     static constexpr int COL_INFORMATION = 1;
