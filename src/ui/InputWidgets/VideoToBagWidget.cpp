@@ -182,7 +182,9 @@ VideoToBagWidget::okButtonPressed()
     }
 
     if (!Utils::ROS::doesTopicNameFollowROS2Convention(m_bagParameters.topicName)) {
-        Utils::UI::createCriticalMessageBox("Wrong topic name format!", "The topic name does not follow the ROS2 naming convention!");
+        Utils::UI::createCriticalMessageBox("Wrong topic name format!",
+                                            "The topic name does not follow the ROS2 naming convention! More information for naming ROS2 topics can be found here:<br>"
+                                            "<a href='https://design.ros2.org/articles/topic_and_service_names.html'>https://design.ros2.org/articles/topic_and_service_names.html</a>");
         return;
     }
     if (std::filesystem::exists(m_bagParameters.targetDirectory.toStdString())) {

@@ -69,7 +69,8 @@ main(int argc, char* argv[])
             topicTypes.push_back(argument);
         } else {
             if (!Utils::ROS::doesTopicNameFollowROS2Convention(argument)) {
-                std::cerr << "The topic name does not follow the ROS2 naming convention!" << std::endl;
+                std::cerr << "The topic names do not follow the ROS2 naming convention! More information on ROS2 naming convention is found here:" << std::endl;
+                std::cerr << "https://design.ros2.org/articles/topic_and_service_names.html" << std::endl;
                 return 0;
             }
             topicNames.push_back(argument);

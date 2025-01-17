@@ -212,10 +212,9 @@ EditBagWidget::okButtonPressed()
         }
         auto* const renamingLineEdit = dynamic_cast<QLineEdit*>(m_treeWidget->itemWidget((*it), COL_RENAMING));
         if (!renamingLineEdit->text().isEmpty() && !Utils::ROS::doesTopicNameFollowROS2Convention(renamingLineEdit->text())) {
-            auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Renamed topic name(s) invalid!",
-                                                 "Please make sure that the new topic names are following the ROS2 naming convention!",
-                                                 QMessageBox::Ok);
-            msgBox->exec();
+            Utils::UI::createCriticalMessageBox("Renamed topic name(s) invalid!",
+                                                "The renamed topic name(s) do not follow the ROS2 naming convention! More information for naming ROS2 topics can be found here:<br>"
+                                                "<a href='https://design.ros2.org/articles/topic_and_service_names.html'>https://design.ros2.org/articles/topic_and_service_names.html</a>");
             return;
         }
 

@@ -157,7 +157,9 @@ DummyBagWidget::okButtonPressed()
             return;
         }
         if (!Utils::ROS::doesTopicNameFollowROS2Convention(dummyTopicWidget->getTopicName())) {
-            Utils::UI::createCriticalMessageBox("Wrong topic name format!", "Please make sure that the topic names follow the ROS2 conventioning!");
+            Utils::UI::createCriticalMessageBox("Wrong topic name format!",
+                                                "The topic name(s) do not follow the ROS2 naming convention! More information for naming ROS2 topics can be found here:<br>"
+                                                "<a href='https://design.ros2.org/articles/topic_and_service_names.html'>https://design.ros2.org/articles/topic_and_service_names.html</a>");
             return;
         }
 

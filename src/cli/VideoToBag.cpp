@@ -71,7 +71,8 @@ main(int argc, char* argv[])
 
             const auto& topicName = arguments.at(topicNameIndex + 1);
             if (!Utils::ROS::doesTopicNameFollowROS2Convention(topicName)) {
-                std::cerr << "The topic name does not follow the ROS2 naming convention!" << std::endl;
+                std::cerr << "The topic name does not follow the ROS2 naming convention! More information on ROS2 naming convention is found here:" << std::endl;
+                std::cerr << "https://design.ros2.org/articles/topic_and_service_names.html" << std::endl;
                 return 0;
             }
             bagParameters.topicName = topicName;
