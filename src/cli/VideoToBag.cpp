@@ -13,9 +13,10 @@
 void
 showHelp()
 {
-    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_video_to_bag path/to/video topic_name path/of/stored/ros_bag" << std::endl;
+    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_video_to_bag path/to/video path/of/stored/ros_bag" << std::endl;
     std::cout << "The video must have an ending of .mp4 or .mkv.\n" << std::endl;
     std::cout << "Additional parameters:" << std::endl;
+    std::cout << "-t or --topic_name: Topic name. If this is empty, the name '/topic_video' will be taken." << std::endl;
     std::cout << "-r or --rate: Framerate for the image stream. Must be from 10 to 60. If no rate is specified, the video's rate will be taken." << std::endl;
     std::cout << "-a or --accelerate: Use hardware acceleration." << std::endl;
     std::cout << "-h or --help: Show this help." << std::endl;
@@ -28,7 +29,7 @@ main(int argc, char* argv[])
     // Create application
     QCoreApplication app(argc, argv);
     const auto arguments = app.arguments();
-    if (arguments.size() < 4 || arguments.contains("--help") || arguments.contains("-h")) {
+    if (arguments.size() < 3 || arguments.contains("--help") || arguments.contains("-h")) {
         showHelp();
         return 0;
     }
@@ -49,15 +50,8 @@ main(int argc, char* argv[])
         return 0;
     }
 
-    // Topic name
-    bagParameters.topicName = arguments.at(2);
-    if (!Utils::ROS::doesTopicNameFollowROS2Convention(bagParameters.topicName)) {
-        std::cerr << "The topic name does not follow the ROS2 naming convention!" << std::endl;
-        return 0;
-    }
-
     // Handle bag directory
-    bagParameters.targetDirectory = arguments.at(3);
+    bagParameters.targetDirectory = arguments.at(2);
     dirPath = bagParameters.targetDirectory;
     dirPath.truncate(dirPath.lastIndexOf(QChar('/')));
     if (!std::filesystem::exists(dirPath.toStdString())) {
@@ -66,7 +60,23 @@ main(int argc, char* argv[])
     }
 
     // Check for optional arguments
-    if (arguments.size() > 4) {
+    if (arguments.size() > 3) {
+        // Topic name
+        if (Utils::CLI::containsArguments(arguments, "-t", "--topic_name")) {
+            const auto topicNameIndex = Utils::CLI::getArgumentsIndex(arguments, "-t", "--topic_name");
+            if (arguments.at(topicNameIndex) == arguments.last()) {
+                std::cerr << "Please enter a valid topic name!" << std::endl;
+                return 0;
+            }
+
+            const auto& topicName = arguments.at(topicNameIndex + 1);
+            if (!Utils::ROS::doesTopicNameFollowROS2Convention(topicName)) {
+                std::cerr << "The topic name does not follow the ROS2 naming convention!" << std::endl;
+                return 0;
+            }
+            bagParameters.topicName = topicName;
+        }
+
         // Framerate
         if (!Utils::CLI::checkArgumentValidity(arguments, "-r", "--rate", bagParameters.fps, 10, 60)) {
             std::cerr << "Please enter a framerate in the range of 10 to 60!" << std::endl;
@@ -75,6 +85,11 @@ main(int argc, char* argv[])
 
         // Hardware acceleration
         bagParameters.useHardwareAcceleration = Utils::CLI::containsArguments(arguments, "-a", "--accelerate");
+    }
+
+    // Apply default topic name if not assigned
+    if (bagParameters.topicName.isEmpty()) {
+        bagParameters.topicName = "/topic_video";
     }
 
     if (std::filesystem::exists(bagParameters.targetDirectory.toStdString())) {

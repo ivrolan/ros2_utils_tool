@@ -86,6 +86,23 @@ getTopicType(const QString& bagDirectory, const QString& topicName)
 }
 
 
+std::optional<QString>
+getFirstTopicWithCertainType(const QString& bagDirectory, const QString& typeName)
+{
+    const auto& bagMetaData = Utils::ROS::getBagMetadata(bagDirectory);
+    const auto& topics = bagMetaData.topics_with_message_count;
+
+    auto it = std::find_if(topics.begin(), topics.end(), [&] (const auto& topic) {
+        return topic.topic_metadata.type == typeName.toStdString();
+    });
+    if (it == topics.end()) {
+        return std::nullopt;
+    }
+
+    return QString::fromStdString(it->topic_metadata.name);
+}
+
+
 QVector<QString>
 getBagVideoTopics(const QString& bagDirectory)
 {

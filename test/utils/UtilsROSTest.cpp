@@ -63,6 +63,14 @@ TEST_CASE("Utils ROS Testing", "[utils]") {
         topicType = Utils::ROS::getTopicType(qString, "/topic_should_not_be_included");
         REQUIRE(topicType == "");
     }
+    SECTION("First topic with type test") {
+        auto topicName = Utils::ROS::getFirstTopicWithCertainType(qString, "sensor_msgs/msg/Image");
+        REQUIRE(*topicName == "/topic_image");
+        topicName = Utils::ROS::getFirstTopicWithCertainType(qString, "std_msgs/msg/String");
+        REQUIRE(*topicName == "/topic_string");
+        topicName = Utils::ROS::getFirstTopicWithCertainType(qString, "std_msgs/msg/Int");
+        REQUIRE(topicName == std::nullopt);
+    }
     SECTION("Video topics test") {
         const auto videoTopics = Utils::ROS::getBagVideoTopics(qString);
         REQUIRE(videoTopics.size() == 1);

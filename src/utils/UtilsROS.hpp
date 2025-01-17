@@ -60,6 +60,11 @@ getBagMetadata(const QString& bagDirectory);
 getTopicType(const QString& bagDirectory,
              const QString& topicName);
 
+// Returns the first topic in a bag file with a certain type
+[[nodiscard]] std::optional<QString>
+getFirstTopicWithCertainType(const QString& bagDirectory,
+                             const QString& typeName);
+
 // Returns all video bag topics stored in a ROSBag
 [[nodiscard]] QVector<QString>
 getBagVideoTopics(const QString& bagDirectory);

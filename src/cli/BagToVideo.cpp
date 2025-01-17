@@ -13,8 +13,9 @@
 void
 showHelp()
 {
-    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_bag_to_video path/to/ROSBag topic_name path/of/stored/video\n" << std::endl;
+    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_bag_to_video path/to/ROSBag path/of/stored/video\n" << std::endl;
     std::cout << "Additional parameters:" << std::endl;
+    std::cout << "-t or --topic_name: Video topic inside the bag. If no topic name is specified, the first found video topic in the bag is taken.\n" << std::endl;
     std::cout << "-r or --rate: Framerate for the encoded video. Must be from 10 to 60." << std::endl;
     std::cout << "-a or --accelerate: Use hardware acceleration." << std::endl;
     std::cout << "-c or --colorless: Use colorless images." << std::endl;
@@ -29,7 +30,7 @@ main(int argc, char* argv[])
     // Create application
     QCoreApplication app(argc, argv);
     const auto arguments = app.arguments();
-    if (arguments.size() < 4 || arguments.contains("--help") || arguments.contains("-h")) {
+    if (arguments.size() < 3 || arguments.contains("--help") || arguments.contains("-h")) {
         showHelp();
         return 0;
     }
@@ -48,19 +49,8 @@ main(int argc, char* argv[])
         return 0;
     }
 
-    // Topic name
-    videoParameters.topicName = arguments.at(2);
-    if (!Utils::ROS::doesBagContainTopicName(videoParameters.sourceDirectory, videoParameters.topicName)) {
-        std::cerr << "Topic has not been found in the bag file!" << std::endl;
-        return 0;
-    }
-    if (Utils::ROS::getTopicType(videoParameters.sourceDirectory, videoParameters.topicName) != "sensor_msgs/msg/Image") {
-        std::cerr << "The entered topic is not in sensor message format!" << std::endl;
-        return 0;
-    }
-
     // Video directory
-    videoParameters.targetDirectory = arguments.at(3);
+    videoParameters.targetDirectory = arguments.at(2);
     dirPath = videoParameters.targetDirectory;
     dirPath.truncate(dirPath.lastIndexOf(QChar('/')));
     if (!std::filesystem::exists(dirPath.toStdString())) {
@@ -74,7 +64,27 @@ main(int argc, char* argv[])
     }
 
     // Check for optional arguments
-    if (arguments.size() > 4) {
+    if (arguments.size() > 3) {
+        // Topic name
+        if (Utils::CLI::containsArguments(arguments, "-t", "--topic_name")) {
+            const auto topicNameIndex = Utils::CLI::getArgumentsIndex(arguments, "-t", "--topic_name");
+            if (arguments.at(topicNameIndex) == arguments.last()) {
+                std::cerr << "Please enter the bag topic name!" << std::endl;
+                return 0;
+            }
+
+            const auto& topicName = arguments.at(topicNameIndex + 1);
+            if (!Utils::ROS::doesBagContainTopicName(videoParameters.sourceDirectory, topicName)) {
+                std::cerr << "Topic has not been found in the bag file!" << std::endl;
+                return 0;
+            }
+            if (Utils::ROS::getTopicType(videoParameters.sourceDirectory, topicName) != "sensor_msgs/msg/Image") {
+                std::cerr << "The entered topic is not in sensor message format!" << std::endl;
+                return 0;
+            }
+            videoParameters.topicName = topicName;
+        }
+
         // Framerate
         if (!Utils::CLI::checkArgumentValidity(arguments, "-r", "--rate", videoParameters.fps, 10, 60)) {
             std::cerr << "Please enter a framerate in the range of 10 to 60!" << std::endl;
@@ -83,8 +93,21 @@ main(int argc, char* argv[])
 
         // Hardware acceleration
         videoParameters.useHardwareAcceleration = Utils::CLI::containsArguments(arguments, "-a", "--accelerate");
+        // Colorless
         videoParameters.useBWImages = Utils::CLI::containsArguments(arguments, "-c", "--colorless");
+        // Lossless
         videoParameters.lossless = Utils::CLI::containsArguments(arguments, "-l", "--lossless");
+    }
+
+    // Search for topic name in bag file if not specified
+    if (videoParameters.topicName.isEmpty()) {
+        const auto& firstTopicWithImageType = Utils::ROS::getFirstTopicWithCertainType(videoParameters.sourceDirectory, "sensor_msgs/msg/Image");
+        if (firstTopicWithImageType == std::nullopt) {
+            std::cerr << "The bag file does not contain any image topics!" << std::endl;
+            return 0;
+        }
+
+        videoParameters.topicName = *firstTopicWithImageType;
     }
 
     if (std::filesystem::exists(videoParameters.targetDirectory.toStdString())) {
