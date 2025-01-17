@@ -43,28 +43,34 @@ WriteToImageThread::run()
     emit calculatedMaximumInstances(messageCount);
     emit startingDataCollection();
 
+    // Prepare parameters
     rosbag2_cpp::Reader reader;
     reader.open(m_sourceDirectory);
-
     std::deque<rosbag2_storage::SerializedBagMessageSharedPtr> queue;
-    while (reader.has_next()) {
-        if (isInterruptionRequested()) {
-            reader.close();
-            return;
-        }
+    constexpr int maximumInstancesForQueue = 100;
 
-        auto message = reader.read_next();
-        if (message->topic_name != m_topicName) {
-            continue;
-        }
-        queue.push_front(message);
-    }
-    reader.close();
-
-    // Prepare parameters
     rclcpp::Serialization<sensor_msgs::msg::Image> serialization;
     auto iterationCount = 0;
     std::mutex mutex;
+
+    // Read 100 messages into queue
+    const auto readMessagesToQueue = [this, &reader, &queue] {
+        auto i = 0;
+
+        while (reader.has_next() && i < maximumInstancesForQueue) {
+            if (isInterruptionRequested()) {
+                reader.close();
+                return;
+            }
+
+            auto message = reader.read_next();
+            if (message->topic_name != m_topicName) {
+                continue;
+            }
+            queue.push_front(message);
+            i++;
+        }
+    };
 
     // We want to run the image writing in parallel
     const auto writeImageFromQueue = [this, &targetDirectoryStd, &mutex, &iterationCount, &queue, serialization, messageCount] {
@@ -112,13 +118,26 @@ WriteToImageThread::run()
         }
     };
 
-    std::vector<std::thread> threadPool;
-    for (unsigned int i = 0; i < std::thread::hardware_concurrency(); ++i) {
-        threadPool.emplace_back(writeImageFromQueue);
+    // Writing images might take lots of time, especially if higher compression is used. Thus, we aim to multithread the image writing.
+    // However, the reader does not support parallel reading, thus we store the messages in a queue for parallel access.
+    // Messages have a pretty large size and storing all of them at once might lead to an overflow quickly, though.
+    // Thus, iterate through the bag in steps of 100 messages:
+    // 1. Read 100 messages into the queue
+    // 2. Write messages to images, emptying the queue
+    // 3. Repeat until done
+    while (reader.has_next()) {
+        readMessagesToQueue();
+
+        std::vector<std::thread> threadPool;
+        for (unsigned int i = 0; i < std::thread::hardware_concurrency(); ++i) {
+            threadPool.emplace_back(writeImageFromQueue);
+        }
+        for (auto& thread : threadPool) {
+            thread.join();
+        }
     }
-    for (auto& thread : threadPool) {
-        thread.join();
-    }
+
+    reader.close();
 
     emit finished();
 }
