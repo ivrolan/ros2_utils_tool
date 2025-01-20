@@ -8,12 +8,12 @@ class DummyBagThread : public BasicThread {
     Q_OBJECT
 public:
     explicit
-    DummyBagThread(const Utils::UI::DummyBagParameters& dummyBagParameters,
-                   QObject*                             parent = nullptr);
+    DummyBagThread(const Utils::UI::DummyBagInputParameters& parameters,
+                   QObject*                                  parent = nullptr);
 
     void
     run() override;
 
 private:
-    const Utils::UI::DummyBagParameters& m_dummyBagParameters;
+    const Utils::UI::DummyBagInputParameters& m_parameters;
 };

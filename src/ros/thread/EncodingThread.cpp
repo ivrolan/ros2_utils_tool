@@ -13,10 +13,10 @@
 #include <cv_bridge/cv_bridge.h>
 #endif
 
-EncodingThread::EncodingThread(const Utils::UI::VideoParameters& videoParameters,
-                               QObject*                          parent) :
-    BasicThread(videoParameters.sourceDirectory, videoParameters.topicName, parent),
-    m_videoParameters(videoParameters)
+EncodingThread::EncodingThread(const Utils::UI::VideoInputParameters& parameters,
+                               QObject*                               parent) :
+    BasicThread(parameters.sourceDirectory, parameters.topicName, parent),
+    m_parameters(parameters)
 {
 }
 
@@ -35,8 +35,8 @@ EncodingThread::run()
     cv_bridge::CvImagePtr cvPointer;
     auto iterationCount = 0;
     const auto topicNameStdString = m_topicName;
-    const auto videoEncoder = std::make_shared<VideoEncoder>(m_videoParameters.format == "mp4" ? cv::VideoWriter::fourcc('m', 'p', '4', 'v') :
-                                                             m_videoParameters.lossless ? cv::VideoWriter::fourcc('F', 'F', 'V', '1') : cv::VideoWriter::fourcc('X', '2', '6', '4'));
+    const auto videoEncoder = std::make_shared<VideoEncoder>(m_parameters.format == "mp4" ? cv::VideoWriter::fourcc('m', 'p', '4', 'v') :
+                                                             m_parameters.lossless ? cv::VideoWriter::fourcc('F', 'F', 'V', '1') : cv::VideoWriter::fourcc('X', '2', '6', '4'));
 
     // Now the main encoding
     while (reader.has_next()) {
@@ -60,8 +60,8 @@ EncodingThread::run()
             const auto width = rosMsg->width;
             const auto height = rosMsg->height;
 
-            if (!videoEncoder->setVideoWriter(m_videoParameters.targetDirectory.toStdString(), m_videoParameters.fps, width, height,
-                                              m_videoParameters.useHardwareAcceleration, m_videoParameters.useBWImages)) {
+            if (!videoEncoder->setVideoWriter(m_parameters.targetDirectory.toStdString(), m_parameters.fps, width, height,
+                                              m_parameters.useHardwareAcceleration, m_parameters.useBWImages)) {
                 emit openingCVInstanceFailed();
                 return;
             }
@@ -70,7 +70,7 @@ EncodingThread::run()
         // Convert message to cv and encode
         cvPointer = cv_bridge::toCvCopy(*rosMsg, rosMsg->encoding);
 
-        if (m_videoParameters.useBWImages) {
+        if (m_parameters.useBWImages) {
             // @note
             // It seems that just setting the VIDEOWRITER_PROP_IS_COLOR in the videowriter leads to a broken video,
             // at least if FFMPEG is used. Converting to a gray mat beforehand provides a fix. More information here:

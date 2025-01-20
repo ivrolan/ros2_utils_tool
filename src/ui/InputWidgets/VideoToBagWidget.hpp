@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BagParamSettings.hpp"
+#include "BagInputSettings.hpp"
 #include "BasicInputWidget.hpp"
 #include "UtilsUI.hpp"
 
@@ -19,8 +19,8 @@ class VideoToBagWidget : public BasicInputWidget
     Q_OBJECT
 
 public:
-    VideoToBagWidget(Utils::UI::BagParameters& bagParameters,
-                     QWidget*                  parent = 0);
+    VideoToBagWidget(Utils::UI::BagInputParameters& parameters,
+                     QWidget*                       parent = 0);
 
 private slots:
     void
@@ -40,7 +40,7 @@ private:
     QPointer<QFormLayout> m_advancedOptionsFormLayout;
     QPointer<QSpinBox> m_fpsSpinBox;
 
-    Utils::UI::BagParameters& m_bagParameters;
+    Utils::UI::BagInputParameters& m_parameters;
 
-    BagParamSettings m_bagParamSettings;
+    BagInputSettings m_settings;
 };

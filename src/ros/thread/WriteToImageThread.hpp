@@ -8,12 +8,12 @@ class WriteToImageThread : public BasicThread {
     Q_OBJECT
 public:
     explicit
-    WriteToImageThread(const Utils::UI::ImageParameters& imageParameters,
-                       QObject*                          parent = nullptr);
+    WriteToImageThread(const Utils::UI::ImageInputParameters& parameters,
+                       QObject*                               parent = nullptr);
 
     void
     run() override;
 
 private:
-    const Utils::UI::ImageParameters& m_imageParameters;
+    const Utils::UI::ImageInputParameters& m_parameters;
 };

@@ -1,7 +1,6 @@
 #include "StartWidget.hpp"
 
 #include "SettingsDialog.hpp"
-#include "UtilsUI.hpp"
 
 #include <QEvent>
 #include <QHBoxLayout>
@@ -10,8 +9,8 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 
-StartWidget::StartWidget(QWidget *parent) :
-    QWidget(parent)
+StartWidget::StartWidget(Utils::UI::DialogParameters& dialogParameters, QWidget *parent) :
+    QWidget(parent), m_dialogParameters(dialogParameters)
 {
     auto* const headerLabel = new QLabel("ROS TOOLS");
     Utils::UI::setWidgetFontSize(headerLabel);
@@ -96,7 +95,7 @@ StartWidget::StartWidget(QWidget *parent) :
 void
 StartWidget::openSettingsDialog()
 {
-    auto* const settingsDialog = new SettingsDialog;
+    auto* const settingsDialog = new SettingsDialog(m_dialogParameters);
     settingsDialog->exec();
 }
 

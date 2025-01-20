@@ -12,10 +12,10 @@
 #include <cv_bridge/cv_bridge.h>
 #endif
 
-DummyBagThread::DummyBagThread(const Utils::UI::DummyBagParameters& dummyBagParameters,
-                               QObject*                             parent) :
-    BasicThread(dummyBagParameters.sourceDirectory, dummyBagParameters.topicName, parent),
-    m_dummyBagParameters(dummyBagParameters)
+DummyBagThread::DummyBagThread(const Utils::UI::DummyBagInputParameters& parameters,
+                               QObject*                                  parent) :
+    BasicThread(parameters.sourceDirectory, parameters.topicName, parent),
+    m_parameters(parameters)
 {
 }
 
@@ -23,7 +23,7 @@ DummyBagThread::DummyBagThread(const Utils::UI::DummyBagParameters& dummyBagPara
 void
 DummyBagThread::run()
 {
-    const auto maximumMessageCount = m_dummyBagParameters.messageCount * m_dummyBagParameters.topics.size();
+    const auto maximumMessageCount = m_parameters.messageCount * m_parameters.topics.size();
     emit calculatedMaximumInstances(maximumMessageCount);
 
     if (std::filesystem::exists(m_sourceDirectory)) {
@@ -36,7 +36,7 @@ DummyBagThread::run()
     std::atomic<int> iterationCount = 1;
 
     const auto writeDummyTopic = [this, &writer, &iterationCount, maximumMessageCount] (const auto& type, const auto& name) {
-        for (auto i = 1; i <= m_dummyBagParameters.messageCount; i++) {
+        for (auto i = 1; i <= m_parameters.messageCount; i++) {
             const auto timeStamp = rclcpp::Clock().now();
 
             if (type == "String") {
@@ -61,7 +61,7 @@ DummyBagThread::run()
 
     // Parallelize the topic writing
     std::vector<std::thread> threadPool;
-    for (const auto& topic : m_dummyBagParameters.topics) {
+    for (const auto& topic : m_parameters.topics) {
         threadPool.emplace_back(writeDummyTopic, topic.type, topic.name);
     }
     for (auto& thread : threadPool) {

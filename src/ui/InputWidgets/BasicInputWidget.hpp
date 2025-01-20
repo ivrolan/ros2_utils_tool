@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BasicParamSettings.hpp"
+#include "InputSettings.hpp"
 
 #include <QPointer>
 #include <QWidget>
@@ -49,12 +49,12 @@ protected:
     template<typename T, typename U>
     requires WriteSettingsParameter<T, U>
     void
-    writeSettingsParameter(T&                  settingsParameter,
-                           const U&            newValue,
-                           BasicParamSettings& basicParamSettings)
+    writeSettingsParameter(T&             settingsParameter,
+                           const U&       newValue,
+                           InputSettings& inputSettings)
     {
         settingsParameter = newValue;
-        basicParamSettings.write();
+        inputSettings.write();
     }
 
 protected:

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "UtilsUI.hpp"
+
 #include <QPointer>
 #include <QWidget>
 
@@ -12,7 +14,8 @@ class StartWidget : public QWidget
     Q_OBJECT
 public:
     explicit
-    StartWidget(QWidget* parent = 0);
+    StartWidget(Utils::UI::DialogParameters& dialogParameters,
+                QWidget*                     parent = 0);
 
 signals:
     void
@@ -41,4 +44,6 @@ private:
     QPointer<QToolButton> m_dummyBagButton;
     QPointer<QToolButton> m_editROSBagButton;
     QPointer<QToolButton> m_bagInfoButton;
+
+    Utils::UI::DialogParameters& m_dialogParameters;
 };

@@ -1,6 +1,6 @@
 #include "SettingsDialog.hpp"
 
-#include "UtilsSettings.hpp"
+#include "BasicSettings.hpp"
 
 #include <QCheckBox>
 #include <QDialogButtonBox>
@@ -8,8 +8,8 @@
 #include <QSettings>
 #include <QVBoxLayout>
 
-SettingsDialog::SettingsDialog(QWidget* parent) :
-    QDialog(parent)
+SettingsDialog::SettingsDialog(Utils::UI::DialogParameters& dialogParameters, QWidget* parent) :
+    QDialog(parent), m_dialogSettings(dialogParameters, "dialog"), m_dialogParameters(dialogParameters)
 {
     setWindowTitle("Options");
 
@@ -17,6 +17,7 @@ SettingsDialog::SettingsDialog(QWidget* parent) :
     m_storeParametersCheckBox->setTristate(false);
     m_storeParametersCheckBox->setToolTip("If this is checked, all input parameters are saved\n"
                                           "and reused if this application is launched another time.");
+    m_storeParametersCheckBox->setCheckState(m_dialogParameters.saveParameters ? Qt::Checked : Qt::Unchecked);
 
     auto* const buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
@@ -31,17 +32,13 @@ SettingsDialog::SettingsDialog(QWidget* parent) :
     mainLayout->addWidget(m_storeParametersCheckBox);
     mainLayout->addWidget(buttonBox);
     setLayout(mainLayout);
-
-    readSettings();
 }
 
 
 void
 SettingsDialog::storeParametersCheckStateChanged()
 {
-    if (m_storeParametersCheckBox->checkState() != Qt::Unchecked) {
-        return;
-    }
+    m_dialogParameters.saveParameters = m_storeParametersCheckBox->checkState() == Qt::Checked;
 
     auto* const msgBox = new QMessageBox();
     msgBox->setIcon(QMessageBox::Information);
@@ -51,24 +48,8 @@ SettingsDialog::storeParametersCheckStateChanged()
 
 
 void
-SettingsDialog::readSettings()
-{
-    const auto saveParametersState = Utils::Settings::readAreParametersSaved();
-    m_storeParametersCheckBox->setCheckState(saveParametersState ? Qt::Checked : Qt::Unchecked);
-}
-
-
-void
-SettingsDialog::writeSettings()
-{
-    QSettings settings;
-    settings.setValue("save", m_storeParametersCheckBox->checkState() == Qt::Checked);
-}
-
-
-void
 SettingsDialog::okClicked()
 {
-    writeSettings();
+    m_dialogSettings.write();
     QDialog::accept();
 }

@@ -16,13 +16,13 @@
 
 #include <filesystem>
 
-EditBagWidget::EditBagWidget(Utils::UI::EditBagParameters& editBagParameters, QWidget *parent) :
+EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters, QWidget *parent) :
     BasicInputWidget("Edit ROSBag", ":/icons/edit_bag", parent),
-    m_editBagParameters(editBagParameters), m_editBagParamSettings(editBagParameters, "edit_bag")
+    m_parameters(parameters), m_settings(parameters, "edit_bag")
 {
     auto* const formLayout = new QFormLayout;
     formLayout->addRow("Bag Location:", m_findSourceLayout);
-    m_sourceLineEdit->setText(m_editBagParameters.sourceDirectory);
+    m_sourceLineEdit->setText(m_parameters.sourceDirectory);
 
     m_editLabel = new QLabel("Unselect all items you want to remove.<br>"
                              "Change the message count if you want to drop messages.<br>"
@@ -42,7 +42,7 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagParameters& editBagParameters, QW
     m_treeWidget->headerItem()->setText(COL_RENAMING, "Rename:");
     m_treeWidget->setRootIsDecorated(false);
 
-    m_targetLineEdit = new QLineEdit(m_editBagParameters.targetDirectory);
+    m_targetLineEdit = new QLineEdit(m_parameters.targetDirectory);
     auto* const targetPushButton = new QToolButton;
     auto* const targetLineEditLayout = Utils::UI::createLineEditButtonLayout(m_targetLineEdit, targetPushButton);
 
@@ -100,33 +100,33 @@ EditBagWidget::createTopicTree(bool newTreeRequested)
         }
 
         m_sourceLineEdit->setText(bagDirectory);
-        writeSettingsParameter(m_editBagParameters.sourceDirectory, bagDirectory, m_editBagParamSettings);
-        m_editBagParameters.topics.clear();
-        m_editBagParamSettings.write();
+        writeSettingsParameter(m_parameters.sourceDirectory, bagDirectory, m_settings);
+        m_parameters.topics.clear();
+        m_settings.write();
     }
 
     m_treeWidget->clear();
     m_treeWidget->blockSignals(true);
 
-    const auto& bagMetaData = Utils::ROS::getBagMetadata(m_editBagParameters.sourceDirectory);
+    const auto& bagMetaData = Utils::ROS::getBagMetadata(m_parameters.sourceDirectory);
     // Fill tree widget with topics
     for (size_t i = 0; i < bagMetaData.topics_with_message_count.size(); i++) {
         const auto topicWithMessageCount = bagMetaData.topics_with_message_count.at(i);
         const auto& topicMetaData = topicWithMessageCount.topic_metadata;
 
-        const auto it = std::find_if(m_editBagParameters.topics.begin(), m_editBagParameters.topics.end(), [topicMetaData] (const auto& editBagTopic) {
+        const auto it = std::find_if(m_parameters.topics.begin(), m_parameters.topics.end(), [topicMetaData] (const auto& editBagTopic) {
             return editBagTopic.originalTopicName.toStdString() == topicMetaData.name;
         });
         // If the settings do not contain any topic items, create them
-        const auto itemAlreadyExists = it != m_editBagParameters.topics.end();
+        const auto itemAlreadyExists = it != m_parameters.topics.end();
         if (!itemAlreadyExists) {
-            Utils::UI::EditBagTopic editBagTopic;
+            Utils::UI::EditBagInputParameters::EditBagTopic editBagTopic;
             editBagTopic.originalTopicName = QString::fromStdString(topicMetaData.name);
             editBagTopic.upperBoundary = topicWithMessageCount.message_count;
-            m_editBagParameters.topics.push_back(editBagTopic);
+            m_parameters.topics.push_back(editBagTopic);
         }
 
-        auto& editBagItem = itemAlreadyExists ? *it : m_editBagParameters.topics.back();
+        auto& editBagItem = itemAlreadyExists ? *it : m_parameters.topics.back();
 
         auto* const item = new QTreeWidgetItem;
         m_treeWidget->addTopLevelItem(item);
@@ -145,13 +145,13 @@ EditBagWidget::createTopicTree(bool newTreeRequested)
         m_treeWidget->setItemWidget(item, COL_RENAMING, renamingLineEdit);
 
         connect(messageCountWidget, &MessageCountWidget::lowerValueChanged, this, [i, this](int value) {
-            writeSettingsParameter(m_editBagParameters.topics[i].lowerBoundary, static_cast<size_t>(value), m_editBagParamSettings);
+            writeSettingsParameter(m_parameters.topics[i].lowerBoundary, static_cast<size_t>(value), m_settings);
         });
         connect(messageCountWidget, &MessageCountWidget::upperValueChanged, this, [i, this](int value) {
-            writeSettingsParameter(m_editBagParameters.topics[i].upperBoundary, static_cast<size_t>(value), m_editBagParamSettings);
+            writeSettingsParameter(m_parameters.topics[i].upperBoundary, static_cast<size_t>(value), m_settings);
         });
         connect(renamingLineEdit, &QLineEdit::textChanged, this, [i, this](const QString& text) {
-            writeSettingsParameter(m_editBagParameters.topics[i].renamedTopicName, text, m_editBagParamSettings);
+            writeSettingsParameter(m_parameters.topics[i].renamedTopicName, text, m_settings);
         });
     }
 
@@ -180,7 +180,7 @@ EditBagWidget::itemCheckStateChanged(QTreeWidgetItem* item, int column)
     m_treeWidget->itemWidget(item, COL_RENAMING)->setEnabled(item->checkState(COL_CHECKBOXES) == Qt::Checked ? true : false);
 
     const auto rowIndex = m_treeWidget->indexOfTopLevelItem(item);
-    writeSettingsParameter(m_editBagParameters.topics[rowIndex].isSelected, item->checkState(COL_CHECKBOXES) == Qt::Checked, m_editBagParamSettings);
+    writeSettingsParameter(m_parameters.topics[rowIndex].isSelected, item->checkState(COL_CHECKBOXES) == Qt::Checked, m_settings);
 }
 
 
@@ -193,7 +193,7 @@ EditBagWidget::targetPushButtonPressed()
     }
 
     m_targetLineEdit->setText(fileName);
-    writeSettingsParameter(m_editBagParameters.targetDirectory, fileName, m_editBagParamSettings);
+    writeSettingsParameter(m_parameters.targetDirectory, fileName, m_settings);
 }
 
 
@@ -227,7 +227,7 @@ EditBagWidget::okButtonPressed()
         return;
     }
 
-    if (std::filesystem::exists(m_editBagParameters.targetDirectory.toStdString())) {
+    if (std::filesystem::exists(m_parameters.targetDirectory.toStdString())) {
         auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Bagfile already exists!",
                                              "A bag file already exists under the specified directory! Are you sure you want to continue? "
                                              "This will overwrite the existing file.",

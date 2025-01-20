@@ -8,12 +8,12 @@ class EncodingThread : public BasicThread {
     Q_OBJECT
 public:
     explicit
-    EncodingThread(const Utils::UI::VideoParameters& videoParameters,
-                   QObject*                          parent = nullptr);
+    EncodingThread(const Utils::UI::VideoInputParameters& parameters,
+                   QObject*                               parent = nullptr);
 
     void
     run() override;
 
 private:
-    const Utils::UI::VideoParameters& m_videoParameters;
+    const Utils::UI::VideoInputParameters& m_parameters;
 };

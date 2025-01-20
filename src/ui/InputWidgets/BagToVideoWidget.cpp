@@ -20,26 +20,26 @@
 
 #include <filesystem>
 
-BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, QWidget *parent) :
+BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoInputParameters& parameters, QWidget *parent) :
     BasicInputWidget("Encode Video from ROSBag", ":/icons/bag_to_video", parent),
-    m_videoParameters(videoParameters), m_videoParamSettings(videoParameters, "bag_to_video")
+    m_parameters(parameters), m_settings(parameters, "bag_to_video")
 {
-    m_sourceLineEdit->setText(videoParameters.sourceDirectory);
+    m_sourceLineEdit->setText(parameters.sourceDirectory);
     m_sourceLineEdit->setToolTip("The directory of the ROSBag source file.");
 
     m_topicNameComboBox = new QComboBox;
     m_topicNameComboBox->setMinimumWidth(200);
     m_topicNameComboBox->setToolTip("The ROSBag topic of the video file.\n"
                                     "If the Bag contains multiple video topics, you can choose one of them.");
-    if (!m_videoParameters.sourceDirectory.isEmpty()) {
-        Utils::UI::fillComboBoxWithTopics(m_topicNameComboBox, m_videoParameters.sourceDirectory);
+    if (!m_parameters.sourceDirectory.isEmpty()) {
+        Utils::UI::fillComboBoxWithTopics(m_topicNameComboBox, m_parameters.sourceDirectory);
 
-        if (!m_videoParameters.topicName.isEmpty()) {
-            m_topicNameComboBox->setCurrentText(m_videoParameters.topicName);
+        if (!m_parameters.topicName.isEmpty()) {
+            m_topicNameComboBox->setCurrentText(m_parameters.topicName);
         }
     }
 
-    m_videoNameLineEdit = new QLineEdit(m_videoParameters.targetDirectory);
+    m_videoNameLineEdit = new QLineEdit(m_parameters.targetDirectory);
     m_videoNameLineEdit->setToolTip("The directory where the video file should be stored.");
 
     auto* const videoLocationButton = new QToolButton;
@@ -49,7 +49,7 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     m_formatComboBox->addItem("mp4", 0);
     m_formatComboBox->addItem("mkv", 1);
     m_formatComboBox->setToolTip("The video format file.");
-    m_formatComboBox->setCurrentText(m_videoParameters.format);
+    m_formatComboBox->setCurrentText(m_parameters.format);
 
     auto* const basicOptionsFormLayout = new QFormLayout;
     basicOptionsFormLayout->addRow("Bag File:", m_findSourceLayout);
@@ -58,21 +58,21 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     basicOptionsFormLayout->addRow("Format:", m_formatComboBox);
 
     auto* const advancedOptionsCheckBox = new QCheckBox;
-    advancedOptionsCheckBox->setChecked(m_videoParameters.showAdvancedOptions ? Qt::Checked : Qt::Unchecked);
+    advancedOptionsCheckBox->setChecked(m_parameters.showAdvancedOptions ? Qt::Checked : Qt::Unchecked);
     advancedOptionsCheckBox->setText("Show Advanced Options");
 
     auto* const fpsSpinBox = new QSpinBox;
     fpsSpinBox->setRange(10, 60);
-    fpsSpinBox->setValue(m_videoParameters.fps);
+    fpsSpinBox->setValue(m_parameters.fps);
     fpsSpinBox->setToolTip("FPS of the encoded video.");
 
     auto* const useHardwareAccCheckBox = new QCheckBox;
     useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster video encoding.");
-    useHardwareAccCheckBox->setCheckState(m_videoParameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
+    useHardwareAccCheckBox->setCheckState(m_parameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
 
     auto* const useBWImagesCheckBox = new QCheckBox;
     useBWImagesCheckBox->setToolTip("Write a colorless video.");
-    useBWImagesCheckBox->setCheckState(m_videoParameters.useBWImages ? Qt::Checked : Qt::Unchecked);
+    useBWImagesCheckBox->setCheckState(m_parameters.useBWImages ? Qt::Checked : Qt::Unchecked);
 
     m_advancedOptionsFormLayout = new QFormLayout;
     m_advancedOptionsFormLayout->addRow("FPS:", fpsSpinBox);
@@ -81,7 +81,7 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
 
     auto* const advancedOptionsWidget = new QWidget;
     advancedOptionsWidget->setLayout(m_advancedOptionsFormLayout);
-    advancedOptionsWidget->setVisible(m_videoParameters.showAdvancedOptions);
+    advancedOptionsWidget->setVisible(m_parameters.showAdvancedOptions);
 
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
@@ -106,8 +106,8 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     setLayout(mainLayout);
 
     auto* const okShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
-    enableOkButton(!m_videoParameters.sourceDirectory.isEmpty() &&
-                   !m_videoParameters.topicName.isEmpty() && !m_videoParameters.targetDirectory.isEmpty());
+    enableOkButton(!m_parameters.sourceDirectory.isEmpty() &&
+                   !m_parameters.topicName.isEmpty() && !m_parameters.targetDirectory.isEmpty());
 
     // Call once to potentially enable lossless images checkbox
     formatComboBoxTextChanged(m_formatComboBox->currentText());
@@ -115,21 +115,21 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoParameters& videoParameters, 
     connect(m_findSourceButton, &QPushButton::clicked, this, &BagToVideoWidget::searchButtonPressed);
     connect(videoLocationButton, &QPushButton::clicked, this, &BagToVideoWidget::videoLocationButtonPressed);
     connect(m_topicNameComboBox, &QComboBox::currentTextChanged, this, [this] (const QString& text) {
-        writeSettingsParameter(m_videoParameters.topicName, text, m_videoParamSettings);
+        writeSettingsParameter(m_parameters.topicName, text, m_settings);
     });
     connect(m_formatComboBox, &QComboBox::currentTextChanged, this, &BagToVideoWidget::formatComboBoxTextChanged);
     connect(advancedOptionsCheckBox, &QCheckBox::stateChanged, this, [this, advancedOptionsWidget] (int state) {
-        m_videoParameters.showAdvancedOptions = state == Qt::Checked;
+        m_parameters.showAdvancedOptions = state == Qt::Checked;
         advancedOptionsWidget->setVisible(state == Qt::Checked);
     });
     connect(fpsSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
-        writeSettingsParameter(m_videoParameters.fps, value, m_videoParamSettings);
+        writeSettingsParameter(m_parameters.fps, value, m_settings);
     });
     connect(useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-        writeSettingsParameter(m_videoParameters.useHardwareAcceleration, state == Qt::Checked, m_videoParamSettings);
+        writeSettingsParameter(m_parameters.useHardwareAcceleration, state == Qt::Checked, m_settings);
     });
     connect(useBWImagesCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-        writeSettingsParameter(m_videoParameters.useBWImages, state == Qt::Checked, m_videoParamSettings);
+        writeSettingsParameter(m_parameters.useBWImages, state == Qt::Checked, m_settings);
     });
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &BagToVideoWidget::okButtonPressed);
     connect(okShortCut, &QShortcut::activated, this, &BagToVideoWidget::okButtonPressed);
@@ -151,19 +151,19 @@ BagToVideoWidget::searchButtonPressed()
     }
 
     m_sourceLineEdit->setText(bagDirectory);
-    writeSettingsParameter(m_videoParameters.sourceDirectory, bagDirectory, m_videoParamSettings);
+    writeSettingsParameter(m_parameters.sourceDirectory, bagDirectory, m_settings);
 
     QDir bagDirectoryDir(bagDirectory);
     bagDirectoryDir.cdUp();
     if (const auto autoVideoDirectory = bagDirectoryDir.path() + "/bag_video." + m_formatComboBox->currentText();
         !std::filesystem::exists(autoVideoDirectory.toStdString())) {
         m_videoNameLineEdit->setText(autoVideoDirectory);
-        writeSettingsParameter(m_videoParameters.targetDirectory, autoVideoDirectory, m_videoParamSettings);
+        writeSettingsParameter(m_parameters.targetDirectory, autoVideoDirectory, m_settings);
     }
 
     // Only enable if both line edits contain text
-    enableOkButton(!m_videoParameters.sourceDirectory.isEmpty() &&
-                   !m_videoParameters.topicName.isEmpty() && !m_videoParameters.targetDirectory.isEmpty());
+    enableOkButton(!m_parameters.sourceDirectory.isEmpty() &&
+                   !m_parameters.topicName.isEmpty() && !m_parameters.targetDirectory.isEmpty());
 }
 
 
@@ -178,17 +178,17 @@ BagToVideoWidget::videoLocationButtonPressed()
 
     // Only enable if both line edits contain text
     m_fileDialogOpened = true;
-    writeSettingsParameter(m_videoParameters.targetDirectory, fileName, m_videoParamSettings);
+    writeSettingsParameter(m_parameters.targetDirectory, fileName, m_settings);
     m_videoNameLineEdit->setText(fileName);
-    enableOkButton(!m_videoParameters.sourceDirectory.isEmpty() &&
-                   !m_videoParameters.topicName.isEmpty() && !m_videoParameters.targetDirectory.isEmpty());
+    enableOkButton(!m_parameters.sourceDirectory.isEmpty() &&
+                   !m_parameters.topicName.isEmpty() && !m_parameters.targetDirectory.isEmpty());
 }
 
 
 void
 BagToVideoWidget::formatComboBoxTextChanged(const QString& text)
 {
-    writeSettingsParameter(m_videoParameters.format, text, m_videoParamSettings);
+    writeSettingsParameter(m_parameters.format, text, m_settings);
 
     if (m_useLosslessCheckBox) {
         m_advancedOptionsFormLayout->removeRow(m_useLosslessCheckBox);
@@ -196,13 +196,13 @@ BagToVideoWidget::formatComboBoxTextChanged(const QString& text)
     if (text == "mkv") {
         m_useLosslessCheckBox = new QCheckBox;
         m_useLosslessCheckBox->setToolTip("If the video images should be lossless. Improves video quality, but increases file size.");
-        m_useLosslessCheckBox->setCheckState(m_videoParameters.lossless ? Qt::Checked : Qt::Unchecked);
+        m_useLosslessCheckBox->setCheckState(m_parameters.lossless ? Qt::Checked : Qt::Unchecked);
 
         m_advancedOptionsFormLayout->addRow("Lossless Video:", m_useLosslessCheckBox);
 
         connect(m_useLosslessCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-            m_videoParameters.lossless = state == Qt::Checked;
-            m_videoParamSettings.write();
+            m_parameters.lossless = state == Qt::Checked;
+            m_settings.write();
         });
     }
 
@@ -216,7 +216,7 @@ BagToVideoWidget::formatComboBoxTextChanged(const QString& text)
     newLineEditText += "." + text;
     m_videoNameLineEdit->setText(newLineEditText);
 
-    writeSettingsParameter(m_videoParameters.targetDirectory, newLineEditText, m_videoParamSettings);
+    writeSettingsParameter(m_parameters.targetDirectory, newLineEditText, m_settings);
 }
 
 

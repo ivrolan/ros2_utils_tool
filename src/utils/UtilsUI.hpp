@@ -10,57 +10,60 @@
 // Util functions for user interface related things
 namespace Utils::UI
 {
-struct BasicParameters {
+struct InputParameters {
     virtual
-    ~BasicParameters() = default;
+    ~InputParameters() = default;
 
     QString sourceDirectory = "";
     QString topicName = "";
 };
+struct DummyBagInputParameters : InputParameters {
+    struct DummyBagTopic {
+        QString type;
+        QString name;
+    };
 
-struct AdvancedParameters : BasicParameters {
+    QVector<DummyBagTopic> topics = {};
+    int                    messageCount = 100;
+};
+
+struct AdvancedInputParameters : InputParameters {
     QString targetDirectory = "";
     bool    showAdvancedOptions = false;
 };
-
-struct ImageParameters : AdvancedParameters {
+struct ImageInputParameters : AdvancedInputParameters {
     QString format = "jpg";
     int     quality = 8;
     bool    useBWImages = false;
     bool    jpgOptimize = false;
     bool    pngBilevel = false;
 };
-struct VideoParameters : AdvancedParameters {
+struct VideoInputParameters : AdvancedInputParameters {
     QString format = "mp4";
     int     fps = 30;
     bool    useHardwareAcceleration = false;
     bool    useBWImages = false;
     bool    lossless = false;
 };
-struct BagParameters : AdvancedParameters {
+struct BagInputParameters : AdvancedInputParameters {
     int  fps = 30;
     bool useCustomFPS = false;
     bool useHardwareAcceleration = false;
 };
+struct EditBagInputParameters : AdvancedInputParameters {
+    struct EditBagTopic {
+        QString renamedTopicName = "";
+        QString originalTopicName;
+        size_t  lowerBoundary = 0;
+        size_t  upperBoundary;
+        bool    isSelected = true;
+    };
 
-struct DummyBagTopic {
-    QString type;
-    QString name;
-};
-struct DummyBagParameters : BasicParameters {
-    QVector<DummyBagTopic> topics = {};
-    int                    messageCount = 100;
-};
-
-struct EditBagTopic {
-    QString renamedTopicName = "";
-    QString originalTopicName;
-    size_t  lowerBoundary = 0;
-    size_t  upperBoundary;
-    bool    isSelected = true;
-};
-struct EditBagParameters : AdvancedParameters {
     QVector<EditBagTopic> topics = {};
+};
+
+struct DialogParameters {
+    bool saveParameters = false;
 };
 
 // Create a larger font for a certain widget

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BasicInputWidget.hpp"
-#include "EditBagParamSettings.hpp"
+#include "EditBagInputSettings.hpp"
 #include "UtilsUI.hpp"
 
 #include <QLineEdit>
@@ -18,8 +18,8 @@ class EditBagWidget : public BasicInputWidget
     Q_OBJECT
 public:
     explicit
-    EditBagWidget(Utils::UI::EditBagParameters& editBagParameters,
-                  QWidget*                      parent = 0);
+    EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
+                  QWidget*                           parent = 0);
 
 private slots:
     void
@@ -41,9 +41,9 @@ private:
     QPointer<QLineEdit> m_targetLineEdit;
     QPointer<QWidget> m_targetBagNameWidget;
 
-    Utils::UI::EditBagParameters& m_editBagParameters;
+    Utils::UI::EditBagInputParameters& m_parameters;
 
-    EditBagParamSettings m_editBagParamSettings;
+    EditBagInputSettings m_settings;
 
     static constexpr int COL_CHECKBOXES = 0;
     static constexpr int COL_TOPICS = 1;

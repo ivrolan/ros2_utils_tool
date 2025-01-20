@@ -13,10 +13,10 @@
 #include <cv_bridge/cv_bridge.h>
 #endif
 
-EditBagThread::EditBagThread(const Utils::UI::EditBagParameters& editBagParameters,
-                             QObject*                            parent) :
-    BasicThread(editBagParameters.sourceDirectory, editBagParameters.topicName, parent),
-    m_editBagParameters(editBagParameters)
+EditBagThread::EditBagThread(const Utils::UI::EditBagInputParameters& parameters,
+                             QObject*                                 parent) :
+    BasicThread(parameters.sourceDirectory, parameters.topicName, parent),
+    m_parameters(parameters)
 {
 }
 
@@ -25,7 +25,7 @@ void
 EditBagThread::run()
 {
     auto totalInstances = 0;
-    for (const auto& topic : m_editBagParameters.topics) {
+    for (const auto& topic : m_parameters.topics) {
         if (!topic.isSelected) {
             continue;
         }
@@ -35,7 +35,7 @@ EditBagThread::run()
     emit calculatedMaximumInstances(totalInstances);
     emit startingDataCollection();
 
-    const auto targetDirectoryStd = m_editBagParameters.targetDirectory.toStdString();
+    const auto targetDirectoryStd = m_parameters.targetDirectory.toStdString();
     if (std::filesystem::exists(targetDirectoryStd)) {
         std::filesystem::remove_all(targetDirectoryStd);
     }
@@ -48,7 +48,7 @@ EditBagThread::run()
     // Move to own lambda for multithreading
     const auto writeTopicToBag = [this, &writer, &instanceCount, &mutex, totalInstances] (const auto& topic) {
         const auto originalTopicNameStd = topic.originalTopicName.toStdString();
-        const auto& metadata = Utils::ROS::getBagMetadata(m_editBagParameters.sourceDirectory);
+        const auto& metadata = Utils::ROS::getBagMetadata(m_parameters.sourceDirectory);
         // Create a new topic using either the original or new name
         for (const auto &topicMetaData : metadata.topics_with_message_count) {
             if (topicMetaData.topic_metadata.name == originalTopicNameStd) {
@@ -101,7 +101,7 @@ EditBagThread::run()
 
     // Parallelize the topic writing
     std::vector<std::thread> threadPool;
-    for (const auto& topic : m_editBagParameters.topics) {
+    for (const auto& topic : m_parameters.topics) {
         if (!topic.isSelected) {
             continue;
         }

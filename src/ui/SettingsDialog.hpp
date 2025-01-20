@@ -1,5 +1,8 @@
 #pragma once
 
+#include "DialogSettings.hpp"
+#include "UtilsUI.hpp"
+
 #include <QDialog>
 #include <QPointer>
 
@@ -10,21 +13,19 @@ class SettingsDialog : public QDialog {
     Q_OBJECT
 
 public:
-    SettingsDialog(QWidget* parent = 0);
+    SettingsDialog(Utils::UI::DialogParameters& dialogParameters,
+                   QWidget*                     parent = 0);
 
 private:
     void
     storeParametersCheckStateChanged();
 
     void
-    readSettings();
-
-    void
-    writeSettings();
-
-    void
     okClicked();
 
 private:
     QPointer<QCheckBox> m_storeParametersCheckBox;
+
+    DialogSettings m_dialogSettings;
+    Utils::UI::DialogParameters& m_dialogParameters;
 };

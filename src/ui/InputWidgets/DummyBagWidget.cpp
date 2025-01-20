@@ -18,17 +18,17 @@
 
 #include <filesystem>
 
-DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters, QWidget *parent) :
+DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagInputParameters& parameters, QWidget *parent) :
     BasicInputWidget("Create Dummy ROSBag", ":/icons/dummy_bag", parent),
-    m_dummyBagParameters(dummyBagParameters), m_dummyBagParamSettings(dummyBagParameters, "dummy_bag")
+    m_parameters(parameters), m_settings(parameters, "dummy_bag")
 {
-    m_sourceLineEdit->setText(dummyBagParameters.sourceDirectory);
+    m_sourceLineEdit->setText(parameters.sourceDirectory);
     m_sourceLineEdit->setToolTip("The directory where the ROSBag file should be stored.");
 
     auto* const messageCountSpinBox = new QSpinBox;
     messageCountSpinBox->setRange(1, 1000);
     messageCountSpinBox->setToolTip("The number of messages stored in the ROSBag.");
-    messageCountSpinBox->setValue(m_dummyBagParameters.messageCount);
+    messageCountSpinBox->setValue(m_parameters.messageCount);
 
     m_minusButton = new QToolButton;
     m_minusButton->setToolTip("Remove the topic above.");
@@ -67,14 +67,14 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
     setLayout(mainLayout);
 
     const auto addNewTopic = [this] {
-        m_dummyBagParameters.topics.push_back({ "String", "" });
-        m_dummyBagParamSettings.write();
-        createNewDummyTopicWidget(m_dummyBagParameters.topics.size() - 1, { "", "" });
+        m_parameters.topics.push_back({ "String", "" });
+        m_settings.write();
+        createNewDummyTopicWidget({ "", "" }, m_parameters.topics.size() - 1);
     };
 
     connect(m_findSourceButton, &QPushButton::clicked, this, &DummyBagWidget::bagDirectoryButtonPressed);
     connect(messageCountSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
-        writeSettingsParameter(m_dummyBagParameters.messageCount, value, m_dummyBagParamSettings);
+        writeSettingsParameter(m_parameters.messageCount, value, m_settings);
     });
     connect(m_minusButton, &QPushButton::clicked, this, &DummyBagWidget::removeDummyTopicWidget);
     connect(m_plusButton, &QPushButton::clicked, this, [addNewTopic] {
@@ -84,10 +84,10 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagParameters& dummyBagParameters
 
     setPixmapLabelIcon();
 
-    for (auto i = 0; i < m_dummyBagParameters.topics.size(); i++) {
-        createNewDummyTopicWidget(i, m_dummyBagParameters.topics.at(i));
+    for (auto i = 0; i < m_parameters.topics.size(); i++) {
+        createNewDummyTopicWidget(m_parameters.topics.at(i), i);
     }
-    if (m_dummyBagParameters.topics.empty()) {
+    if (m_parameters.topics.empty()) {
         addNewTopic();
     }
 }
@@ -101,7 +101,7 @@ DummyBagWidget::bagDirectoryButtonPressed()
         return;
     }
 
-    writeSettingsParameter(m_dummyBagParameters.sourceDirectory, fileName, m_dummyBagParamSettings);
+    writeSettingsParameter(m_parameters.sourceDirectory, fileName, m_settings);
     m_sourceLineEdit->setText(fileName);
 }
 
@@ -109,26 +109,26 @@ DummyBagWidget::bagDirectoryButtonPressed()
 void
 DummyBagWidget::removeDummyTopicWidget()
 {
-    m_formLayout->removeRow(m_dummyBagParameters.topics.size());
+    m_formLayout->removeRow(m_parameters.topics.size());
     m_dummyTopicWidgets.pop_back();
-    m_dummyBagParameters.topics.pop_back();
-    m_dummyBagParamSettings.write();
+    m_parameters.topics.pop_back();
+    m_settings.write();
 
     m_plusButton->setEnabled(m_numberOfTopics != MAXIMUM_NUMBER_OF_TOPICS);
-    m_minusButton->setEnabled(m_dummyBagParameters.topics.size() != 1);
+    m_minusButton->setEnabled(m_parameters.topics.size() != 1);
 }
 
 
 void
-DummyBagWidget::createNewDummyTopicWidget(int index, const Utils::UI::DummyBagTopic& topic)
+DummyBagWidget::createNewDummyTopicWidget(const Utils::UI::DummyBagInputParameters::DummyBagTopic& topic, int index)
 {
     auto* const dummyTopicWidget = new DummyTopicWidget(topic.type, topic.name);
 
     connect(dummyTopicWidget, &DummyTopicWidget::topicTypeChanged, this, [this, index] (const QString& text) {
-        writeSettingsParameter(m_dummyBagParameters.topics[index].type, text, m_dummyBagParamSettings);
+        writeSettingsParameter(m_parameters.topics[index].type, text, m_settings);
     });
     connect(dummyTopicWidget, &DummyTopicWidget::topicNameChanged, this, [this, index] (const QString& text) {
-        writeSettingsParameter(m_dummyBagParameters.topics[index].name, text, m_dummyBagParamSettings);
+        writeSettingsParameter(m_parameters.topics[index].name, text, m_settings);
     });
 
     m_formLayout->insertRow(m_formLayout->rowCount() - 2, "Topic " + QString::number(m_numberOfTopics + 1) + ":", dummyTopicWidget);
@@ -136,14 +136,14 @@ DummyBagWidget::createNewDummyTopicWidget(int index, const Utils::UI::DummyBagTo
 
     m_numberOfTopics++;
     m_plusButton->setEnabled(m_numberOfTopics != MAXIMUM_NUMBER_OF_TOPICS);
-    m_minusButton->setEnabled(m_dummyBagParameters.topics.size() != 1);
+    m_minusButton->setEnabled(m_parameters.topics.size() != 1);
 }
 
 
 void
 DummyBagWidget::okButtonPressed()
 {
-    if (m_dummyBagParameters.sourceDirectory.isEmpty()) {
+    if (m_parameters.sourceDirectory.isEmpty()) {
         Utils::UI::createCriticalMessageBox("No bag name specified!", "Please specify a bag name before continuing!");
         return;
     }
@@ -170,7 +170,7 @@ DummyBagWidget::okButtonPressed()
         Utils::UI::createCriticalMessageBox("Duplicate topic names!", "Please make sure that no duplicate topic names are used!");
         return;
     }
-    if (std::filesystem::exists(m_dummyBagParameters.sourceDirectory.toStdString())) {
+    if (std::filesystem::exists(m_parameters.sourceDirectory.toStdString())) {
         auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Bagfile already exists!",
                                              "A bag file already exists under the specified directory! Are you sure you want to continue? "
                                              "This will overwrite the existing file.",

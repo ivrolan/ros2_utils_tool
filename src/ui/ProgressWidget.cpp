@@ -15,7 +15,7 @@
 #include <QVBoxLayout>
 
 ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const QString& headerPixmapLabelTextWhite,
-                               const QString& headerLabelText, Utils::UI::BasicParameters& parameters,
+                               const QString& headerLabelText, Utils::UI::InputParameters& parameters,
                                const int threadTypeId, QWidget *parent) :
     QWidget(parent)
 {
@@ -67,19 +67,19 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
 
     switch (threadTypeId) {
     case 0:
-        m_thread = new EncodingThread(dynamic_cast<Utils::UI::VideoParameters&>(parameters), this);
+        m_thread = new EncodingThread(dynamic_cast<Utils::UI::VideoInputParameters&>(parameters), this);
         break;
     case 1:
-        m_thread = new WriteToImageThread(dynamic_cast<Utils::UI::ImageParameters&>(parameters), this);
+        m_thread = new WriteToImageThread(dynamic_cast<Utils::UI::ImageInputParameters&>(parameters), this);
         break;
     case 2:
-        m_thread = new WriteToBagThread(dynamic_cast<Utils::UI::BagParameters&>(parameters), this);
+        m_thread = new WriteToBagThread(dynamic_cast<Utils::UI::BagInputParameters&>(parameters), this);
         break;
     case 3:
-        m_thread = new DummyBagThread(dynamic_cast<Utils::UI::DummyBagParameters&>(parameters), this);
+        m_thread = new DummyBagThread(dynamic_cast<Utils::UI::DummyBagInputParameters&>(parameters), this);
         break;
     case 4:
-        m_thread = new EditBagThread(dynamic_cast<Utils::UI::EditBagParameters&>(parameters), this);
+        m_thread = new EditBagThread(dynamic_cast<Utils::UI::EditBagInputParameters&>(parameters), this);
         break;
     }
 

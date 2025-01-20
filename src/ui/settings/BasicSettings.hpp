@@ -1,8 +1,5 @@
 #pragma once
 
-#include "UtilsSettings.hpp"
-#include "UtilsUI.hpp"
-
 #include <QSettings>
 
 template<typename T>
@@ -10,17 +7,18 @@ concept SettingsParameter = std::same_as<T, int> || std::same_as<T, size_t> ||
                             std::same_as<T, bool> || std::same_as<T, QString>;
 
 // Basic settings, from which all other settings derive
-class BasicParamSettings {
+class BasicSettings {
 public:
-    BasicParamSettings(Utils::UI::BasicParameters& basicParameters,
-                       const QString&              groupName);
+    BasicSettings(const QString& groupName) : m_groupName(groupName)
+    {
+    }
 
     virtual bool
-    write();
+    write() = 0;
 
 protected:
     virtual bool
-    read();
+    read() = 0;
 
     template<typename T>
     requires SettingsParameter<T>
@@ -44,7 +42,4 @@ protected:
 
 protected:
     const QString m_groupName;
-
-private:
-    Utils::UI::BasicParameters& m_basicParameters;
 };

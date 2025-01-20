@@ -38,21 +38,21 @@ main(int argc, char* argv[])
         return 0;
     }
 
-    Utils::UI::ImageParameters imageParameters;
+    Utils::UI::ImageInputParameters inputParameters;
 
     // Handle bag directory
-    imageParameters.sourceDirectory = arguments.at(1);
-    if (!std::filesystem::exists(imageParameters.sourceDirectory.toStdString())) {
+    inputParameters.sourceDirectory = arguments.at(1);
+    if (!std::filesystem::exists(inputParameters.sourceDirectory.toStdString())) {
         std::cerr << "Bag file not found. Make sure that the bag file exists!" << std::endl;
         return 0;
     }
-    if (const auto doesDirContainBag = Utils::ROS::doesDirectoryContainBagFile(imageParameters.sourceDirectory); !doesDirContainBag) {
+    if (const auto doesDirContainBag = Utils::ROS::doesDirectoryContainBagFile(inputParameters.sourceDirectory); !doesDirContainBag) {
         std::cerr << "The directory does not contain a bag file!" << std::endl;
         return 0;
     }
 
     // Images directory
-    imageParameters.targetDirectory = arguments.at(2);
+    inputParameters.targetDirectory = arguments.at(2);
 
     // Check for optional arguments
     if (arguments.size() > 3) {
@@ -65,19 +65,19 @@ main(int argc, char* argv[])
             }
 
             const auto& topicName = arguments.at(topicNameIndex + 1);
-            if (!Utils::ROS::doesBagContainTopicName(imageParameters.sourceDirectory, topicName)) {
+            if (!Utils::ROS::doesBagContainTopicName(inputParameters.sourceDirectory, topicName)) {
                 std::cerr << "Topic has not been found in the bag file!" << std::endl;
                 return 0;
             }
-            if (Utils::ROS::getTopicType(imageParameters.sourceDirectory, topicName) != "sensor_msgs/msg/Image") {
+            if (Utils::ROS::getTopicType(inputParameters.sourceDirectory, topicName) != "sensor_msgs/msg/Image") {
                 std::cerr << "The entered topic is not in sensor message format!" << std::endl;
                 return 0;
             }
-            imageParameters.topicName = topicName;
+            inputParameters.topicName = topicName;
         }
 
         // Quality
-        if (!Utils::CLI::checkArgumentValidity(arguments, "-q", "--quality", imageParameters.quality, 0, 9)) {
+        if (!Utils::CLI::checkArgumentValidity(arguments, "-q", "--quality", inputParameters.quality, 0, 9)) {
             std::cerr << "Please enter a quality value in the range of 0 to 9!" << std::endl;
             return 0;
         }
@@ -89,29 +89,29 @@ main(int argc, char* argv[])
                 std::cerr << "Please enter either 'jpg', 'png' or 'bmp' for the format!" << std::endl;
                 return 0;
             }
-            imageParameters.format = arguments.at(qualityFormatIndex + 1);
+            inputParameters.format = arguments.at(qualityFormatIndex + 1);
         }
 
         // Black white images
-        imageParameters.useBWImages = Utils::CLI::containsArguments(arguments, "-c", "--colorless");
+        inputParameters.useBWImages = Utils::CLI::containsArguments(arguments, "-c", "--colorless");
         // Optimize for jpeg
-        imageParameters.jpgOptimize = imageParameters.format == "jpg" && Utils::CLI::containsArguments(arguments, "-o", "--optimize");
+        inputParameters.jpgOptimize = inputParameters.format == "jpg" && Utils::CLI::containsArguments(arguments, "-o", "--optimize");
         // Bilevel for png images
-        imageParameters.pngBilevel = imageParameters.format == "png" && Utils::CLI::containsArguments(arguments, "-b", "--binary");
+        inputParameters.pngBilevel = inputParameters.format == "png" && Utils::CLI::containsArguments(arguments, "-b", "--binary");
     }
 
     // Search for topic name in bag file if not specified
-    if (imageParameters.topicName.isEmpty()) {
-        const auto& firstTopicWithImageType = Utils::ROS::getFirstTopicWithCertainType(imageParameters.sourceDirectory, "sensor_msgs/msg/Image");
+    if (inputParameters.topicName.isEmpty()) {
+        const auto& firstTopicWithImageType = Utils::ROS::getFirstTopicWithCertainType(inputParameters.sourceDirectory, "sensor_msgs/msg/Image");
         if (firstTopicWithImageType == std::nullopt) {
             std::cerr << "The bag file does not contain any image topics!" << std::endl;
             return 0;
         }
 
-        imageParameters.topicName = *firstTopicWithImageType;
+        inputParameters.topicName = *firstTopicWithImageType;
     }
 
-    if (std::filesystem::exists(imageParameters.targetDirectory.toStdString())) {
+    if (std::filesystem::exists(inputParameters.targetDirectory.toStdString())) {
         if (!Utils::CLI::continueForExistingSourceDir("The image directory already exists. Continue? [y/n]")) {
             return 0;
         }
@@ -120,7 +120,7 @@ main(int argc, char* argv[])
     auto thisMessageCount = 0;
 
     // Create thread and connect to its informations
-    auto* const writeToImageThread = new WriteToImageThread(imageParameters);
+    auto* const writeToImageThread = new WriteToImageThread(inputParameters);
     QObject::connect(writeToImageThread, &WriteToImageThread::calculatedMaximumInstances, [&thisMessageCount](int count) {
         thisMessageCount = count;
     });

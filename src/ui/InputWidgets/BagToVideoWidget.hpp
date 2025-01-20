@@ -2,7 +2,7 @@
 
 #include "BasicInputWidget.hpp"
 #include "UtilsUI.hpp"
-#include "VideoParamSettings.hpp"
+#include "VideoInputSettings.hpp"
 
 #include <QPointer>
 #include <QWidget>
@@ -20,8 +20,8 @@ class BagToVideoWidget : public BasicInputWidget
     Q_OBJECT
 
 public:
-    BagToVideoWidget(Utils::UI::VideoParameters& videoParameters,
-                     QWidget*                    parent = 0);
+    BagToVideoWidget(Utils::UI::VideoInputParameters& parameters,
+                     QWidget*                         parent = 0);
 
 private slots:
     void
@@ -43,9 +43,9 @@ private:
     QPointer<QFormLayout> m_advancedOptionsFormLayout;
     QPointer<QCheckBox> m_useLosslessCheckBox;
 
-    Utils::UI::VideoParameters& m_videoParameters;
+    Utils::UI::VideoInputParameters& m_parameters;
 
-    VideoParamSettings m_videoParamSettings;
+    VideoInputSettings m_settings;
 
     bool m_fileDialogOpened = false;
 };

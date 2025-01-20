@@ -35,30 +35,30 @@ main(int argc, char* argv[])
         return 0;
     }
 
-    Utils::UI::VideoParameters videoParameters;
+    Utils::UI::VideoInputParameters inputParameters;
 
     // Handle bag directory
-    videoParameters.sourceDirectory = arguments.at(1);
-    auto dirPath = videoParameters.sourceDirectory;
-    if (!std::filesystem::exists(videoParameters.sourceDirectory.toStdString())) {
+    inputParameters.sourceDirectory = arguments.at(1);
+    auto dirPath = inputParameters.sourceDirectory;
+    if (!std::filesystem::exists(inputParameters.sourceDirectory.toStdString())) {
         std::cerr << "Bag file not found. Make sure that the bag file exists!" << std::endl;
         return 0;
     }
-    if (const auto doesDirContainBag = Utils::ROS::doesDirectoryContainBagFile(videoParameters.sourceDirectory); !doesDirContainBag) {
+    if (const auto doesDirContainBag = Utils::ROS::doesDirectoryContainBagFile(inputParameters.sourceDirectory); !doesDirContainBag) {
         std::cerr << "The directory does not contain a bag file!" << std::endl;
         return 0;
     }
 
     // Video directory
-    videoParameters.targetDirectory = arguments.at(2);
-    dirPath = videoParameters.targetDirectory;
+    inputParameters.targetDirectory = arguments.at(2);
+    dirPath = inputParameters.targetDirectory;
     dirPath.truncate(dirPath.lastIndexOf(QChar('/')));
     if (!std::filesystem::exists(dirPath.toStdString())) {
         std::cerr << "The entered directory for the video file does not exist. Please specify a correct directory!" << std::endl;
         return 0;
     }
-    videoParameters.format = videoParameters.targetDirectory.right(3);
-    if (videoParameters.format != "mp4" && videoParameters.format != "mkv") {
+    inputParameters.format = inputParameters.targetDirectory.right(3);
+    if (inputParameters.format != "mp4" && inputParameters.format != "mkv") {
         std::cerr << "The entered video name is not in correct format. Please make sure that the video file ends in mp4 or mkv!" << std::endl;
         return 0;
     }
@@ -74,43 +74,43 @@ main(int argc, char* argv[])
             }
 
             const auto& topicName = arguments.at(topicNameIndex + 1);
-            if (!Utils::ROS::doesBagContainTopicName(videoParameters.sourceDirectory, topicName)) {
+            if (!Utils::ROS::doesBagContainTopicName(inputParameters.sourceDirectory, topicName)) {
                 std::cerr << "Topic has not been found in the bag file!" << std::endl;
                 return 0;
             }
-            if (Utils::ROS::getTopicType(videoParameters.sourceDirectory, topicName) != "sensor_msgs/msg/Image") {
+            if (Utils::ROS::getTopicType(inputParameters.sourceDirectory, topicName) != "sensor_msgs/msg/Image") {
                 std::cerr << "The entered topic is not in sensor message format!" << std::endl;
                 return 0;
             }
-            videoParameters.topicName = topicName;
+            inputParameters.topicName = topicName;
         }
 
         // Framerate
-        if (!Utils::CLI::checkArgumentValidity(arguments, "-r", "--rate", videoParameters.fps, 10, 60)) {
+        if (!Utils::CLI::checkArgumentValidity(arguments, "-r", "--rate", inputParameters.fps, 10, 60)) {
             std::cerr << "Please enter a framerate in the range of 10 to 60!" << std::endl;
             return 0;
         }
 
         // Hardware acceleration
-        videoParameters.useHardwareAcceleration = Utils::CLI::containsArguments(arguments, "-a", "--accelerate");
+        inputParameters.useHardwareAcceleration = Utils::CLI::containsArguments(arguments, "-a", "--accelerate");
         // Colorless
-        videoParameters.useBWImages = Utils::CLI::containsArguments(arguments, "-c", "--colorless");
+        inputParameters.useBWImages = Utils::CLI::containsArguments(arguments, "-c", "--colorless");
         // Lossless
-        videoParameters.lossless = Utils::CLI::containsArguments(arguments, "-l", "--lossless");
+        inputParameters.lossless = Utils::CLI::containsArguments(arguments, "-l", "--lossless");
     }
 
     // Search for topic name in bag file if not specified
-    if (videoParameters.topicName.isEmpty()) {
-        const auto& firstTopicWithImageType = Utils::ROS::getFirstTopicWithCertainType(videoParameters.sourceDirectory, "sensor_msgs/msg/Image");
+    if (inputParameters.topicName.isEmpty()) {
+        const auto& firstTopicWithImageType = Utils::ROS::getFirstTopicWithCertainType(inputParameters.sourceDirectory, "sensor_msgs/msg/Image");
         if (firstTopicWithImageType == std::nullopt) {
             std::cerr << "The bag file does not contain any image topics!" << std::endl;
             return 0;
         }
 
-        videoParameters.topicName = *firstTopicWithImageType;
+        inputParameters.topicName = *firstTopicWithImageType;
     }
 
-    if (std::filesystem::exists(videoParameters.targetDirectory.toStdString())) {
+    if (std::filesystem::exists(inputParameters.targetDirectory.toStdString())) {
         if (!Utils::CLI::continueForExistingSourceDir("The video already exists. Continue? [y/n]")) {
             return 0;
         }
@@ -119,13 +119,13 @@ main(int argc, char* argv[])
     auto thisMessageCount = 0;
 
     // Create encoding thread and connect to its informations
-    auto* const encodingThread = new EncodingThread(videoParameters);
+    auto* const encodingThread = new EncodingThread(inputParameters);
 
     QObject::connect(encodingThread, &EncodingThread::calculatedMaximumInstances, [&thisMessageCount](int count) {
         thisMessageCount = count;
     });
     QObject::connect(encodingThread, &EncodingThread::openingCVInstanceFailed, [] {
-        std::cerr << "The video writing failed. Please make sure that all parameters are set correctly and disable the hardware acceleration, if necessary." << std::endl;
+        std::cerr << "The video writing failed. Please make sure that all inputParameters are set correctly and disable the hardware acceleration, if necessary." << std::endl;
         return 0;
     });
     QObject::connect(encodingThread, &EncodingThread::progressChanged, [&thisMessageCount] (int iteration, int progress) {

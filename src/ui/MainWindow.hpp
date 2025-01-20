@@ -29,11 +29,12 @@ private:
     closeEvent(QCloseEvent *event) override;
 
 private:
-    Utils::UI::VideoParameters m_parametersBagToVideo;
-    Utils::UI::BagParameters m_parametersVideoToBag;
-    Utils::UI::ImageParameters m_parametersBagToImages;
-    Utils::UI::DummyBagParameters m_dummyBagParameters;
-    Utils::UI::EditBagParameters m_editBagParameters;
+    Utils::UI::VideoInputParameters m_parametersBagToVideo;
+    Utils::UI::BagInputParameters m_parametersVideoToBag;
+    Utils::UI::ImageInputParameters m_parametersBagToImages;
+    Utils::UI::DummyBagInputParameters m_dummyBagParameters;
+    Utils::UI::EditBagInputParameters m_editBagParameters;
+    Utils::UI::DialogParameters m_dialogParameters;
 
     bool m_saveParametersOnChange;
 

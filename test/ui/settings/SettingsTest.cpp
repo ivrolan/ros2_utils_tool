@@ -1,19 +1,22 @@
 #include "catch_ros2/catch_ros2.hpp"
 
-#include "AdvancedParamSettings.hpp"
-#include "BagParamSettings.hpp"
-#include "BasicParamSettings.hpp"
-#include "DummyBagParamSettings.hpp"
-#include "EditBagParamSettings.hpp"
-#include "ImageParamSettings.hpp"
+#include "AdvancedInputSettings.hpp"
+#include "BagInputSettings.hpp"
+#include "InputSettings.hpp"
+#include "DialogSettings.hpp"
+#include "DummyBagInputSettings.hpp"
+#include "EditBagInputSettings.hpp"
+#include "ImageInputSettings.hpp"
 #include "UtilsUI.hpp"
-#include "VideoParamSettings.hpp"
+#include "VideoInputSettings.hpp"
 
 #include <QSettings>
 
 TEST_CASE("Settings Testing", "[ui]") {
-    QSettings settings;
-    settings.setValue("save", true);
+    QSettings qSettings;
+    qSettings.beginGroup("dialog");
+    qSettings.setValue("save_parameters", true);
+    qSettings.endGroup();
 
     SECTION("Concept Test") {
         REQUIRE(SettingsParameter<int>);
@@ -25,210 +28,230 @@ TEST_CASE("Settings Testing", "[ui]") {
         REQUIRE(!SettingsParameter<char>);
         REQUIRE(!SettingsParameter<std::string>);
     }
-    SECTION("Basic Params Test") {
+    SECTION("Input Params Test") {
         SECTION("Read") {
-            settings.beginGroup("basic");
-            REQUIRE(!settings.value("source_dir").isValid());
-            REQUIRE(!settings.value("topic_name").isValid());
-            settings.endGroup();
+            qSettings.beginGroup("basic");
+            REQUIRE(!qSettings.value("source_dir").isValid());
+            REQUIRE(!qSettings.value("topic_name").isValid());
+            qSettings.endGroup();
         }
         SECTION("Write") {
-            Utils::UI::BasicParameters basicParameters;
-            BasicParamSettings basicParamSettings(basicParameters, "basic");
+            Utils::UI::InputParameters parameters;
+            InputSettings settings(parameters, "basic");
 
-            basicParameters.sourceDirectory = "/source/dir";
-            basicParameters.topicName = "/test_topic_name";
-            basicParamSettings.write();
+            parameters.sourceDirectory = "/source/dir";
+            parameters.topicName = "/test_topic_name";
+            settings.write();
 
-            settings.beginGroup("basic");
-            REQUIRE(settings.value("source_dir").isValid());
-            REQUIRE(settings.value("topic_name").isValid());
-            REQUIRE(settings.value("source_dir").toString() == "/source/dir");
-            REQUIRE(settings.value("topic_name").toString() == "/test_topic_name");
-            settings.endGroup();
+            qSettings.beginGroup("basic");
+            REQUIRE(qSettings.value("source_dir").isValid());
+            REQUIRE(qSettings.value("topic_name").isValid());
+            REQUIRE(qSettings.value("source_dir").toString() == "/source/dir");
+            REQUIRE(qSettings.value("topic_name").toString() == "/test_topic_name");
+            qSettings.endGroup();
         }
     }
-    SECTION("Advanced Params Test") {
+    SECTION("Advanced Input Params Test") {
         SECTION("Read") {
-            settings.beginGroup("advanced");
-            REQUIRE(!settings.value("target_dir").isValid());
-            settings.endGroup();
+            qSettings.beginGroup("advanced");
+            REQUIRE(!qSettings.value("target_dir").isValid());
+            qSettings.endGroup();
         }
         SECTION("Write") {
-            Utils::UI::AdvancedParameters advancedParameters;
-            AdvancedParamSettings advancedParamSettings(advancedParameters, "advanced");
+            Utils::UI::AdvancedInputParameters parameters;
+            AdvancedInputSettings settings(parameters, "advanced");
 
-            advancedParameters.targetDirectory = "/target/dir";
-            advancedParamSettings.write();
+            parameters.targetDirectory = "/target/dir";
+            settings.write();
 
-            settings.beginGroup("advanced");
-            REQUIRE(settings.value("target_dir").isValid());
-            REQUIRE(settings.value("target_dir").toString() == "/target/dir");
-            settings.endGroup();
+            qSettings.beginGroup("advanced");
+            REQUIRE(qSettings.value("target_dir").isValid());
+            REQUIRE(qSettings.value("target_dir").toString() == "/target/dir");
+            qSettings.endGroup();
         }
     }
-    SECTION("Image Params Test") {
+    SECTION("Image Input Params Test") {
         SECTION("Read") {
-            settings.beginGroup("images");
-            REQUIRE(!settings.value("format").isValid());
-            REQUIRE(!settings.value("quality").isValid());
-            REQUIRE(!settings.value("bw_images").isValid());
-            REQUIRE(!settings.value("jpg_optimize").isValid());
-            REQUIRE(!settings.value("png_bilevel").isValid());
-            settings.endGroup();
+            qSettings.beginGroup("images");
+            REQUIRE(!qSettings.value("format").isValid());
+            REQUIRE(!qSettings.value("quality").isValid());
+            REQUIRE(!qSettings.value("bw_images").isValid());
+            REQUIRE(!qSettings.value("jpg_optimize").isValid());
+            REQUIRE(!qSettings.value("png_bilevel").isValid());
+            qSettings.endGroup();
         }
         SECTION("Write") {
-            Utils::UI::ImageParameters imageParameters;
-            ImageParamSettings imageParamSettings(imageParameters, "images");
+            Utils::UI::ImageInputParameters parameters;
+            ImageInputSettings settings(parameters, "images");
 
-            imageParameters.format = "jpg";
-            imageParameters.quality = 10;
-            imageParameters.useBWImages = true;
-            imageParameters.jpgOptimize = true;
-            imageParameters.pngBilevel = true;
-            imageParamSettings.write();
+            parameters.format = "jpg";
+            parameters.quality = 10;
+            parameters.useBWImages = true;
+            parameters.jpgOptimize = true;
+            parameters.pngBilevel = true;
+            settings.write();
 
-            settings.beginGroup("images");
-            REQUIRE(settings.value("format").isValid());
-            REQUIRE(settings.value("format").toString() == "jpg");
-            REQUIRE(settings.value("quality").isValid());
-            REQUIRE(settings.value("quality").toInt() == 10);
-            REQUIRE(settings.value("bw_images").isValid());
-            REQUIRE(settings.value("bw_images").toBool() == true);
-            REQUIRE(settings.value("jpg_optimize").isValid());
-            REQUIRE(settings.value("jpg_optimize").toBool() == true);
-            REQUIRE(settings.value("png_bilevel").isValid());
-            REQUIRE(settings.value("png_bilevel").toBool() == true);
-            settings.endGroup();
+            qSettings.beginGroup("images");
+            REQUIRE(qSettings.value("format").isValid());
+            REQUIRE(qSettings.value("format").toString() == "jpg");
+            REQUIRE(qSettings.value("quality").isValid());
+            REQUIRE(qSettings.value("quality").toInt() == 10);
+            REQUIRE(qSettings.value("bw_images").isValid());
+            REQUIRE(qSettings.value("bw_images").toBool() == true);
+            REQUIRE(qSettings.value("jpg_optimize").isValid());
+            REQUIRE(qSettings.value("jpg_optimize").toBool() == true);
+            REQUIRE(qSettings.value("png_bilevel").isValid());
+            REQUIRE(qSettings.value("png_bilevel").toBool() == true);
+            qSettings.endGroup();
         }
     }
-    SECTION("Video Params Test") {
+    SECTION("Video Input Params Test") {
         SECTION("Read") {
-            settings.beginGroup("video");
-            REQUIRE(!settings.value("format").isValid());
-            REQUIRE(!settings.value("fps").isValid());
-            REQUIRE(!settings.value("hw_acc").isValid());
-            REQUIRE(!settings.value("bw_images").isValid());
-            REQUIRE(!settings.value("lossless_images").isValid());
-            settings.endGroup();
+            qSettings.beginGroup("video");
+            REQUIRE(!qSettings.value("format").isValid());
+            REQUIRE(!qSettings.value("fps").isValid());
+            REQUIRE(!qSettings.value("hw_acc").isValid());
+            REQUIRE(!qSettings.value("bw_images").isValid());
+            REQUIRE(!qSettings.value("lossless_images").isValid());
+            qSettings.endGroup();
         }
         SECTION("Write") {
-            Utils::UI::VideoParameters videoParameters;
-            VideoParamSettings videoParamSettings(videoParameters, "video");
+            Utils::UI::VideoInputParameters parameters;
+            VideoInputSettings settings(parameters, "video");
 
-            videoParameters.format = "mkv";
-            videoParameters.fps = 20;
-            videoParameters.useHardwareAcceleration = true;
-            videoParameters.useBWImages = true;
-            videoParameters.lossless = true;
-            videoParamSettings.write();
+            parameters.format = "mkv";
+            parameters.fps = 20;
+            parameters.useHardwareAcceleration = true;
+            parameters.useBWImages = true;
+            parameters.lossless = true;
+            settings.write();
 
-            settings.beginGroup("video");
-            REQUIRE(settings.value("format").isValid());
-            REQUIRE(settings.value("format").toString() == "mkv");
-            REQUIRE(settings.value("fps").isValid());
-            REQUIRE(settings.value("fps").toInt() == 20);
-            REQUIRE(settings.value("hw_acc").isValid());
-            REQUIRE(settings.value("hw_acc").toBool() == true);
-            REQUIRE(settings.value("bw_images").isValid());
-            REQUIRE(settings.value("bw_images").toBool() == true);
-            REQUIRE(settings.value("lossless_images").isValid());
-            REQUIRE(settings.value("lossless_images").toBool() == true);
-            settings.endGroup();
+            qSettings.beginGroup("video");
+            REQUIRE(qSettings.value("format").isValid());
+            REQUIRE(qSettings.value("format").toString() == "mkv");
+            REQUIRE(qSettings.value("fps").isValid());
+            REQUIRE(qSettings.value("fps").toInt() == 20);
+            REQUIRE(qSettings.value("hw_acc").isValid());
+            REQUIRE(qSettings.value("hw_acc").toBool() == true);
+            REQUIRE(qSettings.value("bw_images").isValid());
+            REQUIRE(qSettings.value("bw_images").toBool() == true);
+            REQUIRE(qSettings.value("lossless_images").isValid());
+            REQUIRE(qSettings.value("lossless_images").toBool() == true);
+            qSettings.endGroup();
         }
     }
-    SECTION("Bag Params Test") {
+    SECTION("Bag Input Params Test") {
         SECTION("Read") {
-            settings.beginGroup("bag");
-            REQUIRE(!settings.value("cdr").isValid());
-            settings.endGroup();
+            qSettings.beginGroup("bag");
+            REQUIRE(!qSettings.value("cdr").isValid());
+            qSettings.endGroup();
         }
         SECTION("Write") {
-            Utils::UI::BagParameters bagParameters;
-            BagParamSettings bagParamSettings(bagParameters, "bag");
+            Utils::UI::BagInputParameters parameters;
+            BagInputSettings settings(parameters, "bag");
 
-            bagParameters.fps = 40;
-            bagParameters.useCustomFPS = true;
-            bagParameters.useHardwareAcceleration = true;
-            bagParamSettings.write();
+            parameters.fps = 40;
+            parameters.useCustomFPS = true;
+            parameters.useHardwareAcceleration = true;
+            settings.write();
 
-            settings.beginGroup("bag");
-            REQUIRE(settings.value("fps").isValid());
-            REQUIRE(settings.value("fps").toInt() == 40);
-            REQUIRE(settings.value("custom_fps").isValid());
-            REQUIRE(settings.value("custom_fps").toBool() == true);
-            REQUIRE(settings.value("hw_acc").isValid());
-            REQUIRE(settings.value("hw_acc").toBool() == true);
-            settings.endGroup();
+            qSettings.beginGroup("bag");
+            REQUIRE(qSettings.value("fps").isValid());
+            REQUIRE(qSettings.value("fps").toInt() == 40);
+            REQUIRE(qSettings.value("custom_fps").isValid());
+            REQUIRE(qSettings.value("custom_fps").toBool() == true);
+            REQUIRE(qSettings.value("hw_acc").isValid());
+            REQUIRE(qSettings.value("hw_acc").toBool() == true);
+            qSettings.endGroup();
         }
     }
-    SECTION("Dummmy Bag Params Test") {
+    SECTION("Dummmy Bag Input Params Test") {
         SECTION("Read") {
-            settings.beginGroup("dummy");
-            REQUIRE(!settings.value("topics").isValid());
-            REQUIRE(!settings.value("msg_count").isValid());
-            settings.endGroup();
+            qSettings.beginGroup("dummy");
+            REQUIRE(!qSettings.value("topics").isValid());
+            REQUIRE(!qSettings.value("msg_count").isValid());
+            qSettings.endGroup();
         }
         SECTION("Write") {
-            Utils::UI::DummyBagParameters dummyBagParameters;
-            DummyBagParamSettings dummyBagParamSettings(dummyBagParameters, "dummy");
+            Utils::UI::DummyBagInputParameters parameters;
+            DummyBagInputSettings settings(parameters, "dummy");
 
-            dummyBagParameters.messageCount = 250;
-            dummyBagParameters.topics.push_back({ "string", "example_name" });
-            dummyBagParamSettings.write();
+            parameters.messageCount = 250;
+            parameters.topics.push_back({ "string", "example_name" });
+            settings.write();
 
-            settings.beginGroup("dummy");
-            REQUIRE(settings.value("msg_count").isValid());
-            REQUIRE(settings.value("msg_count").toInt() == 250);
+            qSettings.beginGroup("dummy");
+            REQUIRE(qSettings.value("msg_count").isValid());
+            REQUIRE(qSettings.value("msg_count").toInt() == 250);
 
-            const auto size = settings.beginReadArray("topics");
+            const auto size = qSettings.beginReadArray("topics");
             for (auto i = 0; i < size; ++i) {
-                settings.setArrayIndex(i);
-                REQUIRE(settings.value("type").isValid());
-                REQUIRE(settings.value("type").toString() == "string");
-                REQUIRE(settings.value("name").isValid());
-                REQUIRE(settings.value("name").toString() == "example_name");
+                qSettings.setArrayIndex(i);
+                REQUIRE(qSettings.value("type").isValid());
+                REQUIRE(qSettings.value("type").toString() == "string");
+                REQUIRE(qSettings.value("name").isValid());
+                REQUIRE(qSettings.value("name").toString() == "example_name");
             }
             REQUIRE(size == 1);
-            settings.endArray();
+            qSettings.endArray();
 
-            settings.endGroup();
+            qSettings.endGroup();
         }
     }
-    SECTION("Edit Bag Params Test") {
+    SECTION("Edit Bag Input Params Test") {
         SECTION("Read") {
-            settings.beginGroup("dummy");
-            REQUIRE(!settings.value("topics").isValid());
-            settings.endGroup();
+            qSettings.beginGroup("dummy");
+            REQUIRE(!qSettings.value("topics").isValid());
+            qSettings.endGroup();
         }
         SECTION("Write") {
-            Utils::UI::EditBagParameters editBagParameters;
-            EditBagParamSettings editBagParamSettings(editBagParameters, "edit");
+            Utils::UI::EditBagInputParameters parameters;
+            EditBagInputSettings settings(parameters, "edit");
 
-            editBagParameters.topics.push_back({ "renamed_topic", "original_topic", 42, 1337, true });
-            editBagParamSettings.write();
+            parameters.topics.push_back({ "renamed_topic", "original_topic", 42, 1337, true });
+            settings.write();
 
-            settings.beginGroup("edit");
-            const auto size = settings.beginReadArray("topics");
+            qSettings.beginGroup("edit");
+            const auto size = qSettings.beginReadArray("topics");
             for (auto i = 0; i < size; ++i) {
-                settings.setArrayIndex(i);
-                REQUIRE(settings.value("renamed_name").isValid());
-                REQUIRE(settings.value("renamed_name").toString() == "renamed_topic");
-                REQUIRE(settings.value("original_name").isValid());
-                REQUIRE(settings.value("original_name").toString() == "original_topic");
-                REQUIRE(settings.value("lower_boundary").isValid());
-                REQUIRE(settings.value("lower_boundary").toInt() == 42);
-                REQUIRE(settings.value("upper_boundary").isValid());
-                REQUIRE(settings.value("upper_boundary").toInt() == 1337);
-                REQUIRE(settings.value("is_selected").isValid());
-                REQUIRE(settings.value("is_selected").toBool() == true);
+                qSettings.setArrayIndex(i);
+                REQUIRE(qSettings.value("renamed_name").isValid());
+                REQUIRE(qSettings.value("renamed_name").toString() == "renamed_topic");
+                REQUIRE(qSettings.value("original_name").isValid());
+                REQUIRE(qSettings.value("original_name").toString() == "original_topic");
+                REQUIRE(qSettings.value("lower_boundary").isValid());
+                REQUIRE(qSettings.value("lower_boundary").toInt() == 42);
+                REQUIRE(qSettings.value("upper_boundary").isValid());
+                REQUIRE(qSettings.value("upper_boundary").toInt() == 1337);
+                REQUIRE(qSettings.value("is_selected").isValid());
+                REQUIRE(qSettings.value("is_selected").toBool() == true);
             }
             REQUIRE(size == 1);
-            settings.endArray();
+            qSettings.endArray();
 
-            settings.endGroup();
+            qSettings.endGroup();
+        }
+    }
+    SECTION("Dialog Settings Test") {
+        SECTION("Read") {
+            qSettings.clear();
+            qSettings.beginGroup("dialog");
+            REQUIRE(!qSettings.value("save_parameters").isValid());
+            qSettings.endGroup();
+        }
+        SECTION("Write") {
+            Utils::UI::DialogParameters parameters;
+            DialogSettings settings(parameters, "dialog");
+
+            parameters.saveParameters = true;
+            settings.write();
+
+            qSettings.beginGroup("dialog");
+            REQUIRE(qSettings.value("save_parameters").isValid());
+            REQUIRE(qSettings.value("save_parameters").toBool() == true);
+            qSettings.endGroup();
         }
     }
 
-    settings.clear();
+    qSettings.clear();
 }

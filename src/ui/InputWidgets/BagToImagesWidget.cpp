@@ -19,26 +19,26 @@
 
 #include <filesystem>
 
-BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters, QWidget *parent) :
+BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageInputParameters& parameters, QWidget *parent) :
     BasicInputWidget("Write Images from ROSBag", ":/icons/bag_to_images", parent),
-    m_imageParameters(imageParameters), m_imageParamSettings(imageParameters, "bag_to_images")
+    m_parameters(parameters), m_settings(parameters, "bag_to_images")
 {
-    m_sourceLineEdit->setText(imageParameters.sourceDirectory);
+    m_sourceLineEdit->setText(parameters.sourceDirectory);
     m_sourceLineEdit->setToolTip("The directory of the ROSBag source file.");
 
     m_topicNameComboBox = new QComboBox;
     m_topicNameComboBox->setMinimumWidth(200);
     m_topicNameComboBox->setToolTip("The ROSBag topic of the video file.\n"
                                     "If the Bag contains multiple video topics, you can choose one of them.");
-    if (!m_imageParameters.sourceDirectory.isEmpty()) {
-        Utils::UI::fillComboBoxWithTopics(m_topicNameComboBox, m_imageParameters.sourceDirectory);
+    if (!m_parameters.sourceDirectory.isEmpty()) {
+        Utils::UI::fillComboBoxWithTopics(m_topicNameComboBox, m_parameters.sourceDirectory);
 
-        if (!m_imageParameters.topicName.isEmpty()) {
-            m_topicNameComboBox->setCurrentText(m_imageParameters.topicName);
+        if (!m_parameters.topicName.isEmpty()) {
+            m_topicNameComboBox->setCurrentText(m_parameters.topicName);
         }
     }
 
-    m_imagesNameLineEdit = new QLineEdit(m_imageParameters.targetDirectory);
+    m_imagesNameLineEdit = new QLineEdit(m_parameters.targetDirectory);
     m_imagesNameLineEdit->setToolTip("The directory where the images should be stored.");
 
     auto* const imagesLocationButton = new QToolButton;
@@ -49,7 +49,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     formatComboBox->addItem("png", 1);
     formatComboBox->addItem("bmp", 2);
     formatComboBox->setToolTip("The format of the written images.");
-    formatComboBox->setCurrentText(m_imageParameters.format);
+    formatComboBox->setCurrentText(m_parameters.format);
 
     auto* const basicOptionsFormLayout = new QFormLayout;
     basicOptionsFormLayout->addRow("Bag File:", m_findSourceLayout);
@@ -58,11 +58,11 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     basicOptionsFormLayout->addRow("Format:", formatComboBox);
 
     auto* const advancedOptionsCheckBox = new QCheckBox;
-    advancedOptionsCheckBox->setChecked(m_imageParameters.showAdvancedOptions ? Qt::Checked : Qt::Unchecked);
+    advancedOptionsCheckBox->setChecked(m_parameters.showAdvancedOptions ? Qt::Checked : Qt::Unchecked);
     advancedOptionsCheckBox->setText("Show Advanced Options");
 
     m_useBWCheckBox = new QCheckBox;
-    m_useBWCheckBox->setChecked(m_imageParameters.useBWImages ? Qt::Checked : Qt::Unchecked);
+    m_useBWCheckBox->setChecked(m_parameters.useBWImages ? Qt::Checked : Qt::Unchecked);
     m_useBWCheckBox->setToolTip("If the images should be colorless or not.");
 
     m_advancedOptionsFormLayout = new QFormLayout;
@@ -70,7 +70,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
 
     auto* const advancedOptionsWidget = new QWidget;
     advancedOptionsWidget->setLayout(m_advancedOptionsFormLayout);
-    advancedOptionsWidget->setVisible(m_imageParameters.showAdvancedOptions);
+    advancedOptionsWidget->setVisible(m_parameters.showAdvancedOptions);
 
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();
@@ -89,7 +89,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     controlsSqueezedLayout->addLayout(controlsLayout);
     controlsSqueezedLayout->addStretch();
 
-    adjustWidgetsToChangedFormat(m_imageParameters.format);
+    adjustWidgetsToChangedFormat(m_parameters.format);
 
     auto* const mainLayout = new QVBoxLayout;
     mainLayout->addLayout(controlsSqueezedLayout);
@@ -97,22 +97,22 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageParameters& imageParameters
     setLayout(mainLayout);
 
     auto* const okShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
-    enableOkButton(!m_imageParameters.sourceDirectory.isEmpty() &&
-                   !m_imageParameters.topicName.isEmpty() && !m_imageParameters.targetDirectory.isEmpty());
+    enableOkButton(!m_parameters.sourceDirectory.isEmpty() &&
+                   !m_parameters.topicName.isEmpty() && !m_parameters.targetDirectory.isEmpty());
 
 
     connect(m_findSourceButton, &QPushButton::clicked, this, &BagToImagesWidget::searchButtonPressed);
     connect(m_topicNameComboBox, &QComboBox::currentTextChanged, this, [this] (const QString& text) {
-        writeSettingsParameter(m_imageParameters.topicName, text, m_imageParamSettings);
+        writeSettingsParameter(m_parameters.topicName, text, m_settings);
     });
     connect(imagesLocationButton, &QPushButton::clicked, this, &BagToImagesWidget::imagesLocationButtonPressed);
     connect(formatComboBox, &QComboBox::currentTextChanged, this, &BagToImagesWidget::adjustWidgetsToChangedFormat);
     connect(advancedOptionsCheckBox, &QCheckBox::stateChanged, this, [this, advancedOptionsWidget] (int state) {
-        m_imageParameters.showAdvancedOptions = state == Qt::Checked;
+        m_parameters.showAdvancedOptions = state == Qt::Checked;
         advancedOptionsWidget->setVisible(state == Qt::Checked);
     });
     connect(m_useBWCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-        writeSettingsParameter(m_imageParameters.useBWImages, state == Qt::Checked, m_imageParamSettings);
+        writeSettingsParameter(m_parameters.useBWImages, state == Qt::Checked, m_settings);
     });
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &BagToImagesWidget::okButtonPressed);
     connect(okShortCut, &QShortcut::activated, this, &BagToImagesWidget::okButtonPressed);
@@ -134,17 +134,17 @@ BagToImagesWidget::searchButtonPressed()
     }
 
     m_sourceLineEdit->setText(bagDirectory);
-    writeSettingsParameter(m_imageParameters.sourceDirectory, bagDirectory, m_imageParamSettings);
+    writeSettingsParameter(m_parameters.sourceDirectory, bagDirectory, m_settings);
 
     QDir bagDirectoryDir(bagDirectory);
     bagDirectoryDir.cdUp();
     if (const auto autoImageDirectory = bagDirectoryDir.path() + "/bag_images"; !std::filesystem::exists(autoImageDirectory.toStdString())) {
         m_imagesNameLineEdit->setText(autoImageDirectory);
-        writeSettingsParameter(m_imageParameters.targetDirectory, autoImageDirectory, m_imageParamSettings);
+        writeSettingsParameter(m_parameters.targetDirectory, autoImageDirectory, m_settings);
     }
 
-    enableOkButton(!m_imageParameters.sourceDirectory.isEmpty() &&
-                   !m_imageParameters.topicName.isEmpty() && !m_imageParameters.targetDirectory.isEmpty());
+    enableOkButton(!m_parameters.sourceDirectory.isEmpty() &&
+                   !m_parameters.topicName.isEmpty() && !m_parameters.targetDirectory.isEmpty());
 }
 
 
@@ -158,17 +158,17 @@ BagToImagesWidget::imagesLocationButtonPressed()
 
     // Only enable if both line edits contain text
     m_fileDialogOpened = true;
-    writeSettingsParameter(m_imageParameters.targetDirectory, fileName, m_imageParamSettings);
+    writeSettingsParameter(m_parameters.targetDirectory, fileName, m_settings);
     m_imagesNameLineEdit->setText(fileName);
-    enableOkButton(!m_imageParameters.sourceDirectory.isEmpty() &&
-                   !m_imageParameters.topicName.isEmpty() && !m_imageParameters.targetDirectory.isEmpty());
+    enableOkButton(!m_parameters.sourceDirectory.isEmpty() &&
+                   !m_parameters.topicName.isEmpty() && !m_parameters.targetDirectory.isEmpty());
 }
 
 
 void
 BagToImagesWidget::adjustWidgetsToChangedFormat(const QString& text)
 {
-    writeSettingsParameter(m_imageParameters.format, text, m_imageParamSettings);
+    writeSettingsParameter(m_parameters.format, text, m_settings);
 
     if (m_optimizeOrBilevelCheckBox && m_slider) {
         m_advancedOptionsFormLayout->removeRow(m_optimizeOrBilevelCheckBox);
@@ -181,13 +181,13 @@ BagToImagesWidget::adjustWidgetsToChangedFormat(const QString& text)
     m_slider = new QSlider(Qt::Horizontal);
     m_slider->setRange(0, 9);
     m_slider->setTickInterval(1);
-    m_slider->setValue(m_imageParameters.quality);
+    m_slider->setValue(m_parameters.quality);
     m_slider->setTickPosition(QSlider::TicksBelow);
     m_slider->setToolTip(text == "jpg" ? "Image quality. A higher quality will increase the image size."
                                        : "Higher compression will result in smaller size, but increase writing time.");
 
     m_optimizeOrBilevelCheckBox = new QCheckBox;
-    auto& memberVal = text == "jpg" ? m_imageParameters.jpgOptimize : m_imageParameters.pngBilevel;
+    auto& memberVal = text == "jpg" ? m_parameters.jpgOptimize : m_parameters.pngBilevel;
     m_optimizeOrBilevelCheckBox->setChecked(memberVal ? Qt::Checked : Qt::Unchecked);
     m_optimizeOrBilevelCheckBox->setToolTip(text == "jpg" ? "Optimize the stored file size." : "Save as an image containing only black and white pixels.");
 
@@ -195,12 +195,12 @@ BagToImagesWidget::adjustWidgetsToChangedFormat(const QString& text)
     m_advancedOptionsFormLayout->insertRow(1, text == "jpg" ? "Optimize Size" : "Binary Image", m_optimizeOrBilevelCheckBox);
 
     connect(m_slider, &QSlider::valueChanged, this, [this] (int value) {
-        writeSettingsParameter(m_imageParameters.quality, value, m_imageParamSettings);
+        writeSettingsParameter(m_parameters.quality, value, m_settings);
     });
     connect(m_optimizeOrBilevelCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-        m_imageParameters.format == "jpg" ?
-        writeSettingsParameter(m_imageParameters.jpgOptimize, state == Qt::Checked, m_imageParamSettings) :
-        writeSettingsParameter(m_imageParameters.pngBilevel, state == Qt::Checked, m_imageParamSettings);
+        m_parameters.format == "jpg" ?
+        writeSettingsParameter(m_parameters.jpgOptimize, state == Qt::Checked, m_settings) :
+        writeSettingsParameter(m_parameters.pngBilevel, state == Qt::Checked, m_settings);
     });
 }
 

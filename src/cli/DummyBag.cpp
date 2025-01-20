@@ -34,12 +34,12 @@ main(int argc, char* argv[])
         return 0;
     }
 
-    Utils::UI::DummyBagParameters dummyBagParameters;
-    dummyBagParameters.topicName = "";
+    Utils::UI::DummyBagInputParameters inputParameters;
+    inputParameters.topicName = "";
 
     // Bag directory
-    dummyBagParameters.sourceDirectory = arguments.at(1);
-    auto dirPath = dummyBagParameters.sourceDirectory;
+    inputParameters.sourceDirectory = arguments.at(1);
+    auto dirPath = inputParameters.sourceDirectory;
     dirPath.truncate(dirPath.lastIndexOf(QChar('/')));
     if (!std::filesystem::exists(dirPath.toStdString())) {
         std::cerr << "The entered directory for the bag file does not exist. Please specify a correct directory!" << std::endl;
@@ -47,8 +47,8 @@ main(int argc, char* argv[])
     }
 
     // Message count
-    dummyBagParameters.messageCount = arguments.at(arguments.size() - 1).toInt();
-    if (dummyBagParameters.messageCount < 1 || dummyBagParameters.messageCount > 1000) {
+    inputParameters.messageCount = arguments.at(arguments.size() - 1).toInt();
+    if (inputParameters.messageCount < 1 || inputParameters.messageCount > 1000) {
         std::cerr << "Please enter a number between 1 and 1000 for the message count value!" << std::endl;
         return 0;
     }
@@ -87,13 +87,13 @@ main(int argc, char* argv[])
         return 0;
     }
 
-    // Create thread parameters
-    QVector<Utils::UI::DummyBagTopic> topics;
+    // Create thread inputParameters
+    QVector<Utils::UI::DummyBagInputParameters::DummyBagTopic> topics;
     for (auto i = 0; i < topicTypes.size(); i++) {
-        dummyBagParameters.topics.push_back({ topicTypes.at(i), topicNames.at(i) });
+        inputParameters.topics.push_back({ topicTypes.at(i), topicNames.at(i) });
     }
 
-    if (std::filesystem::exists(dummyBagParameters.sourceDirectory.toStdString())) {
+    if (std::filesystem::exists(inputParameters.sourceDirectory.toStdString())) {
         if (!Utils::CLI::continueForExistingSourceDir("The dummy bag file already exists. Continue? [y/n]")) {
             return 0;
         }
@@ -102,7 +102,7 @@ main(int argc, char* argv[])
     auto thisMessageCount = 0;
 
     // Create thread and connect to its informations
-    auto* const dummyBagThread = new DummyBagThread(dummyBagParameters);
+    auto* const dummyBagThread = new DummyBagThread(inputParameters);
 
     QObject::connect(dummyBagThread, &DummyBagThread::calculatedMaximumInstances, [&thisMessageCount](int count) {
         thisMessageCount = count;

@@ -9,12 +9,12 @@ class WriteToBagThread : public BasicThread {
 
 public:
     explicit
-    WriteToBagThread(const Utils::UI::BagParameters& bagParameters,
-                     QObject*                        parent = nullptr);
+    WriteToBagThread(const Utils::UI::BagInputParameters& parameters,
+                     QObject*                             parent = nullptr);
 
     void
     run() override;
 
 private:
-    const Utils::UI::BagParameters& m_bagParameters;
+    const Utils::UI::BagInputParameters& m_parameters;
 };

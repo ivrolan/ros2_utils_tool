@@ -24,7 +24,7 @@ MainWindow::MainWindow()
 void
 MainWindow::setStartWidget()
 {
-    auto* const startWidget = new StartWidget;
+    auto* const startWidget = new StartWidget(m_dialogParameters);
     resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     setCentralWidget(startWidget);
     connect(startWidget, &StartWidget::functionRequested, this, &MainWindow::setConfigWidget);
