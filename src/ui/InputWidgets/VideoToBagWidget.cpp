@@ -4,7 +4,6 @@
 
 #include <QCheckBox>
 #include <QComboBox>
-#include <QDebug>
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -184,8 +183,7 @@ VideoToBagWidget::okButtonPressed()
         return;
     }
 
-    qDebug() << m_checkROS2NameConform;
-    if (m_checkROS2NameConform && !Utils::ROS::doesTopicNameFollowROS2Convention(m_parameters.topicName)) {
+    if (m_checkROS2NameConform && !Utils::ROS::isNameROS2Conform(m_parameters.topicName)) {
         auto *const msgBox = Utils::UI::createInvalidROSNameMessageBox();
 
         if (const auto returnValue = msgBox->exec(); returnValue == QMessageBox::No) {

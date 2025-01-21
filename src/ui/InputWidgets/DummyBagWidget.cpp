@@ -158,7 +158,7 @@ DummyBagWidget::okButtonPressed()
             Utils::UI::createCriticalMessageBox("Empty topic name!", "Please enter a topic name for every topic!");
             return;
         }
-        if (m_checkROS2NameConform && !Utils::ROS::doesTopicNameFollowROS2Convention(dummyTopicWidget->getTopicName())) {
+        if (m_checkROS2NameConform && !Utils::ROS::isNameROS2Conform(dummyTopicWidget->getTopicName())) {
             auto *const msgBox = Utils::UI::createInvalidROSNameMessageBox();
 
             if (const auto returnValue = msgBox->exec(); returnValue == QMessageBox::No) {

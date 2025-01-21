@@ -78,37 +78,37 @@ TEST_CASE("Utils ROS Testing", "[utils]") {
     }
     SECTION("Name ROS2 convention tests") {
         SECTION("Fails for special characters") {
-            const auto followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}");
+            const auto followsConvention = Utils::ROS::isNameROS2Conform("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}");
             REQUIRE(followsConvention == false);
         }
         SECTION("Slash and underbrackets") {
-            auto followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test_topic/");
+            auto followsConvention = Utils::ROS::isNameROS2Conform("test_topic/");
             REQUIRE(followsConvention == false);
-            followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test__topic");
+            followsConvention = Utils::ROS::isNameROS2Conform("test__topic");
             REQUIRE(followsConvention == false);
-            followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("//test_topic");
+            followsConvention = Utils::ROS::isNameROS2Conform("//test_topic");
             REQUIRE(followsConvention == false);
         }
         SECTION("First char number") {
-            auto followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("0test_topic");
+            auto followsConvention = Utils::ROS::isNameROS2Conform("0test_topic");
             REQUIRE(followsConvention == false);
-            followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test_topic");
+            followsConvention = Utils::ROS::isNameROS2Conform("test_topic");
             REQUIRE(followsConvention == true);
         }
         SECTION("Tilde and slash") {
-            auto followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test~topic");
+            auto followsConvention = Utils::ROS::isNameROS2Conform("test~topic");
             REQUIRE(followsConvention == false);
-            followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test~/topic");
+            followsConvention = Utils::ROS::isNameROS2Conform("test~/topic");
             REQUIRE(followsConvention == true);
         }
         SECTION("Balanced curly braces") {
-            auto followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test{topic}");
+            auto followsConvention = Utils::ROS::isNameROS2Conform("test{topic}");
             REQUIRE(followsConvention == true);
-            followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test_{topic");
+            followsConvention = Utils::ROS::isNameROS2Conform("test_{topic");
             REQUIRE(followsConvention == false);
-            followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test_topic}");
+            followsConvention = Utils::ROS::isNameROS2Conform("test_topic}");
             REQUIRE(followsConvention == false);
-            followsConvention = Utils::ROS::doesTopicNameFollowROS2Convention("test_{t{opic}");
+            followsConvention = Utils::ROS::isNameROS2Conform("test_{t{opic}");
             REQUIRE(followsConvention == false);
         }
     }

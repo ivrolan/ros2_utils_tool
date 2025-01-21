@@ -38,7 +38,7 @@ checkArgumentValidity(const QStringList& stringList, const QString& shortArg, co
 
 
 bool
-continueForExistingSourceDir(const std::string& message)
+shouldContinue(const std::string& message)
 {
     std::string input;
 

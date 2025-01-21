@@ -71,5 +71,5 @@ getBagVideoTopics(const QString& bagDirectory);
 
 // Returns if a topic name follows the ROS2 naming convention
 [[nodiscard]] bool
-doesTopicNameFollowROS2Convention(const QString& topicName);
+isNameROS2Conform(const QString& topicName);
 }

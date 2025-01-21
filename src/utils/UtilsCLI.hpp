@@ -29,8 +29,9 @@ checkArgumentValidity(const QStringList& stringList,
                       int                lowerRange,
                       int                higherRange);
 
+// Ask if the tool should continue for cases of minor invalidacies
 bool
-continueForExistingSourceDir(const std::string& message);
+shouldContinue(const std::string& message);
 
 // Draws a small progress string in the following format:
 // ############################--------------------

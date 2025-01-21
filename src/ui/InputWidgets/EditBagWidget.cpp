@@ -215,7 +215,7 @@ EditBagWidget::okButtonPressed()
 
         auto* const renamingLineEdit = dynamic_cast<QLineEdit*>(m_treeWidget->itemWidget((*it), COL_RENAMING));
         if (!renamingLineEdit->text().isEmpty() && m_checkROS2NameConform &&
-            !Utils::ROS::doesTopicNameFollowROS2Convention(renamingLineEdit->text())) {
+            !Utils::ROS::isNameROS2Conform(renamingLineEdit->text())) {
             auto *const msgBox = Utils::UI::createInvalidROSNameMessageBox();
 
             if (const auto returnValue = msgBox->exec(); returnValue == QMessageBox::No) {

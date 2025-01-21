@@ -70,10 +70,13 @@ main(int argc, char* argv[])
             }
 
             const auto& topicName = arguments.at(topicNameIndex + 1);
-            if (!Utils::ROS::doesTopicNameFollowROS2Convention(topicName)) {
-                std::cerr << "The topic name does not follow the ROS2 naming convention! More information on ROS2 naming convention is found here:" << std::endl;
-                std::cerr << "https://design.ros2.org/articles/topic_and_service_names.html" << std::endl;
-                return 0;
+            if (!Utils::ROS::isNameROS2Conform(topicName)) {
+                const auto errorString = "The topic name does not follow the ROS2 naming convention! More information on ROS2 naming convention is found here:\n"
+                                         "https://design.ros2.org/articles/topic_and_service_names.html\n"
+                                         "Do you want to continue anyways? [y/n]";
+                if (!Utils::CLI::shouldContinue(errorString)) {
+                    return 0;
+                }
             }
             inputParameters.topicName = topicName;
         }
@@ -94,7 +97,7 @@ main(int argc, char* argv[])
     }
 
     if (std::filesystem::exists(inputParameters.targetDirectory.toStdString())) {
-        if (!Utils::CLI::continueForExistingSourceDir("The bag file already exists. Continue? [y/n]")) {
+        if (!Utils::CLI::shouldContinue("The bag file already exists. Continue? [y/n]")) {
             return 0;
         }
     }

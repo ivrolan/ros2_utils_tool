@@ -112,7 +112,7 @@ main(int argc, char* argv[])
     }
 
     if (std::filesystem::exists(inputParameters.targetDirectory.toStdString())) {
-        if (!Utils::CLI::continueForExistingSourceDir("The image directory already exists. Continue? [y/n]")) {
+        if (!Utils::CLI::shouldContinue("The image directory already exists. Continue? [y/n]")) {
             return 0;
         }
     }

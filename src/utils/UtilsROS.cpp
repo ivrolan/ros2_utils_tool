@@ -125,7 +125,7 @@ getBagVideoTopics(const QString& bagDirectory)
 
 
 bool
-doesTopicNameFollowROS2Convention(const QString& topicName)
+isNameROS2Conform(const QString& topicName)
 {
     // Only may contain A-z, a-z, 0-9, _ and /
     QRegularExpression regularExpression("[^A-Za-z0-9/_{}~]");
