@@ -18,9 +18,11 @@
 
 #include <filesystem>
 
-DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagInputParameters& parameters, QWidget *parent) :
+DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagInputParameters& parameters,
+                               bool checkROS2NameConform, QWidget *parent) :
     BasicInputWidget("Create Dummy ROSBag", ":/icons/dummy_bag", parent),
-    m_parameters(parameters), m_settings(parameters, "dummy_bag")
+    m_parameters(parameters), m_settings(parameters, "dummy_bag"),
+    m_checkROS2NameConform(checkROS2NameConform)
 {
     m_sourceLineEdit->setText(parameters.sourceDirectory);
     m_sourceLineEdit->setToolTip("The directory where the ROSBag file should be stored.");
@@ -156,11 +158,12 @@ DummyBagWidget::okButtonPressed()
             Utils::UI::createCriticalMessageBox("Empty topic name!", "Please enter a topic name for every topic!");
             return;
         }
-        if (!Utils::ROS::doesTopicNameFollowROS2Convention(dummyTopicWidget->getTopicName())) {
-            Utils::UI::createCriticalMessageBox("Wrong topic name format!",
-                                                "The topic name(s) do not follow the ROS2 naming convention! More information for naming ROS2 topics can be found here:<br>"
-                                                "<a href='https://design.ros2.org/articles/topic_and_service_names.html'>https://design.ros2.org/articles/topic_and_service_names.html</a>");
-            return;
+        if (m_checkROS2NameConform && !Utils::ROS::doesTopicNameFollowROS2Convention(dummyTopicWidget->getTopicName())) {
+            auto *const msgBox = Utils::UI::createInvalidROSNameMessageBox();
+
+            if (const auto returnValue = msgBox->exec(); returnValue == QMessageBox::No) {
+                return;
+            }
         }
 
         topicNameSet.insert(dummyTopicWidget->getTopicName());

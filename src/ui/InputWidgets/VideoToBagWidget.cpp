@@ -4,6 +4,7 @@
 
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDebug>
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -20,9 +21,11 @@
 
 #include <filesystem>
 
-VideoToBagWidget::VideoToBagWidget(Utils::UI::BagInputParameters& parameters, QWidget *parent) :
+VideoToBagWidget::VideoToBagWidget(Utils::UI::BagInputParameters& parameters,
+                                   bool checkROS2NameConform, QWidget *parent) :
     BasicInputWidget("Write Video to a ROSBag", ":/icons/video_to_bag", parent),
-    m_parameters(parameters), m_settings(parameters, "vid_to_bag")
+    m_parameters(parameters), m_settings(parameters, "vid_to_bag"),
+    m_checkROS2NameConform(checkROS2NameConform)
 {
     m_sourceLineEdit->setText(parameters.sourceDirectory);
     m_sourceLineEdit->setToolTip("The directory of the source video file.");
@@ -181,11 +184,13 @@ VideoToBagWidget::okButtonPressed()
         return;
     }
 
-    if (!Utils::ROS::doesTopicNameFollowROS2Convention(m_parameters.topicName)) {
-        Utils::UI::createCriticalMessageBox("Wrong topic name format!",
-                                            "The topic name does not follow the ROS2 naming convention! More information for naming ROS2 topics can be found here:<br>"
-                                            "<a href='https://design.ros2.org/articles/topic_and_service_names.html'>https://design.ros2.org/articles/topic_and_service_names.html</a>");
-        return;
+    qDebug() << m_checkROS2NameConform;
+    if (m_checkROS2NameConform && !Utils::ROS::doesTopicNameFollowROS2Convention(m_parameters.topicName)) {
+        auto *const msgBox = Utils::UI::createInvalidROSNameMessageBox();
+
+        if (const auto returnValue = msgBox->exec(); returnValue == QMessageBox::No) {
+            return;
+        }
     }
     if (std::filesystem::exists(m_parameters.targetDirectory.toStdString())) {
         auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Bag file already exists!",

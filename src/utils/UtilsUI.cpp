@@ -49,6 +49,18 @@ createLineEditButtonLayout(QPointer<QLineEdit> lineEdit, QPointer<QToolButton> t
 }
 
 
+QMessageBox*
+createInvalidROSNameMessageBox()
+{
+    const auto headerText = "Renamed topic name(s) invalid!";
+    const auto mainText = "The renamed topic name(s) do not follow the ROS2 naming convention! More information can be found here:<br>"
+                          "<a href='https://design.ros2.org/articles/topic_and_service_names.html'>https://design.ros2.org/articles/topic_and_service_names.html</a><br>"
+                          "Do you still want to continue?";
+    auto *const msgBox = new QMessageBox(QMessageBox::Warning, headerText, mainText, QMessageBox::Yes | QMessageBox::No);
+    return msgBox;
+}
+
+
 void
 createCriticalMessageBox(const QString& headerText, const QString& mainText)
 {

@@ -237,6 +237,7 @@ TEST_CASE("Settings Testing", "[ui]") {
             qSettings.clear();
             qSettings.beginGroup("dialog");
             REQUIRE(!qSettings.value("save_parameters").isValid());
+            REQUIRE(!qSettings.value("check_ros2_naming_convention").isValid());
             qSettings.endGroup();
         }
         SECTION("Write") {
@@ -244,11 +245,14 @@ TEST_CASE("Settings Testing", "[ui]") {
             DialogSettings settings(parameters, "dialog");
 
             parameters.saveParameters = true;
+            parameters.checkROS2NameConform = true;
             settings.write();
 
             qSettings.beginGroup("dialog");
             REQUIRE(qSettings.value("save_parameters").isValid());
             REQUIRE(qSettings.value("save_parameters").toBool() == true);
+            REQUIRE(qSettings.value("check_ros2_naming_convention").isValid());
+            REQUIRE(qSettings.value("check_ros2_naming_convention").toBool() == true);
             qSettings.endGroup();
         }
     }

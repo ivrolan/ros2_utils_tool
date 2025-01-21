@@ -20,6 +20,7 @@ class VideoToBagWidget : public BasicInputWidget
 
 public:
     VideoToBagWidget(Utils::UI::BagInputParameters& parameters,
+                     bool                           checkROS2NameConform,
                      QWidget*                       parent = 0);
 
 private slots:
@@ -43,4 +44,6 @@ private:
     Utils::UI::BagInputParameters& m_parameters;
 
     BagInputSettings m_settings;
+
+    const bool m_checkROS2NameConform;
 };

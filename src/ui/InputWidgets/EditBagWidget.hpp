@@ -19,6 +19,7 @@ class EditBagWidget : public BasicInputWidget
 public:
     explicit
     EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
+                  bool                               checkROS2NameConform,
                   QWidget*                           parent = 0);
 
 private slots:
@@ -44,6 +45,8 @@ private:
     Utils::UI::EditBagInputParameters& m_parameters;
 
     EditBagInputSettings m_settings;
+
+    const bool m_checkROS2NameConform;
 
     static constexpr int COL_CHECKBOXES = 0;
     static constexpr int COL_TOPICS = 1;

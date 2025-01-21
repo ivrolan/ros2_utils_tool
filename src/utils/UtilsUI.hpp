@@ -3,6 +3,7 @@
 #include <QComboBox>
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QPointer>
 #include <QToolButton>
 #include <QWidget>
@@ -64,6 +65,7 @@ struct EditBagInputParameters : AdvancedInputParameters {
 
 struct DialogParameters {
     bool saveParameters = false;
+    bool checkROS2NameConform = false;
 };
 
 // Create a larger font for a certain widget
@@ -79,6 +81,10 @@ fillComboBoxWithTopics(QPointer<QComboBox> comboBox,
 [[nodiscard]] QHBoxLayout*
 createLineEditButtonLayout(QPointer<QLineEdit>   lineEdit,
                            QPointer<QToolButton> toolButton);
+
+// Create a messagebox informing of invalid ROS2 topic names
+[[nodiscard]] QMessageBox*
+createInvalidROSNameMessageBox();
 
 // Creates a messagebox informing of a critical error
 void

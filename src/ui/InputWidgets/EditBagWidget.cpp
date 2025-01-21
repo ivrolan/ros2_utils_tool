@@ -16,9 +16,11 @@
 
 #include <filesystem>
 
-EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters, QWidget *parent) :
+EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
+                             bool checkROS2NameConform, QWidget *parent) :
     BasicInputWidget("Edit ROSBag", ":/icons/edit_bag", parent),
-    m_parameters(parameters), m_settings(parameters, "edit_bag")
+    m_parameters(parameters), m_settings(parameters, "edit_bag"),
+    m_checkROS2NameConform(checkROS2NameConform)
 {
     auto* const formLayout = new QFormLayout;
     formLayout->addRow("Bag Location:", m_findSourceLayout);
@@ -210,12 +212,15 @@ EditBagWidget::okButtonPressed()
             msgBox->exec();
             return;
         }
+
         auto* const renamingLineEdit = dynamic_cast<QLineEdit*>(m_treeWidget->itemWidget((*it), COL_RENAMING));
-        if (!renamingLineEdit->text().isEmpty() && !Utils::ROS::doesTopicNameFollowROS2Convention(renamingLineEdit->text())) {
-            Utils::UI::createCriticalMessageBox("Renamed topic name(s) invalid!",
-                                                "The renamed topic name(s) do not follow the ROS2 naming convention! More information for naming ROS2 topics can be found here:<br>"
-                                                "<a href='https://design.ros2.org/articles/topic_and_service_names.html'>https://design.ros2.org/articles/topic_and_service_names.html</a>");
-            return;
+        if (!renamingLineEdit->text().isEmpty() && m_checkROS2NameConform &&
+            !Utils::ROS::doesTopicNameFollowROS2Convention(renamingLineEdit->text())) {
+            auto *const msgBox = Utils::UI::createInvalidROSNameMessageBox();
+
+            if (const auto returnValue = msgBox->exec(); returnValue == QMessageBox::No) {
+                return;
+            }
         }
 
         ++it;

@@ -19,6 +19,11 @@ SettingsDialog::SettingsDialog(Utils::UI::DialogParameters& dialogParameters, QW
                                           "and reused if this application is launched another time.");
     m_storeParametersCheckBox->setCheckState(m_dialogParameters.saveParameters ? Qt::Checked : Qt::Unchecked);
 
+    m_checkROS2NamingConventionCheckBox = new QCheckBox("Check for ROS2 Naming Conventions");
+    m_checkROS2NamingConventionCheckBox->setTristate(false);
+    m_checkROS2NamingConventionCheckBox->setToolTip("If input fields requiring topic names should check\nfor ROS2 Topic Naming Conventions.");
+    m_checkROS2NamingConventionCheckBox->setCheckState(m_dialogParameters.checkROS2NameConform ? Qt::Checked : Qt::Unchecked);
+
     auto* const buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
     connect(m_storeParametersCheckBox, &QCheckBox::stateChanged, this, &SettingsDialog::storeParametersCheckStateChanged);
@@ -30,6 +35,7 @@ SettingsDialog::SettingsDialog(Utils::UI::DialogParameters& dialogParameters, QW
     // Set main layout
     auto* const mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(m_storeParametersCheckBox);
+    mainLayout->addWidget(m_checkROS2NamingConventionCheckBox);
     mainLayout->addWidget(buttonBox);
     setLayout(mainLayout);
 }
@@ -38,8 +44,6 @@ SettingsDialog::SettingsDialog(Utils::UI::DialogParameters& dialogParameters, QW
 void
 SettingsDialog::storeParametersCheckStateChanged()
 {
-    m_dialogParameters.saveParameters = m_storeParametersCheckBox->checkState() == Qt::Checked;
-
     auto* const msgBox = new QMessageBox();
     msgBox->setIcon(QMessageBox::Information);
     msgBox->setText("Changes will take effect after restarting the application.");
@@ -50,6 +54,8 @@ SettingsDialog::storeParametersCheckStateChanged()
 void
 SettingsDialog::okClicked()
 {
+    m_dialogParameters.saveParameters = m_storeParametersCheckBox->checkState() == Qt::Checked;
+    m_dialogParameters.checkROS2NameConform = m_checkROS2NamingConventionCheckBox->checkState() == Qt::Checked;
     m_dialogSettings.write();
     QDialog::accept();
 }

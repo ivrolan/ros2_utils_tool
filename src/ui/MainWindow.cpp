@@ -9,6 +9,8 @@
 #include "StartWidget.hpp"
 #include "VideoToBagWidget.hpp"
 
+#include "DialogSettings.hpp"
+
 #include <QCloseEvent>
 
 #include <csignal>
@@ -16,6 +18,8 @@
 MainWindow::MainWindow()
 {
     setWindowTitle("ROS Tools");
+    // We need to get some values without having to access the dialog beforehand
+    DialogSettings settings(m_dialogParameters, "dialog");
 
     setStartWidget();
 }
@@ -43,13 +47,13 @@ MainWindow::setConfigWidget(int mode)
         basicInputWidget = new BagToImagesWidget(m_parametersBagToImages);
         break;
     case 2:
-        basicInputWidget = new VideoToBagWidget(m_parametersVideoToBag);
+        basicInputWidget = new VideoToBagWidget(m_parametersVideoToBag, m_dialogParameters.checkROS2NameConform);
         break;
     case 3:
-        basicInputWidget = new DummyBagWidget(m_dummyBagParameters);
+        basicInputWidget = new DummyBagWidget(m_dummyBagParameters, m_dialogParameters.checkROS2NameConform);
         break;
     case 4:
-        basicInputWidget = new EditBagWidget(m_editBagParameters);
+        basicInputWidget = new EditBagWidget(m_editBagParameters, m_dialogParameters.checkROS2NameConform);
         break;
     case 5:
         basicInputWidget = new BagInfoWidget;

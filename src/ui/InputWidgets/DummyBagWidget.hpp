@@ -21,6 +21,7 @@ class DummyBagWidget : public BasicInputWidget
 
 public:
     DummyBagWidget(Utils::UI::DummyBagInputParameters& parameters,
+                   bool                                checkROS2NameConform,
                    QWidget*                            parent = 0);
 
 private slots:
@@ -57,6 +58,8 @@ private:
     DummyBagInputSettings m_settings;
 
     int m_numberOfTopics = 0;
+
+    const bool m_checkROS2NameConform;
 
     static constexpr int MAXIMUM_NUMBER_OF_TOPICS = 3;
 };

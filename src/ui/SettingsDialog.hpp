@@ -25,6 +25,7 @@ private:
 
 private:
     QPointer<QCheckBox> m_storeParametersCheckBox;
+    QPointer<QCheckBox> m_checkROS2NamingConventionCheckBox;
 
     DialogSettings m_dialogSettings;
     Utils::UI::DialogParameters& m_dialogParameters;
