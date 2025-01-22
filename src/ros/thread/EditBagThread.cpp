@@ -112,6 +112,10 @@ EditBagThread::run()
         thread.join();
     }
 
+    if (m_parameters.deleteSource) {
+        std::filesystem::remove_all(m_sourceDirectory);
+    }
+
     writer.close();
     emit finished();
 }

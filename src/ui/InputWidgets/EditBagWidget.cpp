@@ -1,5 +1,6 @@
 #include "EditBagWidget.hpp"
 
+#include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QFormLayout>
@@ -49,12 +50,17 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
     m_treeWidget->headerItem()->setText(COL_RENAMING, "Rename:");
     m_treeWidget->setRootIsDecorated(false);
 
+    m_deleteSourceCheckBox = new QCheckBox("Delete source bag after completion");
+    m_deleteSourceCheckBox->setTristate(false);
+    m_deleteSourceCheckBox->setChecked(true);
+    m_deleteSourceCheckBox->setVisible(false);
+
     m_targetLineEdit = new QLineEdit(m_parameters.targetDirectory);
     auto* const targetPushButton = new QToolButton;
     auto* const targetLineEditLayout = Utils::UI::createLineEditButtonLayout(m_targetLineEdit, targetPushButton);
 
     auto* const targetFormLayout = new QFormLayout;
-    targetFormLayout->addRow("Edited Bag Location:", targetLineEditLayout);
+    targetFormLayout->addRow("Target location:", targetLineEditLayout);
     targetFormLayout->setContentsMargins(0, 0, 0, 0);
 
     m_targetBagNameWidget = new QWidget;
@@ -71,6 +77,7 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
     controlsLayout->addWidget(m_editLabel);
     controlsLayout->addWidget(m_treeWidget);
     controlsLayout->addWidget(m_targetBagNameWidget);
+    controlsLayout->addWidget(m_deleteSourceCheckBox);
     // Give it a more "squishy" look
     controlsLayout->setContentsMargins(30, 30, 30, 30);
     controlsLayout->addStretch();
@@ -87,6 +94,9 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
         createTopicTree(true);
     });
     connect(m_treeWidget, &QTreeWidget::itemChanged, this, &EditBagWidget::itemCheckStateChanged);
+    connect(m_deleteSourceCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
+        m_parameters.deleteSource = state == Qt::Checked;
+    });
     connect(targetPushButton, &QPushButton::clicked, this, &EditBagWidget::targetPushButtonPressed);
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &EditBagWidget::okButtonPressed);
 
@@ -171,6 +181,7 @@ EditBagWidget::createTopicTree(bool newTreeRequested)
     m_editLabel->setVisible(true);
     m_treeWidget->setVisible(true);
     m_targetBagNameWidget->setVisible(true);
+    m_deleteSourceCheckBox->setVisible(true);
     m_okButton->setVisible(true);
 }
 

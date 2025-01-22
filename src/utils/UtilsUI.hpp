@@ -64,6 +64,7 @@ struct EditBagInputParameters : AdvancedInputParameters {
     };
 
     QVector<EditBagTopic> topics = {};
+    bool                  deleteSource = true;
 };
 
 struct PublishVideoParameters : AdvancedInputParameters {

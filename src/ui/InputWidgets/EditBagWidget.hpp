@@ -9,6 +9,7 @@
 #include <QWidget>
 #include <QTreeWidgetItem>
 
+class QCheckBox;
 class QLabel;
 class QTreeWidget;
 
@@ -39,6 +40,7 @@ private slots:
 private:
     QPointer<QTreeWidget> m_treeWidget;
     QPointer<QLabel> m_editLabel;
+    QPointer<QCheckBox> m_deleteSourceCheckBox;
     QPointer<QLineEdit> m_targetLineEdit;
     QPointer<QWidget> m_targetBagNameWidget;
 
