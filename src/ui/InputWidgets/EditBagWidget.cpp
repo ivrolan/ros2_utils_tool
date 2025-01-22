@@ -24,6 +24,11 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
 {
     auto* const formLayout = new QFormLayout;
     formLayout->addRow("Bag Location:", m_findSourceLayout);
+
+    if (!std::filesystem::exists(m_parameters.sourceDirectory.toStdString())) {
+        m_parameters.sourceDirectory = "";
+        writeSettingsParameter(m_parameters.sourceDirectory, QString(), m_settings);
+    }
     m_sourceLineEdit->setText(m_parameters.sourceDirectory);
 
     m_editLabel = new QLabel("Unselect all items you want to remove.<br>"
