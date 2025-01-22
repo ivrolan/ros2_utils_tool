@@ -63,9 +63,8 @@ WriteToBagThread::run()
         // Create empty sensor message
         sensor_msgs::msg::Image message;
         std_msgs::msg::Header header;
-        const auto seconds = (float) iterationCount / finalFPS;
-        const auto time = rclcpp::Time(seconds, seconds * 1000000000);
-        header.stamp = time;
+        // Nanoseconds directly
+        rclcpp::Time time(static_cast<uint64_t>(((float) iterationCount / finalFPS) * 1e9));
 
         // Convert image and write
         const auto cvBridge = cv_bridge::CvImage(header, sensor_msgs::image_encodings::BGR8, frame);
