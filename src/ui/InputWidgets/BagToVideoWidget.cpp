@@ -70,6 +70,10 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoInputParameters& parameters, 
     useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster video encoding.");
     useHardwareAccCheckBox->setCheckState(m_parameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
 
+    auto* const switchRedBlueCheckBox = new QCheckBox;
+    switchRedBlueCheckBox->setToolTip("Switch the video's red and blue values.");
+    switchRedBlueCheckBox->setCheckState(m_parameters.switchRedBlueValues ? Qt::Checked : Qt::Unchecked);
+
     auto* const useBWImagesCheckBox = new QCheckBox;
     useBWImagesCheckBox->setToolTip("Write a colorless video.");
     useBWImagesCheckBox->setCheckState(m_parameters.useBWImages ? Qt::Checked : Qt::Unchecked);
@@ -77,6 +81,7 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoInputParameters& parameters, 
     m_advancedOptionsFormLayout = new QFormLayout;
     m_advancedOptionsFormLayout->addRow("FPS:", fpsSpinBox);
     m_advancedOptionsFormLayout->addRow("HW Acceleration:", useHardwareAccCheckBox);
+    m_advancedOptionsFormLayout->addRow("Switch Red and Blue Values:", switchRedBlueCheckBox);
     m_advancedOptionsFormLayout->addRow("Use Colorless Images:", useBWImagesCheckBox);
 
     auto* const advancedOptionsWidget = new QWidget;
@@ -127,6 +132,9 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoInputParameters& parameters, 
     });
     connect(useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         writeSettingsParameter(m_parameters.useHardwareAcceleration, state == Qt::Checked, m_settings);
+    });
+    connect(switchRedBlueCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
+        writeSettingsParameter(m_parameters.switchRedBlueValues, state == Qt::Checked, m_settings);
     });
     connect(useBWImagesCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         writeSettingsParameter(m_parameters.useBWImages, state == Qt::Checked, m_settings);

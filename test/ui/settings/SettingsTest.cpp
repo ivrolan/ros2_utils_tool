@@ -75,6 +75,7 @@ TEST_CASE("Settings Testing", "[ui]") {
             qSettings.beginGroup("images");
             REQUIRE(!qSettings.value("format").isValid());
             REQUIRE(!qSettings.value("quality").isValid());
+            REQUIRE(!qSettings.value("switch_red_blue").isValid());
             REQUIRE(!qSettings.value("bw_images").isValid());
             REQUIRE(!qSettings.value("jpg_optimize").isValid());
             REQUIRE(!qSettings.value("png_bilevel").isValid());
@@ -86,6 +87,7 @@ TEST_CASE("Settings Testing", "[ui]") {
 
             parameters.format = "jpg";
             parameters.quality = 10;
+            parameters.switchRedBlueValues = true;
             parameters.useBWImages = true;
             parameters.jpgOptimize = true;
             parameters.pngBilevel = true;
@@ -96,6 +98,8 @@ TEST_CASE("Settings Testing", "[ui]") {
             REQUIRE(qSettings.value("format").toString() == "jpg");
             REQUIRE(qSettings.value("quality").isValid());
             REQUIRE(qSettings.value("quality").toInt() == 10);
+            REQUIRE(qSettings.value("switch_red_blue").isValid());
+            REQUIRE(qSettings.value("switch_red_blue").toBool() == true);
             REQUIRE(qSettings.value("bw_images").isValid());
             REQUIRE(qSettings.value("bw_images").toBool() == true);
             REQUIRE(qSettings.value("jpg_optimize").isValid());
@@ -111,6 +115,7 @@ TEST_CASE("Settings Testing", "[ui]") {
             REQUIRE(!qSettings.value("format").isValid());
             REQUIRE(!qSettings.value("fps").isValid());
             REQUIRE(!qSettings.value("hw_acc").isValid());
+            REQUIRE(!qSettings.value("switch_red_blue").isValid());
             REQUIRE(!qSettings.value("bw_images").isValid());
             REQUIRE(!qSettings.value("lossless_images").isValid());
             qSettings.endGroup();
@@ -122,6 +127,7 @@ TEST_CASE("Settings Testing", "[ui]") {
             parameters.format = "mkv";
             parameters.fps = 20;
             parameters.useHardwareAcceleration = true;
+            parameters.switchRedBlueValues = true;
             parameters.useBWImages = true;
             parameters.lossless = true;
             settings.write();
@@ -133,6 +139,8 @@ TEST_CASE("Settings Testing", "[ui]") {
             REQUIRE(qSettings.value("fps").toInt() == 20);
             REQUIRE(qSettings.value("hw_acc").isValid());
             REQUIRE(qSettings.value("hw_acc").toBool() == true);
+            REQUIRE(qSettings.value("switch_red_blue").isValid());
+            REQUIRE(qSettings.value("switch_red_blue").toBool() == true);
             REQUIRE(qSettings.value("bw_images").isValid());
             REQUIRE(qSettings.value("bw_images").toBool() == true);
             REQUIRE(qSettings.value("lossless_images").isValid());
@@ -146,6 +154,7 @@ TEST_CASE("Settings Testing", "[ui]") {
             REQUIRE(!qSettings.value("fps").isValid());
             REQUIRE(!qSettings.value("custom_fps").isValid());
             REQUIRE(!qSettings.value("hw_acc").isValid());
+            REQUIRE(!qSettings.value("switch_red_blue").isValid());
             qSettings.endGroup();
         }
         SECTION("Write") {
@@ -155,6 +164,7 @@ TEST_CASE("Settings Testing", "[ui]") {
             parameters.fps = 40;
             parameters.useCustomFPS = true;
             parameters.useHardwareAcceleration = true;
+            parameters.switchRedBlueValues = true;
             settings.write();
 
             qSettings.beginGroup("bag");
@@ -164,6 +174,8 @@ TEST_CASE("Settings Testing", "[ui]") {
             REQUIRE(qSettings.value("custom_fps").toBool() == true);
             REQUIRE(qSettings.value("hw_acc").isValid());
             REQUIRE(qSettings.value("hw_acc").toBool() == true);
+            REQUIRE(qSettings.value("switch_red_blue").isValid());
+            REQUIRE(qSettings.value("switch_red_blue").toBool() == true);
             qSettings.endGroup();
         }
     }

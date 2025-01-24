@@ -19,6 +19,7 @@ showHelp()
     std::cout << "-t or --topic_name: Topic name. If this is empty, the name '/topic_video' will be taken." << std::endl;
     std::cout << "-r or --rate: Framerate for the image stream. Must be from 10 to 60. If no rate is specified, the video's rate will be taken." << std::endl;
     std::cout << "-a or --accelerate: Use hardware acceleration." << std::endl;
+    std::cout << "-s or --switch: Switch red and blue values." << std::endl;
     std::cout << "-h or --help: Show this help." << std::endl;
 }
 
@@ -91,6 +92,8 @@ main(int argc, char* argv[])
 
         // Hardware acceleration
         inputParameters.useHardwareAcceleration = Utils::CLI::containsArguments(arguments, "-a", "--accelerate");
+        // Switch red and blue values
+        inputParameters.switchRedBlueValues = Utils::CLI::containsArguments(arguments, "-s", "--switch");
     }
 
     // Apply default topic name if not assigned

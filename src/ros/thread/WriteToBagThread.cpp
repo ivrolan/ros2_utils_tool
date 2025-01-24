@@ -60,6 +60,9 @@ WriteToBagThread::run()
         }
 
         iterationCount++;
+        if (m_parameters.switchRedBlueValues) {
+            cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
+        }
 
         // Create empty sensor message
         sensor_msgs::msg::Image message;

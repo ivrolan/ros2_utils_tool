@@ -61,11 +61,16 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageInputParameters& parameters
     advancedOptionsCheckBox->setChecked(m_parameters.showAdvancedOptions ? Qt::Checked : Qt::Unchecked);
     advancedOptionsCheckBox->setText("Show Advanced Options");
 
+    auto* const switchRedBlueCheckBox = new QCheckBox;
+    switchRedBlueCheckBox->setToolTip("Switch the image's red and blue values.");
+    switchRedBlueCheckBox->setCheckState(m_parameters.switchRedBlueValues ? Qt::Checked : Qt::Unchecked);
+
     m_useBWCheckBox = new QCheckBox;
     m_useBWCheckBox->setChecked(m_parameters.useBWImages ? Qt::Checked : Qt::Unchecked);
     m_useBWCheckBox->setToolTip("If the images should be colorless or not.");
 
     m_advancedOptionsFormLayout = new QFormLayout;
+    m_advancedOptionsFormLayout->addRow("Switch Red and Blue Values:", switchRedBlueCheckBox);
     m_advancedOptionsFormLayout->addRow("Colorless Images:", m_useBWCheckBox);
 
     auto* const advancedOptionsWidget = new QWidget;
@@ -110,6 +115,9 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageInputParameters& parameters
     connect(advancedOptionsCheckBox, &QCheckBox::stateChanged, this, [this, advancedOptionsWidget] (int state) {
         m_parameters.showAdvancedOptions = state == Qt::Checked;
         advancedOptionsWidget->setVisible(state == Qt::Checked);
+    });
+    connect(switchRedBlueCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
+        writeSettingsParameter(m_parameters.switchRedBlueValues, state == Qt::Checked, m_settings);
     });
     connect(m_useBWCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         writeSettingsParameter(m_parameters.useBWImages, state == Qt::Checked, m_settings);
