@@ -29,7 +29,8 @@ BagInfoWidget::BagInfoWidget(QWidget *parent) :
     m_infoTreeWidget->headerItem()->setText(COL_INFORMATION, "Values");
     m_infoTreeWidget->setVisible(false);
     m_infoTreeWidget->setRootIsDecorated(false);
-    m_infoTreeWidget->setMinimumWidth(350);
+    m_infoTreeWidget->setMinimumWidth(430);
+    m_infoTreeWidget->setMinimumHeight(300);
 
     auto* const controlsLayout = new QVBoxLayout;
     controlsLayout->addStretch();

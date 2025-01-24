@@ -59,8 +59,8 @@ MainWindow::setConfigWidget(int mode)
         basicInputWidget = new BagInfoWidget;
         break;
     }
-    resize(mode == 4 ? basicInputWidget->width() : DEFAULT_WIDTH,
-           mode == 4 ? basicInputWidget->height() : DEFAULT_HEIGHT);
+
+    resize(mode == 4 ? basicInputWidget->width() : DEFAULT_WIDTH, DEFAULT_HEIGHT);
     setCentralWidget(basicInputWidget);
 
     connect(basicInputWidget, &BasicInputWidget::back, this, &MainWindow::setStartWidget);
