@@ -20,7 +20,7 @@ showHelp()
     std::cout << "-a or --accelerate: Use hardware acceleration." << std::endl;
     std::cout << "-s or --switch: Switch red and blue values." << std::endl;
     std::cout << "-c or --colorless: Use colorless images." << std::endl;
-    std::cout << "-l or --lossless (mkv only): Use lossless images." << std::endl;
+    std::cout << "-l or --lossless (mkv only): Use lossless images.\n" << std::endl;
     std::cout << "-h or --help: Show this help." << std::endl;
 }
 

@@ -13,13 +13,13 @@
 void
 showHelp()
 {
-    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_video_to_bag path/to/video path/of/stored/ros_bag" << std::endl;
-    std::cout << "The video must have an ending of .mp4 or .mkv.\n" << std::endl;
-    std::cout << "Additional inputParameters:" << std::endl;
-    std::cout << "-t or --topic_name: Topic name. If this is empty, the name '/topic_video' will be taken." << std::endl;
+    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_video_to_bag path/to/video path/of/stored/ros_bag\n" << std::endl;
+    std::cout << "The video must have an ending of .mp4 or .mkv." << std::endl;
+    std::cout << "Additional parameters:" << std::endl;
+    std::cout << "-t or --topic_name: Topic name. If this is empty, the name '/topic_video' will be taken.\n" << std::endl;
     std::cout << "-r or --rate: Framerate for the image stream. Must be from 10 to 60. If no rate is specified, the video's rate will be taken." << std::endl;
     std::cout << "-a or --accelerate: Use hardware acceleration." << std::endl;
-    std::cout << "-s or --switch: Switch red and blue values." << std::endl;
+    std::cout << "-s or --switch: Switch red and blue values.\n" << std::endl;
     std::cout << "-h or --help: Show this help." << std::endl;
 }
 
