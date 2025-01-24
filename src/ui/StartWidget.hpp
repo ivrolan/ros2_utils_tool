@@ -38,12 +38,12 @@ private:
 private:
     QPointer<QPushButton> m_settingsButton;
 
-    QPointer<QToolButton> m_bagToVideoPushButton;
-    QPointer<QToolButton> m_bagToImagesPushButton;
-    QPointer<QToolButton> m_videoToBagPushButton;
-    QPointer<QToolButton> m_dummyBagButton;
     QPointer<QToolButton> m_editROSBagButton;
     QPointer<QToolButton> m_bagInfoButton;
+    QPointer<QToolButton> m_bagToVideoPushButton;
+    QPointer<QToolButton> m_videoToBagPushButton;
+    QPointer<QToolButton> m_bagToImagesPushButton;
+    QPointer<QToolButton> m_dummyBagButton;
 
     Utils::UI::DialogParameters& m_dialogParameters;
 };

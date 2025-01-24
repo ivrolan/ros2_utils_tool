@@ -19,12 +19,12 @@ StartWidget::StartWidget(Utils::UI::DialogParameters& dialogParameters, QWidget 
     m_settingsButton = new QPushButton;
     m_settingsButton->setFlat(true);
 
-    m_bagToVideoPushButton = createToolButton("Encode Video\nfrom ROSBag");
-    m_bagToImagesPushButton = createToolButton("Write Images\nfrom ROSBag");
-    m_videoToBagPushButton = createToolButton("Write Video\nto ROSBag");
-    m_dummyBagButton = createToolButton("Create Dummy\nROSBag");
     m_editROSBagButton = createToolButton("Edit\nROSBag");
     m_bagInfoButton = createToolButton("Get Infos\nfrom ROSBag");
+    m_bagToVideoPushButton = createToolButton("Encode Video\nfrom ROSBag");
+    m_videoToBagPushButton = createToolButton("Write Video\nto ROSBag");
+    m_bagToImagesPushButton = createToolButton("Write Images\nfrom ROSBag");
+    m_dummyBagButton = createToolButton("Create Dummy\nROSBag");
 
     setButtonIcons();
 
@@ -34,20 +34,20 @@ StartWidget::StartWidget(Utils::UI::DialogParameters& dialogParameters, QWidget 
 
     auto* const upperButtonLayout = new QHBoxLayout;
     upperButtonLayout->addStretch();
-    upperButtonLayout->addWidget(m_bagToVideoPushButton);
-    upperButtonLayout->addWidget(m_bagToImagesPushButton);
+    upperButtonLayout->addWidget(m_editROSBagButton);
+    upperButtonLayout->addWidget(m_bagInfoButton);
     upperButtonLayout->addStretch();
 
     auto* const centreButtonLayout = new QHBoxLayout;
     centreButtonLayout->addStretch();
+    centreButtonLayout->addWidget(m_bagToVideoPushButton);
     centreButtonLayout->addWidget(m_videoToBagPushButton);
-    centreButtonLayout->addWidget(m_dummyBagButton);
     centreButtonLayout->addStretch();
 
     auto* const lowerButtonLayout = new QHBoxLayout;
     lowerButtonLayout->addStretch();
-    lowerButtonLayout->addWidget(m_bagInfoButton);
-    lowerButtonLayout->addWidget(m_editROSBagButton);
+    lowerButtonLayout->addWidget(m_bagToImagesPushButton);
+    lowerButtonLayout->addWidget(m_dummyBagButton);
     lowerButtonLayout->addStretch();
 
     auto* const versionLabel = new QLabel("v0.6.2");
@@ -71,22 +71,22 @@ StartWidget::StartWidget(Utils::UI::DialogParameters& dialogParameters, QWidget 
 
     connect(m_settingsButton, &QPushButton::clicked, this, &StartWidget::openSettingsDialog);
 
-    connect(m_bagToVideoPushButton, &QPushButton::clicked, this, [this] {
+    connect(m_editROSBagButton, &QPushButton::clicked, this, [this] {
         emit functionRequested(0);
     });
-    connect(m_bagToImagesPushButton, &QPushButton::clicked, this, [this] {
+    connect(m_bagInfoButton, &QPushButton::clicked, this, [this] {
         emit functionRequested(1);
     });
-    connect(m_videoToBagPushButton, &QPushButton::clicked, this, [this] {
+    connect(m_bagToVideoPushButton, &QPushButton::clicked, this, [this] {
         emit functionRequested(2);
     });
-    connect(m_dummyBagButton, &QPushButton::clicked, this, [this] {
+    connect(m_videoToBagPushButton, &QPushButton::clicked, this, [this] {
         emit functionRequested(3);
     });
-    connect(m_editROSBagButton, &QPushButton::clicked, this, [this] {
+    connect(m_bagToImagesPushButton, &QPushButton::clicked, this, [this] {
         emit functionRequested(4);
     });
-    connect(m_bagInfoButton, &QPushButton::clicked, this, [this] {
+    connect(m_dummyBagButton, &QPushButton::clicked, this, [this] {
         emit functionRequested(5);
     });
 }
@@ -120,12 +120,12 @@ StartWidget::setButtonIcons()
 {
     const auto isDarkMode = Utils::UI::isDarkMode();
     m_settingsButton->setIcon(QIcon(isDarkMode ? ":/icons/gear_white.svg" : ":/icons/gear_black.svg"));
-    m_bagToVideoPushButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_to_video_white.svg" : ":/icons/bag_to_video_black.svg"));
-    m_bagToImagesPushButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_to_images_white.svg" : ":/icons/bag_to_images_black.svg"));
-    m_videoToBagPushButton->setIcon(QIcon(isDarkMode ? ":/icons/video_to_bag_white.svg" : ":/icons/video_to_bag_black.svg"));
-    m_dummyBagButton->setIcon(QIcon(isDarkMode ? ":/icons/dummy_bag_white.svg" : ":/icons/dummy_bag_black.svg"));
     m_editROSBagButton->setIcon(QIcon(isDarkMode ? ":/icons/edit_bag_white.svg" : ":/icons/edit_bag_black.svg"));
     m_bagInfoButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_info_white.svg" : ":/icons/bag_info_black.svg"));
+    m_bagToVideoPushButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_to_video_white.svg" : ":/icons/bag_to_video_black.svg"));
+    m_videoToBagPushButton->setIcon(QIcon(isDarkMode ? ":/icons/video_to_bag_white.svg" : ":/icons/video_to_bag_black.svg"));
+    m_bagToImagesPushButton->setIcon(QIcon(isDarkMode ? ":/icons/bag_to_images_white.svg" : ":/icons/bag_to_images_black.svg"));
+    m_dummyBagButton->setIcon(QIcon(isDarkMode ? ":/icons/dummy_bag_white.svg" : ":/icons/dummy_bag_black.svg"));
 }
 
 
