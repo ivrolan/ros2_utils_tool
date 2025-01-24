@@ -117,10 +117,10 @@ main(int argc, char* argv[])
             "and disable the hardware acceleration, if necessary." << std::endl;
         return 0;
     });
-    QObject::connect(writeToBagThread, &WriteToBagThread::progressChanged, [&thisMessageCount] (int iteration, int progress) {
-        const auto progressString = Utils::CLI::drawProgressString(progress);
+    QObject::connect(writeToBagThread, &WriteToBagThread::progressChanged, [] (const QString& progressString, int progress) {
+        const auto progressStringCMD = Utils::CLI::drawProgressString(progress);
         // Always clear the last line for a nice "progress bar" feeling
-        std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << thisMessageCount << ")\r" << std::flush;
+        std::cout << progressStringCMD << " " << progressString.toStdString() << "\r" << std::flush;
     });
     QObject::connect(writeToBagThread, &WriteToBagThread::finished, [] {
         std::cout << "" << std::endl; // Extra line to stop flushing

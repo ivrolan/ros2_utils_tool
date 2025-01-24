@@ -14,10 +14,8 @@ public:
 signals:
     // Maximum instances used as 100 percent reference for a progress bar
     void
-    calculatedMaximumInstances(int count);
-
-    void
-    startingDataCollection();
+    calculatedMaximumInstances(int  count,
+                               bool showDataCollectionLabel = false);
 
     // OpenCV video writer or capture opening might fail
     void
@@ -25,8 +23,8 @@ signals:
 
     // Update progress bars
     void
-    progressChanged(int iteration,
-                    int progress);
+    progressChanged(const QString& progressString,
+                    int            progress);
 
     void
     finished();

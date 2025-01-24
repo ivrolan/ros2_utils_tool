@@ -130,10 +130,10 @@ main(int argc, char* argv[])
         std::cerr << "The video writing failed. Please make sure that all inputParameters are set correctly and disable the hardware acceleration, if necessary." << std::endl;
         return 0;
     });
-    QObject::connect(encodingThread, &EncodingThread::progressChanged, [&thisMessageCount] (int iteration, int progress) {
-        const auto progressString = Utils::CLI::drawProgressString(progress);
+    QObject::connect(encodingThread, &EncodingThread::progressChanged, [] (const QString& progressString, int progress) {
+        const auto progressStringCMD = Utils::CLI::drawProgressString(progress);
         // Always clear the last line for a nice "progress bar" feeling
-        std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << thisMessageCount << ")\r" << std::flush;
+        std::cout << progressStringCMD << " " << progressString.toStdString() << "\r" << std::flush;
     });
     QObject::connect(encodingThread, &EncodingThread::finished, [] {
         std::cout << "" << std::endl; // Extra line to stop flushing

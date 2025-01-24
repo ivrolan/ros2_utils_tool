@@ -99,11 +99,11 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
         emit finished();
     });
 
-    connect(m_thread, &BasicThread::calculatedMaximumInstances, this, [this](int count) {
+    connect(m_thread, &BasicThread::calculatedMaximumInstances, this, [this, progressLabel] (int count, bool showDataCollectionLabel) {
         m_maximumCount = count;
-    });
-    connect(m_thread, &BasicThread::startingDataCollection, this, [progressLabel] {
-        progressLabel->setText("Collecting necessary data...");
+        if (showDataCollectionLabel) {
+            progressLabel->setText("Collecting necessary data...");
+        }
     });
     connect(m_thread, &BasicThread::openingCVInstanceFailed, this, [this] {
         auto* const messageBox = new QMessageBox(QMessageBox::Warning, "Failed writing file!",
@@ -112,12 +112,12 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
         messageBox->exec();
         emit progressStopped();
     });
-    connect(m_thread, &BasicThread::progressChanged, this, [this, progressLabel, progressBar] (int iteration, int progress) {
+    connect(m_thread, &BasicThread::progressChanged, this, [progressLabel, progressBar] (const QString& progressString, int progress) {
         if (!progressBar->isVisible()) {
             progressBar->setVisible(true);
         }
         progressBar->setValue(progress);
-        progressLabel->setText(QString::number(iteration) + " of " + QString::number(m_maximumCount) + "...");
+        progressLabel->setText(progressString);
     });
     connect(m_thread, &BasicThread::finished, this, [cancelButton, finishedButton] {
         cancelButton->setVisible(false);

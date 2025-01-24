@@ -123,16 +123,14 @@ main(int argc, char* argv[])
 
     // Create thread and connect to its informations
     auto* const writeToImageThread = new WriteToImageThread(inputParameters);
-    QObject::connect(writeToImageThread, &WriteToImageThread::calculatedMaximumInstances, [&thisMessageCount](int count) {
+    QObject::connect(writeToImageThread, &WriteToImageThread::calculatedMaximumInstances, [&thisMessageCount](int count, bool /* showDataCollectionLabel */) {
         thisMessageCount = count;
-    });
-    QObject::connect(writeToImageThread, &WriteToImageThread::startingDataCollection, [] {
         std::cout << "Starting, gathering necessery data..." << std::endl;
     });
-    QObject::connect(writeToImageThread, &WriteToImageThread::progressChanged, [&thisMessageCount] (int iteration, int progress) {
-        const auto progressString = Utils::CLI::drawProgressString(progress);
+    QObject::connect(writeToImageThread, &WriteToImageThread::progressChanged, [] (const QString& progressString, int progress) {
+        const auto progressStringCMD = Utils::CLI::drawProgressString(progress);
         // Always clear the last line for a nice "progress bar" feeling
-        std::cout << progressString << " " << progress << "% (Frame " << iteration << " of " << thisMessageCount << ")\r" << std::flush;
+        std::cout << progressStringCMD << " " << progressString.toStdString() << "\r" << std::flush;
     });
     QObject::connect(writeToImageThread, &WriteToImageThread::finished, [] {
         std::cout << "" << std::endl; // Extra line to stop flushing

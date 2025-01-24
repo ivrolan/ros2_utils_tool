@@ -58,7 +58,8 @@ DummyBagThread::run()
                 writer.write(message, name.toStdString(), timeStamp);
             }
 
-            emit progressChanged(iterationCount, ((float) iterationCount / (float) maximumMessageCount) * 100);
+            emit progressChanged("Writing message " + QString::number(iterationCount) + " of " + QString::number(maximumMessageCount) + "...",
+                                 ((float) iterationCount / (float) maximumMessageCount) * 100);
             iterationCount++;
         }
     };

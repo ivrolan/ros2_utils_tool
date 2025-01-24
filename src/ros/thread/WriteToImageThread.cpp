@@ -40,8 +40,7 @@ WriteToImageThread::run()
     }
 
     const auto messageCount = Utils::ROS::getTopicMessageCount(m_sourceDirectory, m_topicName);
-    emit calculatedMaximumInstances(messageCount);
-    emit startingDataCollection();
+    emit calculatedMaximumInstances(messageCount, true);
 
     // Prepare parameters
     rosbag2_cpp::Reader reader;
@@ -102,7 +101,8 @@ WriteToImageThread::run()
 
             // Inform of progress update
             iterationCount++;
-            emit progressChanged(iterationCount, ((float) iterationCount / (float) messageCount) * 100);
+            emit progressChanged("Writing image " + QString::number(iterationCount) + " of " + QString::number(messageCount) + "...",
+                                 ((float) iterationCount / (float) messageCount) * 100);
 
             // Have to create this as extra string to keep it atomic inside the mutex
             const auto targetString = targetDirectoryStd + "/" + std::to_string(iterationCount) + "." + m_parameters.format.toStdString();

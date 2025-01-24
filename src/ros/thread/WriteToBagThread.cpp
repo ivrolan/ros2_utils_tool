@@ -72,7 +72,8 @@ WriteToBagThread::run()
         cvBridge.toImageMsg(message);
         writer.write(message, m_topicName, time);
 
-        emit progressChanged(iterationCount, ((float) iterationCount / (float) frameCount) * 100);
+        emit progressChanged("Writing message " + QString::number(iterationCount) + " of " + QString::number(frameCount) + "...",
+                             ((float) iterationCount / (float) frameCount) * 100);
     }
 
     writer.close();

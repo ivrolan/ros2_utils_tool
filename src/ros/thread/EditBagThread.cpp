@@ -32,8 +32,7 @@ EditBagThread::run()
 
         totalInstances += topic.upperBoundary - topic.lowerBoundary;
     }
-    emit calculatedMaximumInstances(totalInstances);
-    emit startingDataCollection();
+    emit calculatedMaximumInstances(totalInstances, true);
 
     const auto targetDirectoryStd = m_parameters.targetDirectory.toStdString();
     if (std::filesystem::exists(targetDirectoryStd)) {
@@ -92,7 +91,8 @@ EditBagThread::run()
             writer.write(message);
 
             boundaryCounter++;
-            emit progressChanged(instanceCount, ((float) instanceCount / (float) totalInstances) * 100);
+            emit progressChanged("Writing message " + QString::number(instanceCount) + " of " + QString::number(totalInstances) + "...",
+                                 ((float) instanceCount / (float) totalInstances) * 100);
             instanceCount++;
         }
 
