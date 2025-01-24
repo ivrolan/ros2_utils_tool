@@ -50,8 +50,8 @@ StartWidget::StartWidget(Utils::UI::DialogParameters& dialogParameters, QWidget 
     lowerButtonLayout->addWidget(m_editROSBagButton);
     lowerButtonLayout->addStretch();
 
-    auto* const versionLabel = new QLabel("v0.6.0");
-    versionLabel->setToolTip("Edit bag feature, multi-threading support for various features and improved CLI usage!");
+    auto* const versionLabel = new QLabel("v0.6.1");
+    versionLabel->setToolTip("Bug fixes.");
 
     auto* const versionLayout = new QHBoxLayout;
     versionLayout->addStretch();
