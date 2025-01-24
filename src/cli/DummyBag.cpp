@@ -14,8 +14,8 @@
 void
 showHelp()
 {
-    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_dummy_bag path/to/ROSBag topic_type_1 topic_name_1 "
-        "topic_type_2 topic_name_2 topic_type_3 topic_name_3 message_count" << std::endl;
+    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_dummy_bag path/to/ROSBag topic_name_1 topic_type_1 "
+        "(topic_name_2 topic_type_2 topic_name_3 topic_type_3) message_count" << std::endl;
     std::cout << "Topic type is either 'String', 'Integer' or 'Image'." << std::endl;
     std::cout << "You can write up to three topics." << std::endl;
     std::cout << "The message count must be between 1 and 1000.\n" << std::endl;
@@ -64,12 +64,6 @@ main(int argc, char* argv[])
         const auto argument = arguments.at(i);
 
         if (i % 2 == 0) {
-            if (argument != "String" && argument != "Integer" && argument != "Image") {
-                std::cerr << "The topic type must be either 'String', 'Integer' or 'Image'!" << std::endl;
-                return 0;
-            }
-            topicTypes.push_back(argument);
-        } else {
             if (!Utils::ROS::isNameROS2Conform(argument)) {
                 const auto errorString = "The topic name does not follow the ROS2 naming convention! More information on ROS2 naming convention is found here:\n"
                                          "https://design.ros2.org/articles/topic_and_service_names.html\n"
@@ -80,6 +74,12 @@ main(int argc, char* argv[])
             }
             topicNames.push_back(argument);
             topicNameSet.insert(argument);
+        } else {
+            if (argument != "String" && argument != "Integer" && argument != "Image") {
+                std::cerr << "The topic type must be either 'String', 'Integer' or 'Image'!" << std::endl;
+                return 0;
+            }
+            topicTypes.push_back(argument);
         }
     }
 
