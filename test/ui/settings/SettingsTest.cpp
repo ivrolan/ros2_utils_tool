@@ -143,7 +143,9 @@ TEST_CASE("Settings Testing", "[ui]") {
     SECTION("Bag Input Params Test") {
         SECTION("Read") {
             qSettings.beginGroup("bag");
-            REQUIRE(!qSettings.value("cdr").isValid());
+            REQUIRE(!qSettings.value("fps").isValid());
+            REQUIRE(!qSettings.value("custom_fps").isValid());
+            REQUIRE(!qSettings.value("hw_acc").isValid());
             qSettings.endGroup();
         }
         SECTION("Write") {
