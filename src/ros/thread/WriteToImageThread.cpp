@@ -58,7 +58,6 @@ WriteToImageThread::run()
 
         while (reader.has_next() && i < maximumInstancesForQueue) {
             if (isInterruptionRequested()) {
-                reader.close();
                 return;
             }
 
@@ -126,6 +125,10 @@ WriteToImageThread::run()
     // 2. Write messages to images, emptying the queue
     // 3. Repeat until done
     while (reader.has_next()) {
+        if (isInterruptionRequested()) {
+            return;
+        }
+
         readMessagesToQueue();
 
         std::vector<std::thread> threadPool;
