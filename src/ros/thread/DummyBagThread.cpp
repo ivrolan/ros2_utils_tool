@@ -37,6 +37,10 @@ DummyBagThread::run()
 
     const auto writeDummyTopic = [this, &writer, &iterationCount, maximumMessageCount] (const auto& type, const auto& name) {
         for (auto i = 1; i <= m_parameters.messageCount; i++) {
+            if (isInterruptionRequested()) {
+                break;
+            }
+
             const auto timeStamp = rclcpp::Clock().now();
 
             if (type == "String") {
