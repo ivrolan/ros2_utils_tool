@@ -16,8 +16,10 @@ main(int argc, char* argv[])
     MainWindow mainWindow;
     mainWindow.show();
 
+    rclcpp::Rate loopRate(60);
     while (rclcpp::ok()) {
         app.processEvents();
+        loopRate.sleep();
     }
 
     // Allow keyboard interrupts
