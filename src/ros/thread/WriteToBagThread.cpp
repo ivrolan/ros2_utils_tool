@@ -48,6 +48,7 @@ WriteToBagThread::run()
 
     while (true) {
         if (isInterruptionRequested()) {
+            writer.close();
             return;
         }
 
@@ -74,5 +75,6 @@ WriteToBagThread::run()
         emit progressChanged(iterationCount, ((float) iterationCount / (float) frameCount) * 100);
     }
 
+    writer.close();
     emit finished();
 }
