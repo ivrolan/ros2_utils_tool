@@ -24,6 +24,8 @@ showHelp()
 }
 
 
+bool interrupted = false;
+
 int
 main(int argc, char* argv[])
 {
@@ -140,11 +142,12 @@ main(int argc, char* argv[])
     });
     QObject::connect(encodingThread, &EncodingThread::finished, encodingThread, &QObject::deleteLater);
 
+    signal(SIGINT, [] (int /* signal */) {
+        interrupted = true;
+    });
+
     std::cout << "Encoding video. Please wait..." << std::endl;
-    encodingThread->start();
-    // Wait until the thread is finished
-    while (!encodingThread->isFinished()) {
-    }
+    Utils::CLI::runThread(encodingThread, interrupted);
 
     return EXIT_SUCCESS;
 }

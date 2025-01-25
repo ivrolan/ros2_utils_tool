@@ -64,4 +64,22 @@ drawProgressString(int progress)
     const auto progressString = std::string(numberOfHashtags, '#') + std::string(numberOfDashes, '-');
     return progressString;
 }
+
+
+void
+runThread(QThread* thread,
+          bool&    interrupted)
+{
+    thread->start();
+
+    // Wait until the thread is finished
+    while (!thread->isFinished()) {
+        if (interrupted) {
+            thread->requestInterruption();
+            thread->wait();
+            std::cout << "" << std::endl;
+            std::cout << "Interrupted" << std::endl;
+        }
+    }
+}
 }

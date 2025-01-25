@@ -2,6 +2,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <QThread>
 
 #include <string>
 
@@ -38,4 +39,9 @@ shouldContinue(const std::string& message);
 // 50 charactes, # shows the progress
 [[nodiscard]] std::string
 drawProgressString(int progress);
+
+// Run the thread handling the main operation
+void
+runThread(QThread* thread,
+          bool&    interrupted);
 }

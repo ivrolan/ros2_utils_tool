@@ -23,6 +23,8 @@ showHelp()
 }
 
 
+bool interrupted = false;
+
 int
 main(int argc, char* argv[])
 {
@@ -116,17 +118,21 @@ main(int argc, char* argv[])
         std::cout << progressString << " " << progress << "% (Message " << iteration << " of " << thisMessageCount << ")\r" << std::flush;
     });
     QObject::connect(dummyBagThread, &DummyBagThread::finished, [] {
-        std::cout << "" << std::endl; // Extra line to stop flushing
-        std::cout << "Creating bag finished!" << std::endl;
+        // This signal is thrown even if SIGINT is called, but we haven't finished, only interrupted
+        if (!interrupted) {
+            std::cout << "" << std::endl; // Extra line to stop flushing
+            std::cout << "Creating bag finished!" << std::endl;
+        }
         return EXIT_SUCCESS;
     });
     QObject::connect(dummyBagThread, &DummyBagThread::finished, dummyBagThread, &QObject::deleteLater);
 
-    std::cout << "Creating dummy thread. Please wait..." << std::endl;
-    dummyBagThread->start();
-    // Wait until the thread is finished
-    while (!dummyBagThread->isFinished()) {
-    }
+    signal(SIGINT, [] (int /* signal */) {
+        interrupted = true;
+    });
+
+    std::cout << "Creating dummy bag. Please wait..." << std::endl;
+    Utils::CLI::runThread(dummyBagThread, interrupted);
 
     return EXIT_SUCCESS;
 }

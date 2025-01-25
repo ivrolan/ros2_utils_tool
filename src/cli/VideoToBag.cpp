@@ -23,6 +23,8 @@ showHelp()
 }
 
 
+bool interrupted = false;
+
 int
 main(int argc, char* argv[])
 {
@@ -127,11 +129,12 @@ main(int argc, char* argv[])
     });
     QObject::connect(writeToBagThread, &WriteToBagThread::finished, writeToBagThread, &QObject::deleteLater);
 
-    std::cout << "Writing video to bag... Please wait..." << std::endl;
-    writeToBagThread->start();
-    // Wait until the thread is finished
-    while (!writeToBagThread->isFinished()) {
-    }
+    signal(SIGINT, [] (int /* signal */) {
+        interrupted = true;
+    });
+
+    std::cout << "Writing video to bag. Please wait..." << std::endl;
+    Utils::CLI::runThread(writeToBagThread, interrupted);
 
     return EXIT_SUCCESS;
 }

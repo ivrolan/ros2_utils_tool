@@ -128,7 +128,7 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
 
 ProgressWidget::~ProgressWidget()
 {
-    m_thread->quit();
+    m_thread->requestInterruption();
     m_thread->wait();
 }
 

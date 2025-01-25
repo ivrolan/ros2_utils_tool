@@ -27,6 +27,8 @@ showHelp()
 }
 
 
+bool interrupted = false;
+
 int
 main(int argc, char* argv[])
 {
@@ -139,10 +141,12 @@ main(int argc, char* argv[])
     });
     QObject::connect(writeToImageThread, &WriteToImageThread::finished, writeToImageThread, &QObject::deleteLater);
 
-    writeToImageThread->start();
-    // Wait until the thread is finished
-    while (!writeToImageThread->isFinished()) {
-    }
+    signal(SIGINT, [] (int /* signal */) {
+        interrupted = true;
+    });
+
+    std::cout << "Writing images. Please wait..." << std::endl;
+    Utils::CLI::runThread(writeToImageThread, interrupted);
 
     return EXIT_SUCCESS;
 }
