@@ -67,8 +67,7 @@ drawProgressString(int progress)
 
 
 void
-runThread(QThread* thread,
-          bool&    interrupted)
+runThread(QThread* thread, bool& interrupted, const bool& finished)
 {
     thread->start();
 
@@ -78,7 +77,8 @@ runThread(QThread* thread,
             thread->requestInterruption();
             thread->wait();
             std::cout << "" << std::endl;
-            std::cout << "Interrupted" << std::endl;
+            // Differentiate between an interrupted and cleanly finished thread
+            std::cout << (finished ? "Finished" : "Interrupted") << std::endl;
         }
     }
 }

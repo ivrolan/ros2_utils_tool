@@ -5,8 +5,10 @@
 #include <QPointer>
 #include <QWidget>
 
+class QLabel;
 class QPushButton;
 class QToolButton;
+class QVBoxLayout;
 
 // The starting widget showing all possible ui tools
 class StartWidget : public QWidget
@@ -19,13 +21,18 @@ public:
 
 signals:
     void
-    functionRequested(int id);
+    toolRequested(int id);
 
 private slots:
     void
     openSettingsDialog();
 
 private:
+    void
+    replaceWidgets(QWidget* fromWidget,
+                   QWidget* toWidget,
+                   bool     otherItemVisibility);
+
     QPointer<QToolButton>
     createToolButton(const QString& buttonText);
 
@@ -38,6 +45,9 @@ private:
 private:
     QPointer<QPushButton> m_settingsButton;
 
+    QPointer<QToolButton> m_bagToolsButton;
+    QPointer<QToolButton> m_publishingToolsButton;
+
     QPointer<QToolButton> m_editROSBagButton;
     QPointer<QToolButton> m_bagInfoButton;
     QPointer<QToolButton> m_bagToVideoPushButton;
@@ -45,5 +55,14 @@ private:
     QPointer<QToolButton> m_bagToImagesPushButton;
     QPointer<QToolButton> m_dummyBagButton;
 
+    QPointer<QToolButton> m_publishVideoButton;
+
+    QPointer<QVBoxLayout> m_mainLayout;
+
+    QPointer<QPushButton> m_backButton;
+    QPointer<QLabel> m_versionLabel;
+
     Utils::UI::DialogParameters& m_dialogParameters;
+
+    bool m_isBagToolsWidgetSelected;
 };

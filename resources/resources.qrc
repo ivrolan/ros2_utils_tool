@@ -1,11 +1,16 @@
 <RCC>
     <qresource>
+        <file>gifs/publishing_black.gif</file>
+        <file>gifs/publishing_white.gif</file>
+
         <file>icons/bag_info_black.svg</file>
         <file>icons/bag_info_white.svg</file>
         <file>icons/bag_to_images_black.svg</file>
         <file>icons/bag_to_images_white.svg</file>
         <file>icons/bag_to_video_black.svg</file>
         <file>icons/bag_to_video_white.svg</file>
+        <file>icons/bag_tools_black.svg</file>
+        <file>icons/bag_tools_white.svg</file>
         <file>icons/dummy_bag_black.svg</file>
         <file>icons/dummy_bag_white.svg</file>
         <file>icons/edit_bag_black.svg</file>
@@ -16,6 +21,10 @@
         <file>icons/minus_white.svg</file>
         <file>icons/plus_black.svg</file>
         <file>icons/plus_white.svg</file>
+        <file>icons/publishing_tools_black.svg</file>
+        <file>icons/publishing_tools_white.svg</file>
+        <file>icons/publish_video_black.svg</file>
+        <file>icons/publish_video_white.svg</file>
         <file>icons/video_to_bag_black.svg</file>
         <file>icons/video_to_bag_white.svg</file>
     </qresource>

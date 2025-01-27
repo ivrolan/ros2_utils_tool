@@ -42,6 +42,8 @@ drawProgressString(int progress);
 
 // Run the thread handling the main operation
 void
-runThread(QThread* thread,
-          bool&    interrupted);
+runThread(QThread*    thread,
+          bool&       interrupted,
+          // Only for publishing
+          const bool& finished = false);
 }

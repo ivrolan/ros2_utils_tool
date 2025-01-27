@@ -34,6 +34,9 @@ private:
     Utils::UI::ImageInputParameters m_parametersBagToImages;
     Utils::UI::DummyBagInputParameters m_dummyBagParameters;
     Utils::UI::EditBagInputParameters m_editBagParameters;
+
+    Utils::UI::PublishVideoParameters m_publishVideoParameters;
+
     Utils::UI::DialogParameters m_dialogParameters;
 
     bool m_saveParametersOnChange;

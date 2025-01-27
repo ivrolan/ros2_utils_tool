@@ -7,6 +7,7 @@
 #include "DummyBagInputSettings.hpp"
 #include "EditBagInputSettings.hpp"
 #include "ImageInputSettings.hpp"
+#include "PublishVideoSettings.hpp"
 #include "UtilsUI.hpp"
 #include "VideoInputSettings.hpp"
 
@@ -243,6 +244,33 @@ TEST_CASE("Settings Testing", "[ui]") {
             REQUIRE(size == 1);
             qSettings.endArray();
 
+            qSettings.endGroup();
+        }
+    }
+    SECTION("Publish Video Settings Test") {
+        SECTION("Read") {
+            qSettings.beginGroup("publish_vid");
+            REQUIRE(!qSettings.value("hw_acc").isValid());
+            REQUIRE(!qSettings.value("switch_red_blue").isValid());
+            REQUIRE(!qSettings.value("loop").isValid());
+            qSettings.endGroup();
+        }
+        SECTION("Write") {
+            Utils::UI::PublishVideoParameters parameters;
+            PublishVideoSettings settings(parameters, "publish_vid");
+
+            parameters.useHardwareAcceleration = true;
+            parameters.switchRedBlueValues = true;
+            parameters.loop = true;
+            settings.write();
+
+            qSettings.beginGroup("publish_vid");
+            REQUIRE(qSettings.value("hw_acc").isValid());
+            REQUIRE(qSettings.value("hw_acc").toBool() == true);
+            REQUIRE(qSettings.value("switch_red_blue").isValid());
+            REQUIRE(qSettings.value("switch_red_blue").toBool() == true);
+            REQUIRE(qSettings.value("loop").isValid());
+            REQUIRE(qSettings.value("loop").toBool() == true);
             qSettings.endGroup();
         }
     }

@@ -4,11 +4,13 @@
 #include "DummyBagThread.hpp"
 #include "EditBagThread.hpp"
 #include "EncodingThread.hpp"
+#include "PublishVideoThread.hpp"
 #include "WriteToBagThread.hpp"
 #include "WriteToImageThread.hpp"
 
 #include <QLabel>
 #include <QMessageBox>
+#include <QMovie>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QShortcut>
@@ -19,52 +21,6 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
                                const int threadTypeId, QWidget *parent) :
     QWidget(parent)
 {
-    const auto isDarkMode = Utils::UI::isDarkMode();
-
-    auto* const headerPixmapLabel = new QLabel;
-    headerPixmapLabel->setPixmap(QIcon(isDarkMode ? headerPixmapLabelTextWhite : headerPixmapLabelTextBlack).pixmap(QSize(100, 45)));
-    headerPixmapLabel->setAlignment(Qt::AlignHCenter);
-
-    auto* const headerLabel = new QLabel(headerLabelText);
-    Utils::UI::setWidgetFontSize(headerLabel);
-    headerLabel->setAlignment(Qt::AlignHCenter);
-
-    auto* const progressBar = new QProgressBar;
-    progressBar->setVisible(false);
-
-    auto* const progressLabel = new QLabel;
-    progressLabel->setAlignment(Qt::AlignHCenter);
-
-    auto* const cancelButton = new QPushButton("Cancel");
-    auto* const finishedButton = new QPushButton("Done");
-    finishedButton->setVisible(false);
-
-    auto* const buttonLayout = new QHBoxLayout;
-    buttonLayout->addWidget(cancelButton);
-    buttonLayout->addStretch();
-    buttonLayout->addWidget(finishedButton);
-
-    auto* const uiLayout = new QVBoxLayout;
-    uiLayout->addStretch();
-    uiLayout->addWidget(headerPixmapLabel);
-    uiLayout->addWidget(headerLabel);
-    uiLayout->addSpacing(30);
-    uiLayout->addWidget(progressBar);
-    uiLayout->addWidget(progressLabel);
-    uiLayout->addStretch();
-
-    auto* const uiLayoutStretched = new QHBoxLayout;
-    uiLayoutStretched->addStretch();
-    uiLayoutStretched->addLayout(uiLayout);
-    uiLayoutStretched->addStretch();
-
-    auto* const mainLayout = new QVBoxLayout;
-    mainLayout->addLayout(uiLayoutStretched);
-    mainLayout->addLayout(buttonLayout);
-    setLayout(mainLayout);
-
-    auto* const doneShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
-
     switch (threadTypeId) {
     case 0:
         m_thread = new EditBagThread(dynamic_cast<Utils::UI::EditBagInputParameters&>(parameters), this);
@@ -81,7 +37,83 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
     case 5:
         m_thread = new DummyBagThread(dynamic_cast<Utils::UI::DummyBagInputParameters&>(parameters), this);
         break;
+    case 6:
+        m_thread = new PublishVideoThread(dynamic_cast<Utils::UI::PublishVideoParameters&>(parameters), this);
+        break;
     }
+
+    const auto isDarkMode = Utils::UI::isDarkMode();
+
+    auto* const headerPixmapLabel = new QLabel;
+    headerPixmapLabel->setPixmap(QIcon(isDarkMode ? headerPixmapLabelTextWhite : headerPixmapLabelTextBlack).pixmap(QSize(100, 45)));
+    headerPixmapLabel->setAlignment(Qt::AlignHCenter);
+
+    auto* const headerLabel = new QLabel(headerLabelText);
+    Utils::UI::setWidgetFontSize(headerLabel);
+    headerLabel->setAlignment(Qt::AlignHCenter);
+
+    auto* const progressLabel = new QLabel;
+    progressLabel->setAlignment(Qt::AlignHCenter);
+
+    auto* const cancelButton = new QPushButton("Cancel");
+    auto* const finishedButton = new QPushButton("Done");
+    finishedButton->setVisible(false);
+
+    auto* const buttonLayout = new QHBoxLayout;
+    buttonLayout->addWidget(cancelButton);
+    buttonLayout->addStretch();
+    buttonLayout->addWidget(finishedButton);
+
+    // Display a progress bar or play a gif depending on if we are doing bag or publishing stuff
+    QWidget* progressWidget;
+    if (threadTypeId < 6) {
+        auto* const progressBar = new QProgressBar;
+        progressBar->setVisible(false);
+        progressWidget = progressBar;
+
+        connect(m_thread, &BasicThread::progressChanged, this, [progressLabel, progressBar] (const QString& progressString, int progress) {
+            if (!progressBar->isVisible()) {
+                progressBar->setVisible(true);
+            }
+            progressBar->setValue(progress);
+            progressLabel->setText(progressString);
+        });
+    } else {
+        auto* const movie = new QMovie(isDarkMode? ":/gifs/publishing_white.gif" : ":/gifs/publishing_black.gif");
+        movie->setScaledSize(QSize(120, 100));
+
+        auto* const movieLabel = new QLabel;
+        movieLabel->setMovie(movie);
+        movieLabel->setAlignment(Qt::AlignHCenter);
+        progressWidget = movieLabel;
+
+        connect(m_thread, &BasicThread::progressChanged, this, [progressLabel] (const QString& progressString, int /* progress */) {
+            progressLabel->setText(progressString);
+        });
+
+        movie->start();
+    }
+
+    auto* const uiLayout = new QVBoxLayout;
+    uiLayout->addStretch();
+    uiLayout->addWidget(headerPixmapLabel);
+    uiLayout->addWidget(headerLabel);
+    uiLayout->addSpacing(30);
+    uiLayout->addWidget(progressWidget);
+    uiLayout->addWidget(progressLabel);
+    uiLayout->addStretch();
+
+    auto* const uiLayoutStretched = new QHBoxLayout;
+    uiLayoutStretched->addStretch();
+    uiLayoutStretched->addLayout(uiLayout);
+    uiLayoutStretched->addStretch();
+
+    auto* const mainLayout = new QVBoxLayout;
+    mainLayout->addLayout(uiLayoutStretched);
+    mainLayout->addLayout(buttonLayout);
+    setLayout(mainLayout);
+
+    auto* const doneShortCut = new QShortcut(QKeySequence(Qt::Key_Return), this);
 
     connect(cancelButton, &QPushButton::clicked, this, [this] {
         if (m_thread->isRunning()) {
@@ -111,13 +143,6 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
                                                  "and disable the hardware acceleration, if necessary.");
         messageBox->exec();
         emit progressStopped();
-    });
-    connect(m_thread, &BasicThread::progressChanged, this, [progressLabel, progressBar] (const QString& progressString, int progress) {
-        if (!progressBar->isVisible()) {
-            progressBar->setVisible(true);
-        }
-        progressBar->setValue(progress);
-        progressLabel->setText(progressString);
     });
     connect(m_thread, &BasicThread::finished, this, [cancelButton, finishedButton] {
         cancelButton->setVisible(false);

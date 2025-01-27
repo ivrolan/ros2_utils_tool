@@ -44,6 +44,9 @@ add_executable(tool_bag_to_video
 add_executable(tool_dummy_bag
     ${CMAKE_CURRENT_LIST_DIR}/src/cli/DummyBag.cpp
 )
+add_executable(tool_publish_video
+    ${CMAKE_CURRENT_LIST_DIR}/src/cli/PublishVideo.cpp
+)
 add_executable(tool_video_to_bag
     ${CMAKE_CURRENT_LIST_DIR}/src/cli/VideoToBag.cpp
 )
@@ -52,6 +55,7 @@ ament_target_dependencies(tool_ui cv_bridge rclcpp rosbag2_cpp sensor_msgs)
 ament_target_dependencies(tool_bag_to_images cv_bridge rclcpp rosbag2_cpp sensor_msgs)
 ament_target_dependencies(tool_bag_to_video cv_bridge rclcpp rosbag2_cpp sensor_msgs)
 ament_target_dependencies(tool_dummy_bag cv_bridge rclcpp rosbag2_cpp sensor_msgs)
+ament_target_dependencies(tool_publish_video cv_bridge rclcpp rosbag2_cpp sensor_msgs)
 ament_target_dependencies(tool_video_to_bag cv_bridge rclcpp rosbag2_cpp sensor_msgs)
 
 target_link_libraries(tool_ui
@@ -66,6 +70,9 @@ target_link_libraries(tool_bag_to_video
 target_link_libraries(tool_dummy_bag
     Qt::Widgets rt_thread rt_utils
 )
+target_link_libraries(tool_publish_video
+    Qt::Widgets rt_thread rt_utils
+)
 target_link_libraries(tool_video_to_bag
     Qt::Widgets rt_thread rt_utils
 )
@@ -75,6 +82,7 @@ install(TARGETS
     tool_bag_to_images
     tool_bag_to_video
     tool_dummy_bag
+    tool_publish_video
     tool_video_to_bag
     tool_tests
     DESTINATION lib/${PROJECT_NAME}/

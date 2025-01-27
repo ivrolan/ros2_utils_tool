@@ -66,6 +66,12 @@ struct EditBagInputParameters : AdvancedInputParameters {
     QVector<EditBagTopic> topics = {};
 };
 
+struct PublishVideoParameters : AdvancedInputParameters {
+    bool useHardwareAcceleration = false;
+    bool switchRedBlueValues = false;
+    bool loop = false;
+};
+
 struct DialogParameters {
     bool saveParameters = false;
     bool checkROS2NameConform = false;

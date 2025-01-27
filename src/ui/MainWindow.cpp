@@ -6,6 +6,7 @@
 #include "DummyBagWidget.hpp"
 #include "EditBagWidget.hpp"
 #include "ProgressWidget.hpp"
+#include "PublishVideoWidget.hpp"
 #include "StartWidget.hpp"
 #include "VideoToBagWidget.hpp"
 
@@ -31,7 +32,7 @@ MainWindow::setStartWidget()
     auto* const startWidget = new StartWidget(m_dialogParameters);
     resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     setCentralWidget(startWidget);
-    connect(startWidget, &StartWidget::functionRequested, this, &MainWindow::setConfigWidget);
+    connect(startWidget, &StartWidget::toolRequested, this, &MainWindow::setConfigWidget);
 }
 
 
@@ -57,6 +58,9 @@ MainWindow::setConfigWidget(int mode)
         break;
     case 5:
         basicInputWidget = new DummyBagWidget(m_dummyBagParameters, m_dialogParameters.checkROS2NameConform);
+        break;
+    case 6:
+        basicInputWidget = new PublishVideoWidget(m_publishVideoParameters, m_dialogParameters.checkROS2NameConform);
         break;
     }
 
@@ -94,6 +98,10 @@ MainWindow::setProgressWidget(int mode)
     case 5:
         progressWidget = new ProgressWidget(":/icons/dummy_bag_black.svg", ":/icons/dummy_bag_white.svg",
                                             "Creating ROSBag...", m_dummyBagParameters, mode);
+        break;
+    case 6:
+        progressWidget = new ProgressWidget(":/icons/publish_video_black.svg", ":/icons/publish_video_white.svg",
+                                            "Publishing Video...", m_publishVideoParameters, mode);
         break;
     }
     resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
