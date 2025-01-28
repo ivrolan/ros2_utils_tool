@@ -36,6 +36,4 @@ signals:
 
 private:
     QPointer<BasicThread> m_thread;
-
-    int m_maximumCount;
 };

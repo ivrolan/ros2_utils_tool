@@ -119,7 +119,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageInputParameters& parameters
     connect(switchRedBlueCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         writeSettingsParameter(m_parameters.switchRedBlueValues, state == Qt::Checked, m_settings);
     });
-    connect(m_useBWCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
+    connect(useBWCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
         writeSettingsParameter(m_parameters.useBWImages, state == Qt::Checked, m_settings);
     });
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &BagToImagesWidget::okButtonPressed);

@@ -104,14 +104,9 @@ main(int argc, char* argv[])
         }
     }
 
-    auto thisMessageCount = 0;
-
     // Create thread and connect to its informations
     auto* const dummyBagThread = new DummyBagThread(inputParameters);
 
-    QObject::connect(dummyBagThread, &DummyBagThread::calculatedMaximumInstances, [&thisMessageCount](int count) {
-        thisMessageCount = count;
-    });
     QObject::connect(dummyBagThread, &DummyBagThread::progressChanged, [] (const QString& progressString, int progress) {
         const auto progressStringCMD = Utils::CLI::drawProgressString(progress);
         // Always clear the last line for a nice "progress bar" feeling

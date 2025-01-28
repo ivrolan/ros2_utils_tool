@@ -107,14 +107,9 @@ main(int argc, char* argv[])
         }
     }
 
-    auto thisMessageCount = 0;
-
     // Create thread and connect to its informations
     auto* const writeToBagThread = new WriteToBagThread(inputParameters);
 
-    QObject::connect(writeToBagThread, &WriteToBagThread::calculatedMaximumInstances, [&thisMessageCount](int count) {
-        thisMessageCount = count;
-    });
     QObject::connect(writeToBagThread, &WriteToBagThread::openingCVInstanceFailed, [] {
         std::cerr << "The video writing failed. Please make sure that all inputParameters are set correctly "
             "and disable the hardware acceleration, if necessary." << std::endl;

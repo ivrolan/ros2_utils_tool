@@ -12,10 +12,8 @@ public:
                 QObject*       parent = nullptr);
 
 signals:
-    // Maximum instances used as 100 percent reference for a progress bar
     void
-    calculatedMaximumInstances(int  count,
-                               bool showDataCollectionLabel = false);
+    informOfGatheringData();
 
     // OpenCV video writer or capture opening might fail
     void

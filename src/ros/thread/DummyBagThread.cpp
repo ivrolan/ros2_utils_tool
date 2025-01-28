@@ -24,7 +24,6 @@ void
 DummyBagThread::run()
 {
     const auto maximumMessageCount = m_parameters.messageCount * m_parameters.topics.size();
-    emit calculatedMaximumInstances(maximumMessageCount);
 
     if (std::filesystem::exists(m_sourceDirectory)) {
         std::filesystem::remove_all(m_sourceDirectory);

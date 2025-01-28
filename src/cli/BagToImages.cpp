@@ -122,14 +122,8 @@ main(int argc, char* argv[])
         }
     }
 
-    auto thisMessageCount = 0;
-
     // Create thread and connect to its informations
     auto* const writeToImageThread = new WriteToImageThread(inputParameters);
-    QObject::connect(writeToImageThread, &WriteToImageThread::calculatedMaximumInstances, [&thisMessageCount](int count, bool /* showDataCollectionLabel */) {
-        thisMessageCount = count;
-        std::cout << "Starting, gathering necessery data..." << std::endl;
-    });
     QObject::connect(writeToImageThread, &WriteToImageThread::progressChanged, [] (const QString& progressString, int progress) {
         const auto progressStringCMD = Utils::CLI::drawProgressString(progress);
         // Always clear the last line for a nice "progress bar" feeling

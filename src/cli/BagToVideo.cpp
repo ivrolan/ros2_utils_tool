@@ -121,14 +121,8 @@ main(int argc, char* argv[])
         }
     }
 
-    auto thisMessageCount = 0;
-
     // Create encoding thread and connect to its informations
     auto* const encodingThread = new EncodingThread(inputParameters);
-
-    QObject::connect(encodingThread, &EncodingThread::calculatedMaximumInstances, [&thisMessageCount](int count) {
-        thisMessageCount = count;
-    });
     QObject::connect(encodingThread, &EncodingThread::openingCVInstanceFailed, [] {
         std::cerr << "The video writing failed. Please make sure that all inputParameters are set correctly and disable the hardware acceleration, if necessary." << std::endl;
         return 0;

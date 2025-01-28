@@ -32,8 +32,8 @@ EditBagThread::run()
 
         totalInstances += topic.upperBoundary - topic.lowerBoundary;
     }
-    emit calculatedMaximumInstances(totalInstances, true);
 
+    emit informOfGatheringData();
     const auto targetDirectoryStd = m_parameters.targetDirectory.toStdString();
     if (std::filesystem::exists(targetDirectoryStd)) {
         std::filesystem::remove_all(targetDirectoryStd);

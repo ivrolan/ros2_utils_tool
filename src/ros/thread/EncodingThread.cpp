@@ -27,10 +27,8 @@ EncodingThread::run()
     rosbag2_cpp::Reader reader;
     reader.open(m_sourceDirectory);
 
-    const auto messageCount = Utils::ROS::getTopicMessageCount(m_sourceDirectory, m_topicName);
-    emit calculatedMaximumInstances(messageCount);
-
     // Prepare parameters
+    const auto messageCount = Utils::ROS::getTopicMessageCount(m_sourceDirectory, m_topicName);
     rclcpp::Serialization<sensor_msgs::msg::Image> serialization;
     cv_bridge::CvImagePtr cvPointer;
     auto iterationCount = 0;

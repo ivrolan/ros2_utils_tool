@@ -38,8 +38,6 @@ WriteToBagThread::run()
     }
 
     const auto frameCount = videoCapture.get(cv::CAP_PROP_FRAME_COUNT);
-    emit calculatedMaximumInstances(frameCount);
-
     const auto finalFPS = m_parameters.useCustomFPS ? m_parameters.fps : videoCapture.get(cv::CAP_PROP_FPS);
 
     rosbag2_cpp::Writer writer;

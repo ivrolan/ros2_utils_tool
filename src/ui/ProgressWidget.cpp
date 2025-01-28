@@ -131,11 +131,8 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
         emit finished();
     });
 
-    connect(m_thread, &BasicThread::calculatedMaximumInstances, this, [this, progressLabel] (int count, bool showDataCollectionLabel) {
-        m_maximumCount = count;
-        if (showDataCollectionLabel) {
-            progressLabel->setText("Collecting necessary data...");
-        }
+    connect(m_thread, &BasicThread::informOfGatheringData, this, [this, progressLabel] () {
+        progressLabel->setText("Collecting necessary data...");
     });
     connect(m_thread, &BasicThread::openingCVInstanceFailed, this, [this] {
         auto* const messageBox = new QMessageBox(QMessageBox::Warning, "Failed writing file!",

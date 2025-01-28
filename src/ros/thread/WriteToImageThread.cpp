@@ -39,10 +39,8 @@ WriteToImageThread::run()
         }
     }
 
-    const auto messageCount = Utils::ROS::getTopicMessageCount(m_sourceDirectory, m_topicName);
-    emit calculatedMaximumInstances(messageCount, true);
-
     // Prepare parameters
+    const auto messageCount = Utils::ROS::getTopicMessageCount(m_sourceDirectory, m_topicName);
     rosbag2_cpp::Reader reader;
     reader.open(m_sourceDirectory);
     std::deque<rosbag2_storage::SerializedBagMessageSharedPtr> queue;
