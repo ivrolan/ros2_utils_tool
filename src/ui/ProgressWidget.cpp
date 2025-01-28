@@ -131,7 +131,7 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
         emit finished();
     });
 
-    connect(m_thread, &BasicThread::informOfGatheringData, this, [this, progressLabel] () {
+    connect(m_thread, &BasicThread::informOfGatheringData, this, [progressLabel] () {
         progressLabel->setText("Collecting necessary data...");
     });
     connect(m_thread, &BasicThread::openingCVInstanceFailed, this, [this] {

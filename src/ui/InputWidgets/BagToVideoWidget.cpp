@@ -66,17 +66,10 @@ BagToVideoWidget::BagToVideoWidget(Utils::UI::VideoInputParameters& parameters, 
     fpsSpinBox->setValue(m_parameters.fps);
     fpsSpinBox->setToolTip("FPS of the encoded video.");
 
-    auto* const useHardwareAccCheckBox = new QCheckBox;
-    useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster video encoding.");
-    useHardwareAccCheckBox->setCheckState(m_parameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
-
-    auto* const switchRedBlueCheckBox = new QCheckBox;
-    switchRedBlueCheckBox->setToolTip("Switch the video's red and blue values.");
-    switchRedBlueCheckBox->setCheckState(m_parameters.switchRedBlueValues ? Qt::Checked : Qt::Unchecked);
-
-    auto* const useBWImagesCheckBox = new QCheckBox;
-    useBWImagesCheckBox->setToolTip("Write a colorless video.");
-    useBWImagesCheckBox->setCheckState(m_parameters.useBWImages ? Qt::Checked : Qt::Unchecked);
+    auto* const useHardwareAccCheckBox = Utils::UI::createCheckBox("Enable hardware acceleration for faster video encoding.",
+                                                                   m_parameters.useHardwareAcceleration);
+    auto* const switchRedBlueCheckBox = Utils::UI::createCheckBox("Switch the video's red and blue values.", m_parameters.switchRedBlueValues);
+    auto* const useBWImagesCheckBox = Utils::UI::createCheckBox("Write a colorless video.", m_parameters.useBWImages);
 
     m_advancedOptionsFormLayout = new QFormLayout;
     m_advancedOptionsFormLayout->addRow("FPS:", fpsSpinBox);

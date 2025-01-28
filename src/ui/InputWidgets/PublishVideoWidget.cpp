@@ -37,17 +37,10 @@ PublishVideoWidget::PublishVideoWidget(Utils::UI::PublishVideoParameters& parame
     advancedOptionsCheckBox->setChecked(m_parameters.showAdvancedOptions ? Qt::Checked : Qt::Unchecked);
     advancedOptionsCheckBox->setText("Show Advanced Options");
 
-    auto* const useHardwareAccCheckBox = new QCheckBox;
-    useHardwareAccCheckBox->setToolTip("Enable hardware acceleration for faster video decoding and writing.");
-    useHardwareAccCheckBox->setCheckState(m_parameters.useHardwareAcceleration ? Qt::Checked : Qt::Unchecked);
-
-    auto* const switchRedBlueCheckBox = new QCheckBox;
-    switchRedBlueCheckBox->setToolTip("Switch the video's red and blue values.");
-    switchRedBlueCheckBox->setCheckState(m_parameters.switchRedBlueValues ? Qt::Checked : Qt::Unchecked);
-
-    auto* const loopCheckBox = new QCheckBox;
-    loopCheckBox->setToolTip("Loop the video file if it has been played through.");
-    loopCheckBox->setCheckState(m_parameters.loop ? Qt::Checked : Qt::Unchecked);
+    auto* const useHardwareAccCheckBox = Utils::UI::createCheckBox("Enable hardware acceleration for faster video decoding.",
+                                                                   m_parameters.useHardwareAcceleration);
+    auto* const switchRedBlueCheckBox = Utils::UI::createCheckBox("Switch the video's red and blue values.", m_parameters.switchRedBlueValues);
+    auto* const loopCheckBox = Utils::UI::createCheckBox("Loop the video file if it has been played through.", m_parameters.loop);
 
     auto* const advancedOptionsFormLayout = new QFormLayout;
     advancedOptionsFormLayout->addRow("Hardware Accleration:", useHardwareAccCheckBox);

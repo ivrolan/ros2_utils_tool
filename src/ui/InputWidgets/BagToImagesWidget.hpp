@@ -38,7 +38,6 @@ private:
     QPointer<QComboBox> m_topicNameComboBox;
     QPointer<QLineEdit> m_imagesNameLineEdit;
     QPointer<QSlider> m_slider;
-    QPointer<QCheckBox> m_useBWCheckBox;
     QPointer<QCheckBox> m_optimizeOrBilevelCheckBox;
 
     QPointer<QFormLayout> m_advancedOptionsFormLayout;

@@ -28,8 +28,7 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageInputParameters& parameters
 
     m_topicNameComboBox = new QComboBox;
     m_topicNameComboBox->setMinimumWidth(200);
-    m_topicNameComboBox->setToolTip("The ROSBag topic of the video file.\n"
-                                    "If the Bag contains multiple video topics, you can choose one of them.");
+    m_topicNameComboBox->setToolTip("The ROSBag topic of the video file.\nIf the Bag contains multiple video topics, you can choose one of them.");
     if (!m_parameters.sourceDirectory.isEmpty()) {
         Utils::UI::fillComboBoxWithTopics(m_topicNameComboBox, m_parameters.sourceDirectory);
 
@@ -61,17 +60,12 @@ BagToImagesWidget::BagToImagesWidget(Utils::UI::ImageInputParameters& parameters
     advancedOptionsCheckBox->setChecked(m_parameters.showAdvancedOptions ? Qt::Checked : Qt::Unchecked);
     advancedOptionsCheckBox->setText("Show Advanced Options");
 
-    auto* const switchRedBlueCheckBox = new QCheckBox;
-    switchRedBlueCheckBox->setToolTip("Switch the image's red and blue values.");
-    switchRedBlueCheckBox->setCheckState(m_parameters.switchRedBlueValues ? Qt::Checked : Qt::Unchecked);
-
-    m_useBWCheckBox = new QCheckBox;
-    m_useBWCheckBox->setChecked(m_parameters.useBWImages ? Qt::Checked : Qt::Unchecked);
-    m_useBWCheckBox->setToolTip("If the images should be colorless or not.");
+    auto* const switchRedBlueCheckBox = Utils::UI::createCheckBox("Switch the video's red and blue values.", m_parameters.switchRedBlueValues);
+    auto* const useBWCheckBox = Utils::UI::createCheckBox("If the images should be colorless or not.", m_parameters.useBWImages);
 
     m_advancedOptionsFormLayout = new QFormLayout;
     m_advancedOptionsFormLayout->addRow("Switch Red and Blue Values:", switchRedBlueCheckBox);
-    m_advancedOptionsFormLayout->addRow("Colorless Images:", m_useBWCheckBox);
+    m_advancedOptionsFormLayout->addRow("Colorless Images:", useBWCheckBox);
 
     auto* const advancedOptionsWidget = new QWidget;
     advancedOptionsWidget->setLayout(m_advancedOptionsFormLayout);

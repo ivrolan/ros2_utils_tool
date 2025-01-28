@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QCheckBox>
 #include <QComboBox>
 #include <QHBoxLayout>
 #include <QLineEdit>
@@ -86,6 +87,11 @@ setWidgetFontSize(QWidget* widget,
 [[maybe_unused]] bool
 fillComboBoxWithTopics(QPointer<QComboBox> comboBox,
                        const QString&      bagDirectory);
+
+// Creates a layout of a lineedit along with a tool button
+[[nodiscard]] QCheckBox*
+createCheckBox(const QString& toolTipText,
+               bool           checkState);
 
 // Creates a layout of a lineedit along with a tool button
 [[nodiscard]] QHBoxLayout*

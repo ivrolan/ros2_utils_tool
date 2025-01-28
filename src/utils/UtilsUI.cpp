@@ -34,6 +34,17 @@ fillComboBoxWithTopics(QPointer<QComboBox> comboBox, const QString& bagDirectory
 }
 
 
+QCheckBox*
+createCheckBox(const QString& toolTipText, bool checkState)
+{
+    auto* const checkBox = new QCheckBox;
+    checkBox->setToolTip(toolTipText);
+    checkBox->setCheckState(checkState ? Qt::Checked : Qt::Unchecked);
+
+    return checkBox;
+}
+
+
 QHBoxLayout*
 createLineEditButtonLayout(QPointer<QLineEdit> lineEdit, QPointer<QToolButton> toolButton)
 {
