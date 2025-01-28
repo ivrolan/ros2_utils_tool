@@ -4,6 +4,7 @@
 #include "DummyBagThread.hpp"
 #include "EditBagThread.hpp"
 #include "EncodingThread.hpp"
+#include "PublishImagesThread.hpp"
 #include "PublishVideoThread.hpp"
 #include "WriteToBagThread.hpp"
 #include "WriteToImageThread.hpp"
@@ -38,7 +39,10 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
         m_thread = new DummyBagThread(dynamic_cast<Utils::UI::DummyBagInputParameters&>(parameters), this);
         break;
     case 6:
-        m_thread = new PublishVideoThread(dynamic_cast<Utils::UI::PublishVideoParameters&>(parameters), this);
+        m_thread = new PublishVideoThread(dynamic_cast<Utils::UI::PublishParameters&>(parameters), this);
+        break;
+    case 7:
+        m_thread = new PublishImagesThread(dynamic_cast<Utils::UI::PublishParameters&>(parameters), this);
         break;
     }
 
@@ -135,9 +139,9 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
         progressLabel->setText("Collecting necessary data...");
     });
     connect(m_thread, &BasicThread::openingCVInstanceFailed, this, [this] {
-        auto* const messageBox = new QMessageBox(QMessageBox::Warning, "Failed writing file!",
-                                                 "The video writing failed. Please make sure that all parameters are set correctly "
-                                                 "and disable the hardware acceleration, if necessary.");
+        auto* const messageBox = new QMessageBox(QMessageBox::Warning, "Failed processing files!",
+                                                 "The file processing failed. Please make sure that all input parameters are set correctly, "
+                                                 "that the input data is valid and disable the hardware acceleration, if necessary.");
         messageBox->exec();
         emit progressStopped();
     });

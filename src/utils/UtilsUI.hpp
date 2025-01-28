@@ -68,10 +68,11 @@ struct EditBagInputParameters : AdvancedInputParameters {
     bool                  deleteSource = true;
 };
 
-struct PublishVideoParameters : AdvancedInputParameters {
-    bool useHardwareAcceleration = false;
+struct PublishParameters : AdvancedInputParameters {
+    int  fps = 30;
     bool switchRedBlueValues = false;
     bool loop = false;
+    bool useHardwareAcceleration = false;
 };
 
 struct DialogParameters {

@@ -74,10 +74,12 @@ StartWidget::StartWidget(Utils::UI::DialogParameters& dialogParameters, QWidget 
 
     // Publishing tools widget
     m_publishVideoButton = createToolButton("Video as\nROS Messages");
+    m_publishImagesButton = createToolButton("Images as\nROS Messages");
 
     auto* const publishingToolsLayout = new QHBoxLayout;
     publishingToolsLayout->addStretch();
     publishingToolsLayout->addWidget(m_publishVideoButton);
+    publishingToolsLayout->addWidget(m_publishImagesButton);
     publishingToolsLayout->addStretch();
 
     auto* const publishingToolsWidget = new QWidget;
@@ -141,6 +143,9 @@ StartWidget::StartWidget(Utils::UI::DialogParameters& dialogParameters, QWidget 
     connect(m_publishVideoButton, &QPushButton::clicked, this, [this] {
         emit toolRequested(6);
     });
+    connect(m_publishImagesButton, &QPushButton::clicked, this, [this] {
+        emit toolRequested(7);
+    });
 
     connect(m_backButton, &QPushButton::clicked, this, [this, bagToolsWidget, publishingToolsWidget, overallToolsWidget] {
         replaceWidgets(m_isBagToolsWidgetSelected ? bagToolsWidget : publishingToolsWidget, overallToolsWidget, true);
@@ -201,6 +206,7 @@ StartWidget::setButtonIcons()
     m_dummyBagButton->setIcon(QIcon(isDarkMode ? ":/icons/dummy_bag_white.svg" : ":/icons/dummy_bag_black.svg"));
 
     m_publishVideoButton->setIcon(QIcon(isDarkMode ? ":/icons/publish_video_white.svg" : ":/icons/publish_video_black.svg"));
+    m_publishImagesButton->setIcon(QIcon(isDarkMode ? ":/icons/publish_images_white.svg" : ":/icons/publish_images_black.svg"));
 }
 
 

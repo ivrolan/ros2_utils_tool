@@ -17,8 +17,8 @@ target_sources(rt_settings_input INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/ImageInputSettings.hpp
     ${CMAKE_CURRENT_LIST_DIR}/InputSettings.cpp
     ${CMAKE_CURRENT_LIST_DIR}/InputSettings.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/PublishVideoSettings.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/PublishVideoSettings.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/PublishSettings.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/PublishSettings.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VideoInputSettings.cpp
     ${CMAKE_CURRENT_LIST_DIR}/VideoInputSettings.hpp
 )

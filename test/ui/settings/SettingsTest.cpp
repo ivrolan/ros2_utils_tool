@@ -7,7 +7,7 @@
 #include "DummyBagInputSettings.hpp"
 #include "EditBagInputSettings.hpp"
 #include "ImageInputSettings.hpp"
-#include "PublishVideoSettings.hpp"
+#include "PublishSettings.hpp"
 #include "UtilsUI.hpp"
 #include "VideoInputSettings.hpp"
 
@@ -247,24 +247,28 @@ TEST_CASE("Settings Testing", "[ui]") {
             qSettings.endGroup();
         }
     }
-    SECTION("Publish Video Settings Test") {
+    SECTION("Publish Settings Test") {
         SECTION("Read") {
-            qSettings.beginGroup("publish_vid");
+            qSettings.beginGroup("publish");
+            REQUIRE(!qSettings.value("fps").isValid());
             REQUIRE(!qSettings.value("hw_acc").isValid());
             REQUIRE(!qSettings.value("switch_red_blue").isValid());
             REQUIRE(!qSettings.value("loop").isValid());
             qSettings.endGroup();
         }
         SECTION("Write") {
-            Utils::UI::PublishVideoParameters parameters;
-            PublishVideoSettings settings(parameters, "publish_vid");
+            Utils::UI::PublishParameters parameters;
+            PublishSettings settings(parameters, "publish");
 
+            parameters.fps = 40;
             parameters.useHardwareAcceleration = true;
             parameters.switchRedBlueValues = true;
             parameters.loop = true;
             settings.write();
 
-            qSettings.beginGroup("publish_vid");
+            qSettings.beginGroup("publish");
+            REQUIRE(qSettings.value("fps").isValid());
+            REQUIRE(qSettings.value("fps").toInt() == 40);
             REQUIRE(qSettings.value("hw_acc").isValid());
             REQUIRE(qSettings.value("hw_acc").toBool() == true);
             REQUIRE(qSettings.value("switch_red_blue").isValid());

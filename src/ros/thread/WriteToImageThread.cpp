@@ -8,6 +8,7 @@
 
 #include "sensor_msgs/msg/image.hpp"
 
+#include <cmath>
 #include <filesystem>
 
 #ifdef ROS_JAZZY
@@ -41,6 +42,8 @@ WriteToImageThread::run()
 
     // Prepare parameters
     const auto messageCount = Utils::ROS::getTopicMessageCount(m_sourceDirectory, m_topicName);
+    const auto numberOfDigits = int(log10(messageCount) + 1);
+
     rosbag2_cpp::Reader reader;
     reader.open(m_sourceDirectory);
     std::deque<rosbag2_storage::SerializedBagMessageSharedPtr> queue;
@@ -69,7 +72,7 @@ WriteToImageThread::run()
     };
 
     // We want to run the image writing in parallel
-    const auto writeImageFromQueue = [this, &targetDirectoryStd, &mutex, &iterationCount, &queue, serialization, messageCount] {
+    const auto writeImageFromQueue = [this, &targetDirectoryStd, &mutex, &iterationCount, &queue, serialization, messageCount, numberOfDigits] {
         while (true) {
             mutex.lock();
 
@@ -104,7 +107,10 @@ WriteToImageThread::run()
                                  ((float) iterationCount / (float) messageCount) * 100);
 
             // Have to create this as extra string to keep it atomic inside the mutex
-            const auto targetString = targetDirectoryStd + "/" + std::to_string(iterationCount) + "." + m_parameters.format.toStdString();
+            std::stringstream formatedIterationCount;
+            // Use leading zeroes
+            formatedIterationCount << std::setw(numberOfDigits) << std::setfill('0') << iterationCount << "\n";
+            const auto targetString = targetDirectoryStd + "/" + formatedIterationCount.str() + "." + m_parameters.format.toStdString();
 
             mutex.unlock();
             // The main writing can be done in parallel

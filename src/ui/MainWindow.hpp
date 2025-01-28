@@ -35,7 +35,8 @@ private:
     Utils::UI::DummyBagInputParameters m_dummyBagParameters;
     Utils::UI::EditBagInputParameters m_editBagParameters;
 
-    Utils::UI::PublishVideoParameters m_publishVideoParameters;
+    Utils::UI::PublishParameters m_publishParametersVideo;
+    Utils::UI::PublishParameters m_publishParametersImages;
 
     Utils::UI::DialogParameters m_dialogParameters;
 

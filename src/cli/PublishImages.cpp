@@ -1,4 +1,4 @@
-#include "PublishVideoThread.hpp"
+#include "PublishImagesThread.hpp"
 
 #include "UtilsCLI.hpp"
 #include "UtilsROS.hpp"
@@ -15,11 +15,11 @@
 void
 showHelp()
 {
-    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_publish_video path/to/video\n" << std::endl;
-    std::cout << "The video must have an ending of .mp4 or .mkv." << std::endl;
+    std::cout << "Usage: ros2 run mediassist4_ros_tools tool_publish_images path/to/video\n" << std::endl;
+    std::cout << "The images must have format jpg, png or bmp." << std::endl;
     std::cout << "Additional parameters:" << std::endl;
     std::cout << "-t or --topic_name: Topic name. If this is empty, the name '/topic_video' will be taken.\n" << std::endl;
-    std::cout << "-a or --accelerate: Use hardware acceleration." << std::endl;
+    std::cout << "-r or --rate: Framerate for the published video. Must be from 1 to 60." << std::endl;
     std::cout << "-s or --switch: Switch red and blue values." << std::endl;
     std::cout << "-l or --loop: Loop the video.\n" << std::endl;
     std::cout << "-h or --help: Show this help." << std::endl;
@@ -46,12 +46,18 @@ main(int argc, char* argv[])
     // Video directory
     publishParameters.sourceDirectory = arguments.at(1);
     if (!std::filesystem::exists(publishParameters.sourceDirectory.toStdString())) {
-        std::cerr << "The video file does not exist. Please enter a valid video path!" << std::endl;
+        std::cerr << "The images directory does not exist. Please enter a valid images path!" << std::endl;
         return 0;
     }
-    const auto fileEnding = publishParameters.sourceDirectory.right(3);
-    if (fileEnding != "mp4" && fileEnding != "mkv") {
-        std::cerr << "The entered video name is not in correct format. Please make sure that the video file ends in mp4 or mkv!" << std::endl;
+    auto containsImageFiles = false;
+    for (auto const& entry : std::filesystem::directory_iterator(publishParameters.sourceDirectory.toStdString())) {
+        if (entry.path().extension() == ".jpg" || entry.path().extension() == ".png" || entry.path().extension() == ".bmp") {
+            containsImageFiles = true;
+            break;
+        }
+    }
+    if (!containsImageFiles) {
+        std::cerr << "The specified directory does not contain any images!" << std::endl;
         return 0;
     }
 
@@ -77,8 +83,12 @@ main(int argc, char* argv[])
             publishParameters.topicName = topicName;
         }
 
-        // Hardware acceleration
-        publishParameters.useHardwareAcceleration = Utils::CLI::containsArguments(arguments, "-a", "--accelerate");
+        // Framerate
+        if (!Utils::CLI::checkArgumentValidity(arguments, "-r", "--rate", publishParameters.fps, 1, 60)) {
+            std::cerr << "Please enter a framerate in the range of 1 to 60!" << std::endl;
+            return 0;
+        }
+        std::cout << publishParameters.fps << std::endl;
         // Switch red and blue values
         publishParameters.switchRedBlueValues = Utils::CLI::containsArguments(arguments, "-s", "--switch");
         // Loop
@@ -91,17 +101,17 @@ main(int argc, char* argv[])
     }
 
     // Create thread and connect to its informations
-    auto* const publishVideoThread = new PublishVideoThread(publishParameters);
+    auto* const publishImagesThread = new PublishImagesThread(publishParameters);
     auto finished = false;
-    QObject::connect(publishVideoThread, &PublishVideoThread::openingCVInstanceFailed, [] {
-        std::cerr << "Video publishing failed. Please make sure that the video file is valid and disable the hardware acceleration, if necessary." << std::endl;
+    QObject::connect(publishImagesThread, &PublishImagesThread::openingCVInstanceFailed, [] {
+        std::cerr << "Images publishing failed. Please make sure that the video file is valid and disable the hardware acceleration, if necessary." << std::endl;
         return 0;
     });
-    QObject::connect(publishVideoThread, &PublishVideoThread::progressChanged, [] (const QString& progressString, int /* progress */) {
+    QObject::connect(publishImagesThread, &PublishImagesThread::progressChanged, [] (const QString& progressString, int /* progress */) {
         std::cout << progressString.toStdString() << "\r" << std::flush;
     });
-    QObject::connect(publishVideoThread, &PublishVideoThread::finished, publishVideoThread, &QObject::deleteLater);
-    QObject::connect(publishVideoThread, &PublishVideoThread::finished, [&finished] {
+    QObject::connect(publishImagesThread, &PublishImagesThread::finished, publishImagesThread, &QObject::deleteLater);
+    QObject::connect(publishImagesThread, &PublishImagesThread::finished, [&finished] {
         finished = true;
     });
 
@@ -109,8 +119,8 @@ main(int argc, char* argv[])
         interrupted = true;
     });
 
-    std::cout << "Publishing video..." << std::endl;
-    Utils::CLI::runThread(publishVideoThread, interrupted, finished);
+    std::cout << "Publishing images..." << std::endl;
+    Utils::CLI::runThread(publishImagesThread, interrupted, finished);
 
     rclcpp::shutdown();
     return EXIT_SUCCESS;

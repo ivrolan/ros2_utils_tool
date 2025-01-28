@@ -56,6 +56,7 @@ private:
     QPointer<QToolButton> m_dummyBagButton;
 
     QPointer<QToolButton> m_publishVideoButton;
+    QPointer<QToolButton> m_publishImagesButton;
 
     QPointer<QVBoxLayout> m_mainLayout;
 

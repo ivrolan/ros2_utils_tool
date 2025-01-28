@@ -13,6 +13,8 @@ target_sources(rt_thread INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/EncodingThread.hpp
     ${CMAKE_CURRENT_LIST_DIR}/DummyBagThread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/DummyBagThread.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/PublishImagesThread.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/PublishImagesThread.hpp
     ${CMAKE_CURRENT_LIST_DIR}/PublishVideoThread.cpp
     ${CMAKE_CURRENT_LIST_DIR}/PublishVideoThread.hpp
     ${CMAKE_CURRENT_LIST_DIR}/WriteToBagThread.cpp

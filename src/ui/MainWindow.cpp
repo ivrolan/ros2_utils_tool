@@ -6,7 +6,7 @@
 #include "DummyBagWidget.hpp"
 #include "EditBagWidget.hpp"
 #include "ProgressWidget.hpp"
-#include "PublishVideoWidget.hpp"
+#include "PublishWidget.hpp"
 #include "StartWidget.hpp"
 #include "VideoToBagWidget.hpp"
 
@@ -60,7 +60,10 @@ MainWindow::setConfigWidget(int mode)
         basicInputWidget = new DummyBagWidget(m_dummyBagParameters, m_dialogParameters.checkROS2NameConform);
         break;
     case 6:
-        basicInputWidget = new PublishVideoWidget(m_publishVideoParameters, m_dialogParameters.checkROS2NameConform);
+        basicInputWidget = new PublishWidget(m_publishParametersVideo, m_dialogParameters.checkROS2NameConform, true);
+        break;
+    case 7:
+        basicInputWidget = new PublishWidget(m_publishParametersImages, m_dialogParameters.checkROS2NameConform, false);
         break;
     }
 
@@ -101,7 +104,11 @@ MainWindow::setProgressWidget(int mode)
         break;
     case 6:
         progressWidget = new ProgressWidget(":/icons/publish_video_black.svg", ":/icons/publish_video_white.svg",
-                                            "Publishing Video...", m_publishVideoParameters, mode);
+                                            "Publishing Video...", m_publishParametersVideo, mode);
+        break;
+    case 7:
+        progressWidget = new ProgressWidget(":/icons/publish_images_black.svg", ":/icons/publish_images_white.svg",
+                                            "Publishing Images...", m_publishParametersImages, mode);
         break;
     }
     resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);

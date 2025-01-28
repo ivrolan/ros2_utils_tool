@@ -7,13 +7,13 @@
 #include "sensor_msgs/msg/image.hpp"
 
 // Encoding thread, encoding a video out of a ROSBag
-class PublishVideoThread : public BasicThread {
+class PublishImagesThread : public BasicThread {
     Q_OBJECT
 
 public:
     explicit
-    PublishVideoThread(const Utils::UI::PublishParameters& parameters,
-                       QObject*                            parent = nullptr);
+    PublishImagesThread(const Utils::UI::PublishParameters& parameters,
+                        QObject*                            parent = nullptr);
 
     void
     run() override;
