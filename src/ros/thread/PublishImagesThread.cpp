@@ -29,6 +29,7 @@ PublishImagesThread::run()
     auto frameCount = 0;
 
     emit informOfGatheringData();
+    // It is faster to first store all valid image file paths and then iterate over those
     for (auto const& entry : std::filesystem::directory_iterator(m_sourceDirectory)) {
         if (entry.path().extension() != ".jpg" && entry.path().extension() != ".png" && entry.path().extension() != ".bmp") {
             continue;
@@ -43,7 +44,7 @@ PublishImagesThread::run()
             if (isInterruptionRequested()) {
                 break;
             }
-
+            // Read image from file
             auto mat = cv::imread(fileName, cv::IMREAD_COLOR);
             if (mat.empty()) {
                 continue;
@@ -56,7 +57,7 @@ PublishImagesThread::run()
             // Create empty sensor message
             sensor_msgs::msg::Image message;
             std_msgs::msg::Header header;
-            // Convert image and write
+            // Convert and write image
             const auto cvBridge = cv_bridge::CvImage(header, sensor_msgs::image_encodings::BGR8, mat);
             cvBridge.toImageMsg(message);
 

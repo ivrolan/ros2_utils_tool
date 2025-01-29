@@ -88,7 +88,6 @@ main(int argc, char* argv[])
             std::cerr << "Please enter a framerate in the range of 1 to 60!" << std::endl;
             return 0;
         }
-        std::cout << publishParameters.fps << std::endl;
         // Switch red and blue values
         publishParameters.switchRedBlueValues = Utils::CLI::containsArguments(arguments, "-s", "--switch");
         // Loop

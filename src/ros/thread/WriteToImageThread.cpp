@@ -42,7 +42,7 @@ WriteToImageThread::run()
 
     // Prepare parameters
     const auto messageCount = Utils::ROS::getTopicMessageCount(m_sourceDirectory, m_topicName);
-    const auto numberOfDigits = int(log10(messageCount) + 1);
+    const auto messageCountNumberOfDigits = int(log10(messageCount) + 1);
 
     rosbag2_cpp::Reader reader;
     reader.open(m_sourceDirectory);
@@ -71,8 +71,8 @@ WriteToImageThread::run()
         }
     };
 
-    // We want to run the image writing in parallel
-    const auto writeImageFromQueue = [this, &targetDirectoryStd, &mutex, &iterationCount, &queue, serialization, messageCount, numberOfDigits] {
+    const auto writeImageFromQueue = [this, &targetDirectoryStd, &mutex, &iterationCount, &queue,
+                                      serialization, messageCount, messageCountNumberOfDigits] {
         while (true) {
             mutex.lock();
 
@@ -109,7 +109,7 @@ WriteToImageThread::run()
             // Have to create this as extra string to keep it atomic inside the mutex
             std::stringstream formatedIterationCount;
             // Use leading zeroes
-            formatedIterationCount << std::setw(numberOfDigits) << std::setfill('0') << iterationCount << "\n";
+            formatedIterationCount << std::setw(messageCountNumberOfDigits) << std::setfill('0') << iterationCount << "\n";
             const auto targetString = targetDirectoryStd + "/" + formatedIterationCount.str() + "." + m_parameters.format.toStdString();
 
             mutex.unlock();

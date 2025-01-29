@@ -43,7 +43,7 @@ PublishVideoThread::run()
             videoCapture.set(cv::CAP_PROP_POS_FRAMES, 0);
             iterator = 0;
         }
-        // Create image
+        // Capture image
         cv::Mat frame;
         videoCapture >> frame;
         if (frame.empty()) {
@@ -57,7 +57,7 @@ PublishVideoThread::run()
         // Create empty sensor message
         sensor_msgs::msg::Image message;
         std_msgs::msg::Header header;
-        // Convert image and write
+        // Convert and write image
         const auto cvBridge = cv_bridge::CvImage(header, sensor_msgs::image_encodings::BGR8, frame);
         cvBridge.toImageMsg(message);
 

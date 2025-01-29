@@ -10,7 +10,7 @@ class QPushButton;
 class QToolButton;
 class QVBoxLayout;
 
-// The starting widget showing all possible ui tools
+// The starting widget showing all available ui tools
 class StartWidget : public QWidget
 {
     Q_OBJECT
@@ -43,8 +43,7 @@ private:
     event(QEvent *event) override;
 
 private:
-    QPointer<QPushButton> m_settingsButton;
-
+    // Buttons for tools
     QPointer<QToolButton> m_bagToolsButton;
     QPointer<QToolButton> m_publishingToolsButton;
 
@@ -58,10 +57,12 @@ private:
     QPointer<QToolButton> m_publishVideoButton;
     QPointer<QToolButton> m_publishImagesButton;
 
-    QPointer<QVBoxLayout> m_mainLayout;
-
+    // Widgets for other elements
+    QPointer<QPushButton> m_settingsButton;
     QPointer<QPushButton> m_backButton;
     QPointer<QLabel> m_versionLabel;
+
+    QPointer<QVBoxLayout> m_mainLayout;
 
     Utils::UI::DialogParameters& m_dialogParameters;
 

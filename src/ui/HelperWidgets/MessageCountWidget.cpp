@@ -7,6 +7,7 @@ MessageCountWidget::MessageCountWidget(int minimum, int maximum, int currentMaxi
     QWidget(parent)
 {
     m_lowerBox = new QSpinBox;
+    // Start with a value of 0 instead one 1, most users should be able to handle that :-P
     m_lowerBox->setRange(0, maximum);
     m_lowerBox->setValue(minimum);
 
@@ -22,6 +23,8 @@ MessageCountWidget::MessageCountWidget(int minimum, int maximum, int currentMaxi
     mainLayout->addWidget(rangeDifferenceLabel);
     mainLayout->addStretch();
     mainLayout->addWidget(m_upperBox);
+    // Set these margins because we are going to integrate the widget into existing widgets
+    // where any extra widgets would create undesired extra space
     mainLayout->setContentsMargins(0, 0, 0, 0);
 
     setLayout(mainLayout);

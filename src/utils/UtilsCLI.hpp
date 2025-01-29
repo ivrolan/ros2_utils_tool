@@ -9,7 +9,8 @@
 // Util functions for the cli tools
 namespace Utils::CLI
 {
-// Checks if the stringlist contains either the short or long argument and returns the index
+// Checks if the command arguments stringlist contains either a specific
+// short or long argument and returns the index
 bool
 containsArguments(const QStringList& stringList,
                   const QString&     shortArg,
@@ -30,7 +31,7 @@ checkArgumentValidity(const QStringList& stringList,
                       int                lowerRange,
                       int                higherRange);
 
-// Ask if the tool should continue for cases of minor invalidacies
+// Ask if the tool should continue for cases of invalidacies
 bool
 shouldContinue(const std::string& message);
 

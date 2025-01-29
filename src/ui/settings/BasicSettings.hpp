@@ -7,6 +7,9 @@ concept SettingsParameter = std::same_as<T, int> || std::same_as<T, size_t> ||
                             std::same_as<T, bool> || std::same_as<T, QString>;
 
 // Basic settings, from which all other settings derive
+// Each setting as write and read functions. Read functions are called automatically
+// in the ctor, while the writing is called every time a parameter is changed.
+// Settings for the input widgets follow the parameter hierarchy structure defined in Utils/UI
 class BasicSettings {
 public:
     BasicSettings(const QString& groupName) : m_groupName(groupName)
@@ -20,6 +23,7 @@ protected:
     virtual bool
     read() = 0;
 
+    // Called whenever we want to write values
     template<typename T>
     requires SettingsParameter<T>
     void

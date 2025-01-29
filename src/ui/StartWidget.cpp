@@ -23,7 +23,9 @@ StartWidget::StartWidget(Utils::UI::DialogParameters& dialogParameters, QWidget 
     settingsButtonLayout->addStretch();
     settingsButtonLayout->addWidget(m_settingsButton);
 
-    // Overall widget
+    // Create three widgets: One for providing the overview for bag and publishing tools,
+    // one for bag and one for publishing tools only
+    // Overview widget
     m_bagToolsButton = createToolButton("Bag Tools");
     m_publishingToolsButton = createToolButton("Publishing\nTools");
 
@@ -161,9 +163,11 @@ StartWidget::openSettingsDialog()
 }
 
 
+// Used to switch between the three overall widgets
 void
 StartWidget::replaceWidgets(QWidget* fromWidget, QWidget* toWidget, bool otherItemVisibility)
 {
+    // If the back button is visible, the other elements should be hidden and vice versa
     m_settingsButton->setVisible(otherItemVisibility);
     m_backButton->setVisible(!otherItemVisibility);
     m_versionLabel->setVisible(otherItemVisibility);

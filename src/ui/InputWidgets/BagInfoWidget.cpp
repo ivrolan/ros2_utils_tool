@@ -80,7 +80,7 @@ BagInfoWidget::displayBagInfo()
     m_infoTreeWidget->clear();
     m_sourceLineEdit->setText(bagDirectory);
     const auto& bagMetaData = Utils::ROS::getBagMetadata(bagDirectory);
-
+    // Fill tree with bag data
     QList<QTreeWidgetItem*> treeWidgetItems;
     treeWidgetItems.append(new QTreeWidgetItem({ "Duration (Nanoseconds):", QString::number(bagMetaData.duration.count()) }));
     treeWidgetItems.append(new QTreeWidgetItem({ "Duration (Seconds):", QString::number((float) bagMetaData.duration.count() / 1000000000) }));

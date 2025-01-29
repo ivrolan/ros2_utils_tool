@@ -19,7 +19,7 @@ signals:
     void
     openingCVInstanceFailed();
 
-    // Update progress bars
+    // Update progress displayal in widget
     void
     progressChanged(const QString& progressString,
                     int            progress);

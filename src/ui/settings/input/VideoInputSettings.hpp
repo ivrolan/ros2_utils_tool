@@ -2,7 +2,7 @@
 
 #include "AdvancedInputSettings.hpp"
 
-// Store advanced settings
+// Store video out of ROS bag creation parameters
 class VideoInputSettings : public AdvancedInputSettings {
 public:
     VideoInputSettings(Utils::UI::VideoInputParameters& parameters,
@@ -11,7 +11,7 @@ public:
     bool
     write() override;
 
-protected:
+private:
     bool
     read() override;
 

@@ -69,7 +69,6 @@ EncodingThread::run()
         cvPointer = cv_bridge::toCvCopy(*rosMsg, rosMsg->encoding);
 
         if (m_parameters.useBWImages) {
-            // @note
             // It seems that just setting the VIDEOWRITER_PROP_IS_COLOR in the videowriter leads to a broken video,
             // at least if FFMPEG is used. Converting to a gray mat beforehand provides a fix. More information here:
             // https://github.com/opencv/opencv/issues/26276#issuecomment-2406825667
@@ -84,7 +83,6 @@ EncodingThread::run()
         }
 
         iterationCount++;
-        // Inform of progress update
         emit progressChanged("Writing frame " + QString::number(iterationCount) + " of " + QString::number(messageCount) + "...",
                              ((float) iterationCount / (float) messageCount) * 100);
     }

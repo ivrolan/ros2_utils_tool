@@ -13,7 +13,7 @@ class QCheckBox;
 class QLabel;
 class QTreeWidget;
 
-// The widget showing bag info data
+// Widget for editing a bag file
 class EditBagWidget : public BasicInputWidget
 {
     Q_OBJECT

@@ -2,7 +2,7 @@
 
 #include "InputSettings.hpp"
 
-// Basic settings, from which all other settings derive
+// Store dummy bag creation parameters
 class DummyBagInputSettings : public InputSettings {
 public:
     DummyBagInputSettings(Utils::UI::DummyBagInputParameters& parameters,

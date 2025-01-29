@@ -3,7 +3,7 @@
 #include "BasicThread.hpp"
 #include "UtilsUI.hpp"
 
-// Encoding thread, encoding a video out of a ROSBag
+// Thread handling encoding a video out of a ROS bag
 class EncodingThread : public BasicThread {
     Q_OBJECT
 public:

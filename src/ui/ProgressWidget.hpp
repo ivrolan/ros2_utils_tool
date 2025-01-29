@@ -7,9 +7,9 @@
 
 class BasicThread;
 
-/**
- * @brief Base widget showing encoding or writing process
- */
+// Base widget showing overall progress
+// The progress widget will access the main thread used to perform the corresponding operation.
+// If the user presses the Cancel button, the thread will be cancelled and we'll return to the main window.
 class ProgressWidget : public QWidget
 {
     Q_OBJECT

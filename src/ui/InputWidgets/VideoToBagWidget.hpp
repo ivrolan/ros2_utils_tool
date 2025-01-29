@@ -11,9 +11,7 @@ class QFormLayout;
 class QLineEdit;
 class QSpinBox;
 
-/**
- * @brief The widget used to write a video file into a ROSBag
- */
+// Widget used to write a video file into a ROSBag
 class VideoToBagWidget : public BasicInputWidget
 {
     Q_OBJECT

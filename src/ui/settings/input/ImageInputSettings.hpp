@@ -2,7 +2,7 @@
 
 #include "AdvancedInputSettings.hpp"
 
-// Store advanced settings
+// Store parameters for image sequence out of ROS bag creation
 class ImageInputSettings : public AdvancedInputSettings {
 public:
     ImageInputSettings(Utils::UI::ImageInputParameters& parameters,

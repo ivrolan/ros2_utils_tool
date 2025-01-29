@@ -5,9 +5,7 @@
 #include <QPointer>
 #include <QWidget>
 
-/**
- * @brief Small helper widget used to select a topic type for the ROS bag dummy creation
- */
+// Small helper widget used to select a topic type for the ROS bag dummy creation
 class DummyTopicWidget : public QWidget
 {
     Q_OBJECT

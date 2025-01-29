@@ -22,7 +22,8 @@ DummyTopicWidget::DummyTopicWidget(const QString& topicTypeText, const QString& 
     mainLayout->addWidget(m_topicTypeComboBox);
     mainLayout->addWidget(m_topicNameLineEdit);
     setLayout(mainLayout);
-
+    // This widget will be integrated into other widgets where extra space would look bad
+    // So remove all space around the widget itself
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(0, 0, 0, 0);
 

@@ -41,6 +41,7 @@ SettingsDialog::SettingsDialog(Utils::UI::DialogParameters& dialogParameters, QW
 }
 
 
+// Need to restart for effects to take place
 void
 SettingsDialog::storeParametersCheckStateChanged()
 {

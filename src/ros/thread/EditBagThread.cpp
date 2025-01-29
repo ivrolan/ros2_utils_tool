@@ -72,11 +72,12 @@ EditBagThread::run()
                 reader.close();
                 return;
             }
-            // Read, stay within boundaries
+            // Read the original message
             auto message = reader.read_next();
             if (message->topic_name != originalTopicNameStd) {
                 continue;
             }
+            // Stay within boundaries
             if (boundaryCounter < topic.lowerBoundary) {
                 boundaryCounter++;
                 continue;

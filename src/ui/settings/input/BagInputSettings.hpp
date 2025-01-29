@@ -2,7 +2,7 @@
 
 #include "AdvancedInputSettings.hpp"
 
-// Store bag parameter settings
+// Store bag creation parameters
 class BagInputSettings : public AdvancedInputSettings {
 public:
     BagInputSettings(Utils::UI::BagInputParameters& parameters,

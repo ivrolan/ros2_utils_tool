@@ -6,7 +6,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/image.hpp"
 
-// Encoding thread, encoding a video out of a ROSBag
+// Thread used to publish a video
+// This thread also runs as a separate ROS node to enable the image messages publishing
 class PublishVideoThread : public BasicThread {
     Q_OBJECT
 

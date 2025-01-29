@@ -12,9 +12,7 @@ class DummyTopicWidget;
 class QFormLayout;
 class QToolButton;
 
-/**
- * @brief The widget used to manage creating a ROS bag with dummy data
- */
+// Widget used to manage creating a ROS bag with dummy data
 class DummyBagWidget : public BasicInputWidget
 {
     Q_OBJECT
@@ -39,6 +37,7 @@ private slots:
     okButtonPressed();
 
 private:
+    // Have to overwrite this one because we are using more additional icons then just the top one
     void
     setPixmapLabelIcon();
 

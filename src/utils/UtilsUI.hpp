@@ -12,6 +12,8 @@
 // Util functions for user interface related things
 namespace Utils::UI
 {
+// Parameters used to store input widget input if the widget is closed and then reopened
+// or if the application is restarted (if the user configured it like that)
 struct InputParameters {
     virtual
     ~InputParameters() = default;
@@ -80,7 +82,7 @@ struct DialogParameters {
     bool checkROS2NameConform = false;
 };
 
-// Create a larger font for a certain widget
+// Create a larger font for some buttons and widget headers
 void
 setWidgetFontSize(QWidget* widget,
                   bool     isButton = false);
@@ -89,7 +91,6 @@ setWidgetFontSize(QWidget* widget,
 fillComboBoxWithTopics(QPointer<QComboBox> comboBox,
                        const QString&      bagDirectory);
 
-// Creates a layout of a lineedit along with a tool button
 [[nodiscard]] QCheckBox*
 createCheckBox(const QString& toolTipText,
                bool           checkState);
@@ -108,7 +109,7 @@ void
 createCriticalMessageBox(const QString& headerText,
                          const QString& mainText);
 
-// Checks if the application is using a dark mode
+// Checks if the application is in dark mode
 [[nodiscard]] bool
 isDarkMode();
 

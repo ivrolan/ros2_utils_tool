@@ -59,7 +59,7 @@ main(int argc, char* argv[])
     QVector<QString> topicTypes;
     QVector<QString> topicNames;
     QSet<QString> topicNameSet;
-
+    // Ensure correct topic type and name ordering
     for (auto i = 2; i < arguments.size() - 1; i++) {
         const auto argument = arguments.at(i);
 

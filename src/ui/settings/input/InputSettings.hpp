@@ -3,17 +3,17 @@
 #include "BasicSettings.hpp"
 #include "UtilsUI.hpp"
 
-// Basic parameter settings, which are used to store all input widget parameters
+// Store parameters used by all input widgets
 class InputSettings : public BasicSettings {
 public:
     InputSettings(Utils::UI::InputParameters& parameters,
                   const QString&              groupName);
 
-    virtual bool
+    bool
     write() override;
 
 protected:
-    virtual bool
+    bool
     read() override;
 
 private:

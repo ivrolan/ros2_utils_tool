@@ -12,9 +12,7 @@ class QComboBox;
 class QFormLayout;
 class QLineEdit;
 
-/**
- * @brief The widget used to manage a video encoding out of a ros bag
- */
+// Widget used to configure a video encoding out of a ros bag
 class BagToVideoWidget : public BasicInputWidget
 {
     Q_OBJECT

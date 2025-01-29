@@ -2,7 +2,7 @@
 
 #include "AdvancedInputSettings.hpp"
 
-// Store publishing settings
+// Store publishing parameters
 class PublishSettings : public AdvancedInputSettings {
 public:
     PublishSettings(Utils::UI::PublishParameters& parameters,
@@ -11,7 +11,7 @@ public:
     bool
     write() override;
 
-protected:
+private:
     bool
     read() override;
 

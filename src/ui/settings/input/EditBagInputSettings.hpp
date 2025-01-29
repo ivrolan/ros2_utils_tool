@@ -2,7 +2,7 @@
 
 #include "AdvancedInputSettings.hpp"
 
-// Store edit bag parameter settings
+// Store bag editing parameters
 class EditBagInputSettings : public AdvancedInputSettings {
 public:
     EditBagInputSettings(Utils::UI::EditBagInputParameters& parameters,

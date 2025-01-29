@@ -7,8 +7,6 @@ DialogSettings::DialogSettings(Utils::UI::DialogParameters& parameters, const QS
 }
 
 
-// Make this static because we need to access the variable from many different places
-// in the application without wanting to use this as extra dependency
 bool
 DialogSettings::areParametersSaved()
 {

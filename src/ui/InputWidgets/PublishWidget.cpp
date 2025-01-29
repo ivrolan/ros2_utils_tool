@@ -46,13 +46,14 @@ PublishWidget::PublishWidget(Utils::UI::PublishParameters& parameters,
     advancedOptionsFormLayout->addRow("Switch Red and Blue Values:", switchRedBlueCheckBox);
     advancedOptionsFormLayout->addRow("Loop Video:", loopCheckBox);
 
+    // Different input widgets are needed depending on if we want to publish a video or image sequences
     if (m_publishVideo) {
         auto* const useHardwareAccCheckBox = Utils::UI::createCheckBox("Enable hardware acceleration for faster video decoding.",
                                                                        m_parameters.useHardwareAcceleration);
 
         advancedOptionsFormLayout->addRow("Hardware Accleration:", useHardwareAccCheckBox);
         connect(useHardwareAccCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-            writeSettingsParameter(m_parameters.useHardwareAcceleration, state == Qt::Checked, m_settings);
+            writeParameterToSettings(m_parameters.useHardwareAcceleration, state == Qt::Checked, m_settings);
         });
     } else {
         auto* const fpsSpinBox = new QSpinBox;
@@ -62,7 +63,7 @@ PublishWidget::PublishWidget(Utils::UI::PublishParameters& parameters,
 
         advancedOptionsFormLayout->addRow("FPS:", fpsSpinBox);
         connect(fpsSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
-            writeSettingsParameter(m_parameters.fps, value, m_settings);
+            writeParameterToSettings(m_parameters.fps, value, m_settings);
         });
     }
 
@@ -97,7 +98,7 @@ PublishWidget::PublishWidget(Utils::UI::PublishParameters& parameters,
 
     connect(m_findSourceButton, &QPushButton::clicked, this, &PublishWidget::searchButtonPressed);
     connect(topicNameLineEdit, &QLineEdit::textChanged, this, [this, topicNameLineEdit] {
-        writeSettingsParameter(m_parameters.topicName, topicNameLineEdit->text(), m_settings);
+        writeParameterToSettings(m_parameters.topicName, topicNameLineEdit->text(), m_settings);
         enableOkButton(!m_parameters.sourceDirectory.isEmpty() && !m_parameters.topicName.isEmpty());
     });
     connect(advancedOptionsCheckBox, &QCheckBox::stateChanged, this, [this, advancedOptionsWidget] (int state) {
@@ -105,10 +106,10 @@ PublishWidget::PublishWidget(Utils::UI::PublishParameters& parameters,
         advancedOptionsWidget->setVisible(state == Qt::Checked);
     });
     connect(switchRedBlueCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-        writeSettingsParameter(m_parameters.switchRedBlueValues, state == Qt::Checked, m_settings);
+        writeParameterToSettings(m_parameters.switchRedBlueValues, state == Qt::Checked, m_settings);
     });
     connect(loopCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-        writeSettingsParameter(m_parameters.loop, state == Qt::Checked, m_settings);
+        writeParameterToSettings(m_parameters.loop, state == Qt::Checked, m_settings);
     });
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &PublishWidget::okButtonPressed);
     connect(okShortCut, &QShortcut::activated, this, &PublishWidget::okButtonPressed);
@@ -127,12 +128,15 @@ PublishWidget::searchButtonPressed()
     }
 
     QFileInfo fileInfo(dir);
+    // Check for correct corresponding formats
+    // For video: mp4 or mkv
     if (m_publishVideo) {
         if (fileInfo.suffix().toLower() != "mp4" && fileInfo.suffix().toLower() != "mkv") {
             auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Wrong format!", "The video must be in mp4 or mkv format!", QMessageBox::Ok);
             msgBox->exec();
             return;
         }
+        // For images: jpg, png or bmp
     } else {
         auto containsImageFiles = false;
         for (auto const& entry : std::filesystem::directory_iterator(dir.toStdString())) {
@@ -148,7 +152,7 @@ PublishWidget::searchButtonPressed()
         }
     }
 
-    writeSettingsParameter(m_parameters.sourceDirectory, dir, m_settings);
+    writeParameterToSettings(m_parameters.sourceDirectory, dir, m_settings);
     m_sourceLineEdit->setText(dir);
 
     enableOkButton(!m_parameters.sourceDirectory.isEmpty() && !m_parameters.topicName.isEmpty());

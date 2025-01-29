@@ -9,9 +9,7 @@
 
 class QLineEdit;
 
-/**
- * @brief The widget used to configure publishing a video as ROS message
- */
+// Widget used to configure publishing a video OR image sequence as ROS messages
 class PublishWidget : public BasicInputWidget
 {
     Q_OBJECT

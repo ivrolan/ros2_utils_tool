@@ -20,6 +20,7 @@ private slots:
     displayBagInfo();
 
 private:
+    // Main tree used to display bag info
     QPointer<QTreeWidget> m_infoTreeWidget;
 
     static constexpr int COL_DESCRIPTION = 0;

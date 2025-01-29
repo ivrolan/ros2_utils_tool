@@ -4,9 +4,8 @@
 #include <QSpinBox>
 #include <QWidget>
 
-/**
- * @brief Display the desired final message count of a to be edited ROS bag
- */
+// Display the lower and upper messages which should be extracted out of an existing ROS bag
+// into a newly edited one
 class MessageCountWidget : public QWidget
 {
     Q_OBJECT

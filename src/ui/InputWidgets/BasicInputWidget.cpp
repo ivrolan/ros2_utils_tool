@@ -9,8 +9,8 @@
 #include <QPushButton>
 #include <QToolButton>
 
-BasicInputWidget::BasicInputWidget(const QString& headerText, const QString& logoPath, QWidget *parent) :
-    QWidget(parent), m_logoPath(logoPath)
+BasicInputWidget::BasicInputWidget(const QString& headerText, const QString& iconPath, QWidget *parent) :
+    QWidget(parent), m_iconPath(iconPath)
 {
     m_headerLabel = new QLabel(headerText);
     Utils::UI::setWidgetFontSize(m_headerLabel);
@@ -22,14 +22,14 @@ BasicInputWidget::BasicInputWidget(const QString& headerText, const QString& log
 
     m_sourceLineEdit = new QLineEdit;
     m_findSourceButton = new QToolButton;
-    m_backButton = new QPushButton("Back", this);
 
+    m_backButton = new QPushButton("Back", this);
     m_okButton = new QPushButton("Ok", this);
     m_okButton->setEnabled(false);
 
     m_dialogButtonBox = new QDialogButtonBox;
     m_dialogButtonBox->addButton(m_okButton, QDialogButtonBox::AcceptRole);
-
+    // Layout can be already complete
     m_findSourceLayout = Utils::UI::createLineEditButtonLayout(m_sourceLineEdit, m_findSourceButton);
 
     m_buttonLayout = new QHBoxLayout;
@@ -54,7 +54,8 @@ void
 BasicInputWidget::setPixmapLabelIcon()
 {
     const auto isDarkMode = Utils::UI::isDarkMode();
-    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? m_logoPath + "_white.svg" : m_logoPath + "_black.svg").pixmap(QSize(100, 45)));
+    // Don't need to provide full name, appendix is always the same
+    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? m_iconPath + "_white.svg" : m_iconPath + "_black.svg").pixmap(QSize(100, 45)));
 }
 
 

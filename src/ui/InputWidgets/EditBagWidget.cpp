@@ -28,7 +28,7 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
 
     if (!std::filesystem::exists(m_parameters.sourceDirectory.toStdString())) {
         m_parameters.sourceDirectory = "";
-        writeSettingsParameter(m_parameters.sourceDirectory, QString(), m_settings);
+        writeParameterToSettings(m_parameters.sourceDirectory, QString(), m_settings);
     }
     m_sourceLineEdit->setText(m_parameters.sourceDirectory);
 
@@ -109,6 +109,7 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
 void
 EditBagWidget::createTopicTree(bool newTreeRequested)
 {
+    // Selecting a source file will necessarily need to creating a new tree, so put it in the same function
     if (newTreeRequested) {
         const auto bagDirectory = QFileDialog::getExistingDirectory(this, "Open ROSBag", "",
                                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
@@ -117,7 +118,7 @@ EditBagWidget::createTopicTree(bool newTreeRequested)
         }
 
         m_sourceLineEdit->setText(bagDirectory);
-        writeSettingsParameter(m_parameters.sourceDirectory, bagDirectory, m_settings);
+        writeParameterToSettings(m_parameters.sourceDirectory, bagDirectory, m_settings);
         m_parameters.topics.clear();
         m_settings.write();
     }
@@ -162,13 +163,13 @@ EditBagWidget::createTopicTree(bool newTreeRequested)
         m_treeWidget->setItemWidget(item, COL_RENAMING, renamingLineEdit);
 
         connect(messageCountWidget, &MessageCountWidget::lowerValueChanged, this, [i, this](int value) {
-            writeSettingsParameter(m_parameters.topics[i].lowerBoundary, static_cast<size_t>(value), m_settings);
+            writeParameterToSettings(m_parameters.topics[i].lowerBoundary, static_cast<size_t>(value), m_settings);
         });
         connect(messageCountWidget, &MessageCountWidget::upperValueChanged, this, [i, this](int value) {
-            writeSettingsParameter(m_parameters.topics[i].upperBoundary, static_cast<size_t>(value), m_settings);
+            writeParameterToSettings(m_parameters.topics[i].upperBoundary, static_cast<size_t>(value), m_settings);
         });
         connect(renamingLineEdit, &QLineEdit::textChanged, this, [i, this](const QString& text) {
-            writeSettingsParameter(m_parameters.topics[i].renamedTopicName, text, m_settings);
+            writeParameterToSettings(m_parameters.topics[i].renamedTopicName, text, m_settings);
         });
     }
 
@@ -192,13 +193,13 @@ EditBagWidget::itemCheckStateChanged(QTreeWidgetItem* item, int column)
     if (column != COL_CHECKBOXES) {
         return;
     }
-    // Disable item widgets as well
+    // Disable item widgets, this improves distinction between enabed and disabled topics
     m_treeWidget->itemWidget(item, COL_TOPICS)->setEnabled(item->checkState(COL_CHECKBOXES) == Qt::Checked ? true : false);
     m_treeWidget->itemWidget(item, COL_MESSAGE_COUNT)->setEnabled(item->checkState(COL_CHECKBOXES) == Qt::Checked ? true : false);
     m_treeWidget->itemWidget(item, COL_RENAMING)->setEnabled(item->checkState(COL_CHECKBOXES) == Qt::Checked ? true : false);
 
     const auto rowIndex = m_treeWidget->indexOfTopLevelItem(item);
-    writeSettingsParameter(m_parameters.topics[rowIndex].isSelected, item->checkState(COL_CHECKBOXES) == Qt::Checked, m_settings);
+    writeParameterToSettings(m_parameters.topics[rowIndex].isSelected, item->checkState(COL_CHECKBOXES) == Qt::Checked, m_settings);
 }
 
 
@@ -211,7 +212,7 @@ EditBagWidget::targetPushButtonPressed()
     }
 
     m_targetLineEdit->setText(fileName);
-    writeSettingsParameter(m_parameters.targetDirectory, fileName, m_settings);
+    writeParameterToSettings(m_parameters.targetDirectory, fileName, m_settings);
 }
 
 
@@ -230,8 +231,7 @@ EditBagWidget::okButtonPressed()
         }
 
         auto* const renamingLineEdit = dynamic_cast<QLineEdit*>(m_treeWidget->itemWidget((*it), COL_RENAMING));
-        if (!renamingLineEdit->text().isEmpty() && m_checkROS2NameConform &&
-            !Utils::ROS::isNameROS2Conform(renamingLineEdit->text())) {
+        if (!renamingLineEdit->text().isEmpty() && m_checkROS2NameConform && !Utils::ROS::isNameROS2Conform(renamingLineEdit->text())) {
             auto *const msgBox = Utils::UI::createInvalidROSNameMessageBox();
 
             if (const auto returnValue = msgBox->exec(); returnValue == QMessageBox::No) {

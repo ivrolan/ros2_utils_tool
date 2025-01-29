@@ -10,9 +10,7 @@ class QFormLayout;
 class QLineEdit;
 class QSlider;
 
-/**
- * @brief The widget used to manage writing images out of a ROS bag
- */
+// The widget used to manage writing images out of a ROS bag
 class BagToImagesWidget : public BasicInputWidget
 {
     Q_OBJECT
@@ -37,7 +35,7 @@ private slots:
 private:
     QPointer<QComboBox> m_topicNameComboBox;
     QPointer<QLineEdit> m_imagesNameLineEdit;
-    QPointer<QSlider> m_slider;
+    QPointer<QSlider> m_qualitySlider;
     QPointer<QCheckBox> m_optimizeOrBilevelCheckBox;
 
     QPointer<QFormLayout> m_advancedOptionsFormLayout;

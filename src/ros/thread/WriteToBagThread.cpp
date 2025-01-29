@@ -50,7 +50,7 @@ WriteToBagThread::run()
             return;
         }
 
-        // Create image
+        // Capture image
         cv::Mat frame;
         videoCapture >> frame;
         if (frame.empty()) {
@@ -68,7 +68,7 @@ WriteToBagThread::run()
         // Nanoseconds directly
         rclcpp::Time time(static_cast<uint64_t>(((float) iterationCount / finalFPS) * 1e9));
 
-        // Convert image and write
+        // Convert and write image
         const auto cvBridge = cv_bridge::CvImage(header, sensor_msgs::image_encodings::BGR8, frame);
         cvBridge.toImageMsg(message);
         writer.write(message, m_topicName, time);

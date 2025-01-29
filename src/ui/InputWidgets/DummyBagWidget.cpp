@@ -73,10 +73,17 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagInputParameters& parameters,
         m_settings.write();
         createNewDummyTopicWidget({ "", "" }, m_parameters.topics.size() - 1);
     };
+    // Create widgets for already existing topics
+    for (auto i = 0; i < m_parameters.topics.size(); i++) {
+        createNewDummyTopicWidget(m_parameters.topics.at(i), i);
+    }
+    if (m_parameters.topics.empty()) {
+        addNewTopic();
+    }
 
     connect(m_findSourceButton, &QPushButton::clicked, this, &DummyBagWidget::bagDirectoryButtonPressed);
     connect(messageCountSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this] (int value) {
-        writeSettingsParameter(m_parameters.messageCount, value, m_settings);
+        writeParameterToSettings(m_parameters.messageCount, value, m_settings);
     });
     connect(m_minusButton, &QPushButton::clicked, this, &DummyBagWidget::removeDummyTopicWidget);
     connect(m_plusButton, &QPushButton::clicked, this, [addNewTopic] {
@@ -85,13 +92,6 @@ DummyBagWidget::DummyBagWidget(Utils::UI::DummyBagInputParameters& parameters,
     connect(m_okButton, &QPushButton::clicked, this, &DummyBagWidget::okButtonPressed);
 
     setPixmapLabelIcon();
-
-    for (auto i = 0; i < m_parameters.topics.size(); i++) {
-        createNewDummyTopicWidget(m_parameters.topics.at(i), i);
-    }
-    if (m_parameters.topics.empty()) {
-        addNewTopic();
-    }
 }
 
 
@@ -103,7 +103,7 @@ DummyBagWidget::bagDirectoryButtonPressed()
         return;
     }
 
-    writeSettingsParameter(m_parameters.sourceDirectory, fileName, m_settings);
+    writeParameterToSettings(m_parameters.sourceDirectory, fileName, m_settings);
     m_sourceLineEdit->setText(fileName);
 }
 
@@ -127,12 +127,13 @@ DummyBagWidget::createNewDummyTopicWidget(const Utils::UI::DummyBagInputParamete
     auto* const dummyTopicWidget = new DummyTopicWidget(topic.type, topic.name);
 
     connect(dummyTopicWidget, &DummyTopicWidget::topicTypeChanged, this, [this, index] (const QString& text) {
-        writeSettingsParameter(m_parameters.topics[index].type, text, m_settings);
+        writeParameterToSettings(m_parameters.topics[index].type, text, m_settings);
     });
     connect(dummyTopicWidget, &DummyTopicWidget::topicNameChanged, this, [this, index] (const QString& text) {
-        writeSettingsParameter(m_parameters.topics[index].name, text, m_settings);
+        writeParameterToSettings(m_parameters.topics[index].name, text, m_settings);
     });
 
+    // Keep it all inside the main form layout
     m_formLayout->insertRow(m_formLayout->rowCount() - 2, "Topic " + QString::number(m_numberOfTopics + 1) + ":", dummyTopicWidget);
     m_dummyTopicWidgets.push_back(dummyTopicWidget);
 
@@ -152,12 +153,12 @@ DummyBagWidget::okButtonPressed()
 
     // Sets remove duplicates, so use a set to check if duplicate topic names exist
     QSet<QString> topicNameSet;
-
     for (QPointer<DummyTopicWidget> dummyTopicWidget : m_dummyTopicWidgets) {
         if (dummyTopicWidget->getTopicName().isEmpty()) {
             Utils::UI::createCriticalMessageBox("Empty topic name!", "Please enter a topic name for every topic!");
             return;
         }
+
         if (m_checkROS2NameConform && !Utils::ROS::isNameROS2Conform(dummyTopicWidget->getTopicName())) {
             auto *const msgBox = Utils::UI::createInvalidROSNameMessageBox();
 
@@ -168,11 +169,11 @@ DummyBagWidget::okButtonPressed()
 
         topicNameSet.insert(dummyTopicWidget->getTopicName());
     }
-
     if (topicNameSet.size() != m_dummyTopicWidgets.size()) {
         Utils::UI::createCriticalMessageBox("Duplicate topic names!", "Please make sure that no duplicate topic names are used!");
         return;
     }
+
     if (std::filesystem::exists(m_parameters.sourceDirectory.toStdString())) {
         auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Bagfile already exists!",
                                              "A bag file already exists under the specified directory! Are you sure you want to continue? "
@@ -191,7 +192,7 @@ void
 DummyBagWidget::setPixmapLabelIcon()
 {
     const auto isDarkMode = Utils::UI::isDarkMode();
-    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? m_logoPath + "_white.svg" : m_logoPath + "_black.svg").pixmap(QSize(100, 45)));
+    m_headerPixmapLabel->setPixmap(QIcon(isDarkMode ? m_iconPath + "_white.svg" : m_iconPath + "_black.svg").pixmap(QSize(100, 45)));
     m_minusButton->setIcon(QIcon(isDarkMode ? ":/icons/minus_white.svg" : ":/icons/minus_black.svg"));
     m_plusButton->setIcon(QIcon(isDarkMode ? ":/icons/plus_white.svg" : ":/icons/plus_black.svg"));
 }

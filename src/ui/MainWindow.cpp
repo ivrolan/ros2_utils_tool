@@ -32,12 +32,12 @@ MainWindow::setStartWidget()
     auto* const startWidget = new StartWidget(m_dialogParameters);
     resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     setCentralWidget(startWidget);
-    connect(startWidget, &StartWidget::toolRequested, this, &MainWindow::setConfigWidget);
+    connect(startWidget, &StartWidget::toolRequested, this, &MainWindow::setInputWidget);
 }
 
 
 void
-MainWindow::setConfigWidget(int mode)
+MainWindow::setInputWidget(int mode)
 {
     QPointer<BasicInputWidget> basicInputWidget;
     switch (mode) {
@@ -115,7 +115,7 @@ MainWindow::setProgressWidget(int mode)
     setCentralWidget(progressWidget);
 
     connect(progressWidget, &ProgressWidget::progressStopped, this, [this, mode] {
-        setConfigWidget(mode);
+        setInputWidget(mode);
     });
     connect(progressWidget, &ProgressWidget::finished, this, &MainWindow::setStartWidget);
 
