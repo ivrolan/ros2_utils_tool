@@ -20,7 +20,7 @@
 
 PublishWidget::PublishWidget(Utils::UI::PublishParameters& parameters,
                              bool checkROS2NameConform, bool publishVideo, QWidget *parent) :
-    BasicInputWidget(publishVideo ? "Publish Video as ROS Messages" : "Publish Images as ROS Messages",
+    BasicInputWidget(publishVideo ? "Publish Video as ROS Topic" : "Publish Images as ROS Topic",
                      publishVideo ? ":/icons/publish_video" : ":/icons/publish_images", parent),
     m_parameters(parameters), m_settings(parameters, publishVideo ? "publish_video" : "publish_images"),
     m_checkROS2NameConform(checkROS2NameConform), m_publishVideo(publishVideo)

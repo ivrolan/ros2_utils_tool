@@ -75,8 +75,8 @@ StartWidget::StartWidget(Utils::UI::DialogParameters& dialogParameters, QWidget 
     bagToolsWidget->setLayout(bagToolsLayout);
 
     // Publishing tools widget
-    m_publishVideoButton = createToolButton("Video as\nROS Messages");
-    m_publishImagesButton = createToolButton("Images as\nROS Messages");
+    m_publishVideoButton = createToolButton("Publish Video\nas ROS Topic");
+    m_publishImagesButton = createToolButton("Publish Images\nas ROS Topic");
 
     auto* const publishingToolsLayout = new QHBoxLayout;
     publishingToolsLayout->addStretch();
