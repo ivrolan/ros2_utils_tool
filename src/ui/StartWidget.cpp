@@ -93,8 +93,8 @@ StartWidget::StartWidget(Utils::UI::DialogParameters& dialogParameters, QWidget 
     m_backButton->setVisible(false);
 
     auto* const backButtonLayout = new QHBoxLayout;
-    backButtonLayout->addStretch();
     backButtonLayout->addWidget(m_backButton);
+    backButtonLayout->addStretch();
 
     m_versionLabel = new QLabel("v0.6.2");
     m_versionLabel->setToolTip("Bug fixes and stability improvements.");
@@ -113,16 +113,30 @@ StartWidget::StartWidget(Utils::UI::DialogParameters& dialogParameters, QWidget 
     m_mainLayout->addLayout(backButtonLayout);
     setLayout(m_mainLayout);
 
+    const auto switchToBagTools = [this, overallToolsWidget, bagToolsWidget] {
+        m_isBagToolsWidgetSelected = true;
+        replaceWidgets(overallToolsWidget, bagToolsWidget, 1, false);
+    };
+    const auto switchToPublshingTools = [this, overallToolsWidget, publishingToolsWidget] {
+        m_isBagToolsWidgetSelected = false;
+        replaceWidgets(overallToolsWidget, publishingToolsWidget, 2, false);
+    };
+
+    switch (m_widgetOnInstantiation) {
+    case 1:
+        switchToBagTools();
+        break;
+    case 2:
+        switchToPublshingTools();
+        break;
+    default:
+        break;
+    }
+
     connect(m_settingsButton, &QPushButton::clicked, this, &StartWidget::openSettingsDialog);
 
-    connect(m_bagToolsButton, &QPushButton::clicked, this, [this, overallToolsWidget, bagToolsWidget] {
-        m_isBagToolsWidgetSelected = true;
-        replaceWidgets(overallToolsWidget, bagToolsWidget, false);
-    });
-    connect(m_publishingToolsButton, &QPushButton::clicked, this, [this, overallToolsWidget, publishingToolsWidget] {
-        m_isBagToolsWidgetSelected = false;
-        replaceWidgets(overallToolsWidget, publishingToolsWidget, false);
-    });
+    connect(m_bagToolsButton, &QPushButton::clicked, this, switchToBagTools);
+    connect(m_publishingToolsButton, &QPushButton::clicked, this, switchToPublshingTools);
 
     connect(m_editROSBagButton, &QPushButton::clicked, this, [this] {
         emit toolRequested(0);
@@ -150,7 +164,7 @@ StartWidget::StartWidget(Utils::UI::DialogParameters& dialogParameters, QWidget 
     });
 
     connect(m_backButton, &QPushButton::clicked, this, [this, bagToolsWidget, publishingToolsWidget, overallToolsWidget] {
-        replaceWidgets(m_isBagToolsWidgetSelected ? bagToolsWidget : publishingToolsWidget, overallToolsWidget, true);
+        replaceWidgets(m_isBagToolsWidgetSelected ? bagToolsWidget : publishingToolsWidget, overallToolsWidget, 0, true);
     });
 }
 
@@ -165,12 +179,13 @@ StartWidget::openSettingsDialog()
 
 // Used to switch between the three overall widgets
 void
-StartWidget::replaceWidgets(QWidget* fromWidget, QWidget* toWidget, bool otherItemVisibility)
+StartWidget::replaceWidgets(QWidget* fromWidget, QWidget* toWidget, int widgetIdentifier, bool otherItemVisibility)
 {
     // If the back button is visible, the other elements should be hidden and vice versa
     m_settingsButton->setVisible(otherItemVisibility);
     m_backButton->setVisible(!otherItemVisibility);
     m_versionLabel->setVisible(otherItemVisibility);
+    m_widgetOnInstantiation = widgetIdentifier;
 
     m_mainLayout->replaceWidget(fromWidget, toWidget);
     fromWidget->setVisible(false);

@@ -31,6 +31,7 @@ private:
     void
     replaceWidgets(QWidget* fromWidget,
                    QWidget* toWidget,
+                   int      widgetIdentifier,
                    bool     otherItemVisibility);
 
     QPointer<QToolButton>
@@ -65,6 +66,9 @@ private:
     QPointer<QVBoxLayout> m_mainLayout;
 
     Utils::UI::DialogParameters& m_dialogParameters;
+
+    // Used to remember which widget was active when we switch to the input widget, but cancel
+    inline static int m_widgetOnInstantiation = 0;
 
     bool m_isBagToolsWidgetSelected;
 };
