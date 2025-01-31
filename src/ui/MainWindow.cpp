@@ -67,7 +67,8 @@ MainWindow::setInputWidget(int mode)
         break;
     }
 
-    resize(mode == 0 ? basicInputWidget->width() : DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    resize(mode == 0 ? basicInputWidget->width() : DEFAULT_WIDTH,
+           mode == 0 ? basicInputWidget->height() : DEFAULT_HEIGHT);
     setCentralWidget(basicInputWidget);
 
     connect(basicInputWidget, &BasicInputWidget::back, this, &MainWindow::setStartWidget);

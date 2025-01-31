@@ -67,7 +67,7 @@ struct EditBagInputParameters : AdvancedInputParameters {
     };
 
     QVector<EditBagTopic> topics = {};
-    bool                  deleteSource = true;
+    bool                  deleteSource = false;
 };
 
 struct PublishParameters : AdvancedInputParameters {

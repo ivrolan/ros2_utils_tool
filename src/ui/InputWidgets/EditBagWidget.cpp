@@ -37,10 +37,6 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
                              "Type a name into the 'Rename' column to rename a topic.");
     m_editLabel->setVisible(false);
 
-    auto labelFont = m_editLabel->font();
-    labelFont.setBold(true);
-    m_editLabel->setFont(labelFont);
-
     m_treeWidget = new QTreeWidget;
     m_treeWidget->setVisible(false);
     m_treeWidget->setColumnCount(4);
@@ -49,6 +45,15 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
     m_treeWidget->headerItem()->setText(COL_MESSAGE_COUNT, "Message Count:");
     m_treeWidget->headerItem()->setText(COL_RENAMING, "Rename:");
     m_treeWidget->setRootIsDecorated(false);
+
+    m_differentDirsLabel = new QLabel("The edited bag needs to be a new file due to API restrictions.<br>"
+                                      "However, you can choose to delete the source file after creation.");
+    m_differentDirsLabel->setVisible(false);
+
+    auto labelFont = m_editLabel->font();
+    labelFont.setBold(true);
+    m_editLabel->setFont(labelFont);
+    m_differentDirsLabel->setFont(labelFont);
 
     m_deleteSourceCheckBox = new QCheckBox("Delete source bag after completion");
     m_deleteSourceCheckBox->setTristate(false);
@@ -77,6 +82,7 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
     controlsLayout->addWidget(m_editLabel);
     controlsLayout->addWidget(m_treeWidget);
     controlsLayout->addWidget(m_targetBagNameWidget);
+    controlsLayout->addWidget(m_differentDirsLabel);
     controlsLayout->addWidget(m_deleteSourceCheckBox);
     // Give it a more "squishy" look
     controlsLayout->setContentsMargins(30, 30, 30, 30);
@@ -177,13 +183,20 @@ EditBagWidget::createTopicTree(bool newTreeRequested)
     m_treeWidget->resizeColumnToContents(COL_TOPICS);
     m_treeWidget->resizeColumnToContents(COL_MESSAGE_COUNT);
     m_treeWidget->resizeColumnToContents(COL_RENAMING);
+    // Adjusting the size will for whatever reason reset the column width above
+    const auto width = m_treeWidget->width();
+
     m_treeWidget->blockSignals(false);
 
     m_editLabel->setVisible(true);
     m_treeWidget->setVisible(true);
     m_targetBagNameWidget->setVisible(true);
+    m_differentDirsLabel->setVisible(true);
     m_deleteSourceCheckBox->setVisible(true);
     m_okButton->setVisible(true);
+
+    adjustSize();
+    resize(QSize(width, height()));
 }
 
 
