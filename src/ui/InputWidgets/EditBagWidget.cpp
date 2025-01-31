@@ -247,7 +247,13 @@ EditBagWidget::okButtonPressed()
         msgBox->exec();
         return;
     }
-
+    if (m_parameters.sourceDirectory == m_parameters.targetDirectory) {
+        auto *const msgBox = new QMessageBox(QMessageBox::Critical, "Equal files!",
+                                             "Source and target dir have the same path. Please enter a different name for the target file!",
+                                             QMessageBox::Ok);
+        msgBox->exec();
+        return;
+    }
     if (std::filesystem::exists(m_parameters.targetDirectory.toStdString())) {
         auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Bagfile already exists!",
                                              "A bag file already exists under the specified directory! Are you sure you want to continue? "
