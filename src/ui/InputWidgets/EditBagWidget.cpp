@@ -26,7 +26,8 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
     auto* const formLayout = new QFormLayout;
     formLayout->addRow("Bag Location:", m_findSourceLayout);
 
-    if (!std::filesystem::exists(m_parameters.sourceDirectory.toStdString())) {
+    if (!std::filesystem::exists(m_parameters.sourceDirectory.toStdString()) ||
+        !Utils::ROS::doesDirectoryContainBagFile(m_parameters.sourceDirectory)) {
         m_parameters.sourceDirectory = "";
         writeParameterToSettings(m_parameters.sourceDirectory, QString(), m_settings);
     }
