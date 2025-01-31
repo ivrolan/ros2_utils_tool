@@ -34,8 +34,7 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
     m_sourceLineEdit->setText(m_parameters.sourceDirectory);
 
     m_editLabel = new QLabel("Unselect all items you want to remove.<br>"
-                             "Change the message count if you want to drop messages.<br>"
-                             "Type a name into the 'Rename' column to rename a topic.");
+                             "Change the message count to crop messages.");
     m_editLabel->setVisible(false);
 
     m_treeWidget = new QTreeWidget;
@@ -44,11 +43,11 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
     m_treeWidget->headerItem()->setText(COL_CHECKBOXES, "");
     m_treeWidget->headerItem()->setText(COL_TOPICS, "Topics:");
     m_treeWidget->headerItem()->setText(COL_MESSAGE_COUNT, "Message Count:");
-    m_treeWidget->headerItem()->setText(COL_RENAMING, "Rename:");
+    m_treeWidget->headerItem()->setText(COL_RENAMING, "Rename Topic (Optional):");
     m_treeWidget->setRootIsDecorated(false);
 
-    m_differentDirsLabel = new QLabel("The edited bag needs to be a new file due to API restrictions.<br>"
-                                      "However, you can choose to delete the source file after creation.");
+    m_differentDirsLabel = new QLabel("The edited bag needs to be a new file. However, you can choose to delete<br>"
+                                      "the source file after creation.");
     m_differentDirsLabel->setVisible(false);
 
     auto labelFont = m_editLabel->font();
@@ -66,7 +65,7 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
     auto* const targetLineEditLayout = Utils::UI::createLineEditButtonLayout(m_targetLineEdit, targetPushButton);
 
     auto* const targetFormLayout = new QFormLayout;
-    targetFormLayout->addRow("Target location:", targetLineEditLayout);
+    targetFormLayout->addRow("Target Location:", targetLineEditLayout);
     targetFormLayout->setContentsMargins(0, 0, 0, 0);
 
     m_targetBagNameWidget = new QWidget;
@@ -189,7 +188,7 @@ EditBagWidget::createTopicTree(bool newTreeRequested)
     m_treeWidget->resizeColumnToContents(COL_MESSAGE_COUNT);
     m_treeWidget->resizeColumnToContents(COL_RENAMING);
     // Adjusting the size will for whatever reason reset the column width above
-    const auto width = m_treeWidget->width();
+    const auto keptWidth = width();
 
     m_treeWidget->blockSignals(false);
 
@@ -201,7 +200,7 @@ EditBagWidget::createTopicTree(bool newTreeRequested)
     m_okButton->setVisible(true);
 
     adjustSize();
-    resize(QSize(width, height()));
+    resize(QSize(keptWidth, height()));
 }
 
 
