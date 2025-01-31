@@ -119,7 +119,11 @@ EditBagWidget::createTopicTree(bool newTreeRequested)
     if (newTreeRequested) {
         const auto bagDirectory = QFileDialog::getExistingDirectory(this, "Open ROSBag", "",
                                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-        if (bagDirectory.isEmpty() || !Utils::ROS::doesDirectoryContainBagFile(bagDirectory)) {
+        if (bagDirectory.isEmpty()) {
+            return;
+        }
+        if (!Utils::ROS::doesDirectoryContainBagFile(bagDirectory)) {
+            Utils::UI::createCriticalMessageBox("Invalid bag file!", "The source bag file seems to be invalid or broken!");
             return;
         }
 
@@ -253,6 +257,10 @@ EditBagWidget::okButtonPressed()
         }
 
         ++it;
+    }
+    if (!Utils::ROS::doesDirectoryContainBagFile(m_parameters.sourceDirectory)) {
+        Utils::UI::createCriticalMessageBox("Invalid bag file!", "The source bag file seems to be invalid or broken!");
+        return;
     }
     if (m_targetLineEdit->text().isEmpty()) {
         auto *const msgBox = new QMessageBox(QMessageBox::Warning, "No target specified!", "Please make sure that a target file has been entered!",

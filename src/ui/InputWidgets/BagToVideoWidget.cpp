@@ -229,8 +229,13 @@ BagToVideoWidget::okButtonPressed()
         return;
     }
 
+    if (!Utils::ROS::doesDirectoryContainBagFile(m_parameters.sourceDirectory)) {
+        Utils::UI::createCriticalMessageBox("Invalid bag file!", "The source bag file seems to be invalid or broken!");
+        return;
+    }
+
     // Only ask if exists and the file dialog has not been called
-    if (std::filesystem::exists(m_videoNameLineEdit->text().toStdString()) && !m_fileDialogOpened) {
+    if (std::filesystem::exists(m_parameters.targetDirectory.toStdString()) && !m_fileDialogOpened) {
         auto *const msgBox = new QMessageBox(QMessageBox::Warning, "Video already exists!",
                                              "A video already exists under the specified directory! Are you sure you want to continue? This will overwrite the existing file.",
                                              QMessageBox::Yes | QMessageBox::No);
