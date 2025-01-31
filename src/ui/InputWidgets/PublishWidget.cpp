@@ -119,8 +119,6 @@ PublishWidget::PublishWidget(Utils::UI::PublishParameters& parameters,
 void
 PublishWidget::searchButtonPressed()
 {
-    enableOkButton(false);
-
     const auto dir = m_publishVideo ? QFileDialog::getOpenFileName(this, "Open Video")
                                     : QFileDialog::getExistingDirectory(this, "Open Images", "", QFileDialog::ShowDirsOnly);
     if (dir.isEmpty()) {
