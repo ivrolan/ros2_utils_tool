@@ -33,6 +33,8 @@ doesBagContainTopicName(const QString& bagDirectory, const QString& topicName)
     auto iter = std::find_if(topicsAndTypes.begin(), topicsAndTypes.end(), [&] (const auto& topic) {
         return topic.name == stdStringTopicName;
     });
+
+    reader.close();
     return iter != topicsAndTypes.end();
 }
 
@@ -49,6 +51,8 @@ getTopicMessageCount(const QString& bagDirectory, const QString& topicName)
     auto iter = std::find_if(topics.begin(), topics.end(), [&] (const auto& topic) {
         return topic.topic_metadata.name == stdStringTopicName;
     });
+
+    reader.close();
     return iter != topics.end() ? iter->message_count : 0;
 }
 
@@ -64,9 +68,12 @@ rosbag2_storage::BagMetadata
 getBagMetadata(const QString& bagDirectory)
 {
     rosbag2_cpp::Reader reader;
-    reader.open(bagDirectory.toStdString());
 
-    return reader.get_metadata();
+    reader.open(bagDirectory.toStdString());
+    const auto metaData = reader.get_metadata();
+    reader.close();
+
+    return metaData;
 }
 
 
@@ -82,6 +89,8 @@ getTopicType(const QString& bagDirectory, const QString& topicName)
     auto iter = std::find_if(topicsAndTypes.begin(), topicsAndTypes.end(), [&] (const auto& topic) {
         return topic.name == stdStringTopicName;
     });
+
+    reader.close();
     return iter != topicsAndTypes.end() ? QString::fromStdString(iter->type) : "";
 }
 
