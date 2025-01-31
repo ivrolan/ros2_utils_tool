@@ -215,18 +215,23 @@ TEST_CASE("Settings Testing", "[ui]") {
     }
     SECTION("Edit Bag Input Params Test") {
         SECTION("Read") {
-            qSettings.beginGroup("dummy");
+            qSettings.beginGroup("edit");
             REQUIRE(!qSettings.value("topics").isValid());
+            REQUIRE(!qSettings.value("delete_source").isValid());
             qSettings.endGroup();
         }
         SECTION("Write") {
             Utils::UI::EditBagInputParameters parameters;
             EditBagInputSettings settings(parameters, "edit");
 
+            parameters.deleteSource = true;
             parameters.topics.push_back({ "renamed_topic", "original_topic", 42, 1337, true });
             settings.write();
 
             qSettings.beginGroup("edit");
+            REQUIRE(qSettings.value("delete_source").isValid());
+            REQUIRE(qSettings.value("delete_source").toBool() == true);
+
             const auto size = qSettings.beginReadArray("topics");
             for (auto i = 0; i < size; ++i) {
                 qSettings.setArrayIndex(i);

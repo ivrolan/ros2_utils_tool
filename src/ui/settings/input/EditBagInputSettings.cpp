@@ -28,6 +28,7 @@ EditBagInputSettings::write()
         setSettingsParameter(settings, m_parameters.topics.at(i).isSelected, "is_selected");
     }
     settings.endArray();
+    setSettingsParameter(settings, m_parameters.deleteSource, "delete_source");
 
     settings.endGroup();
     return true;
@@ -53,6 +54,7 @@ EditBagInputSettings::read()
                                      settings.value("is_selected").toBool() });
     }
     settings.endArray();
+    m_parameters.deleteSource = settings.value("delete_source").isValid() ? settings.value("delete_source").toBool() : false;
 
     settings.endGroup();
     return true;

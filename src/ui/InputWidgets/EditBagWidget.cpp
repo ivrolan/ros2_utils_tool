@@ -52,7 +52,7 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
 
     m_deleteSourceCheckBox = new QCheckBox("Delete source bag after completion");
     m_deleteSourceCheckBox->setTristate(false);
-    m_deleteSourceCheckBox->setChecked(true);
+    m_deleteSourceCheckBox->setChecked(m_parameters.deleteSource);
     m_deleteSourceCheckBox->setVisible(false);
 
     m_targetLineEdit = new QLineEdit(m_parameters.targetDirectory);
@@ -95,7 +95,7 @@ EditBagWidget::EditBagWidget(Utils::UI::EditBagInputParameters& parameters,
     });
     connect(m_treeWidget, &QTreeWidget::itemChanged, this, &EditBagWidget::itemCheckStateChanged);
     connect(m_deleteSourceCheckBox, &QCheckBox::stateChanged, this, [this] (int state) {
-        m_parameters.deleteSource = state == Qt::Checked;
+        writeParameterToSettings(m_parameters.deleteSource, state == Qt::Checked, m_settings);
     });
     connect(targetPushButton, &QPushButton::clicked, this, &EditBagWidget::targetPushButtonPressed);
     connect(m_dialogButtonBox, &QDialogButtonBox::accepted, this, &EditBagWidget::okButtonPressed);
