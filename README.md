@@ -4,21 +4,27 @@
    ![C++ badge](https://img.shields.io/badge/C++-20-blue.svg)
    ![CI Ubuntu badge](https://github.com/MaxFleur/ros2_utils_tool/actions/workflows/humble.yml/badge.svg?event=push)
    ![CI Windows badge](https://github.com/MaxFleur/ros2_utils_tool/actions/workflows/jazzy.yml/badge.svg?event=push)
-   ![Tag badge](https://img.shields.io/badge/Release-v0.7.0-blue.svg)
+   ![Tag badge](https://img.shields.io/badge/Release-v0.7.1-blue.svg)
 
 </div>
 
-## Overview
+<p align="center">
+  <img width="360" height="480" src="https://github.com/user-attachments/assets/261c7f8b-ccc5-4734-8edc-81c9e063a4ae">
+  <img width="360" height="480" src="https://github.com/user-attachments/assets/219db62e-10ee-4d0a-b712-cc227c91ee97">
+</p>
+<p align="center">
+  <img width="720" height="120" src="https://github.com/user-attachments/assets/b34534c8-c751-4fec-b58e-0643ea0b7f3f">
+</p>
 
-The ros2_utils_tool package provides various tools for the everyday-usage of ROS2. The package provides a UI as well as command line functionality.
+# Overview
 
-As of now, the tool provides the following functionalities:
-- Encode a video out of a ROS bag video topic to mp4 or mkv (uncompressed is also supported for mkv)
+The ros2_utils_tool package provides a complete UI-based tool for the everyday-usage of ROS2 with additional CLI support. As of now, the tool provides the following functionalities:
+- Edit an existing ROS bag file, with support for renaming or dropping topics and changing the message count
+- Get information for a ROS bag
+- Encode a video out of a ROS bag video topic
 - Write a video to a ROS bag
 - Write images out of a ROS bag video topic
 - Create a dummy ROS bag file, containing either string, int or image messages
-- Edit an existing ROS bag file, with support for renaming or dropping topics and changing the message count (UI only)
-- Get information for a ROS bag (UI only)
 - Publish a video as a ROS topic
 - Publish images as a ROS topic
 
@@ -31,13 +37,13 @@ The following table will give an overview which functionalities are currently su
 | ROS bag video topic to images |  X  |  X  |
 | Create dummy bag ROS file |  X  |  X  |
 | Edit ROS bag file |  X  |    |
-| UI-based ROS bag file information |  X  |    |
+| UI-based ROS bag file information |  X  | (X) (`ros2 bag info`) |
 | Publish Video as ROS Topic |  X  |  X  |
 | Publish Images as ROS Topic |  X  |  X  |
 
 NOTE: The package is still under active development, so more tools might be added later in the future. Additionally, already existing features might expand and change constantly.
 
-## Installation:
+## Installation
 
 ### Dependencies
 
@@ -45,8 +51,9 @@ The following packages are required:
 - [ROS2](https://docs.ros.org/en/jazzy/index.html), both version **humble** and **jazzy** are supported.
 - [OpenCV](https://opencv.org/) for writing video files.
 - [cv_bridge](https://index.ros.org/p/cv_bridge/) for converting ROS sensor images to cv matrices and vice versa.
-- [Qt5/Qt6](https://doc.qt.io/) for all UI as well as some convenience functionalities.
-    - The application uses Qt6 by default. If no Qt6 is found, Qt5 is used instead.
+- [Qt6/Qt5](https://doc.qt.io/) for all UI as well as some convenience functionalities.
+    - The application uses Qt6 by default. If no Qt6 installation is found on the system, Qt5 is used instead.
+    - **Due to Qt5 going end-of-life on May 26th 2025, support for it will be dropped soon**.
 - [catch2_ROS](https://index.ros.org/p/catch_ros2/) for Catch2-based unit tests with ROS2.
 - (Optional) [uncrustify](https://github.com/uncrustify/uncrustify) for code formatting.
 
@@ -56,8 +63,8 @@ The following packages are required:
 **ROS-CV-Bridge:**\
 `sudo apt install ros-humble-cv-bridge` or `sudo apt install ros-jazzy-cv-bridge`
 
-**Qt5/Qt6**:\
-`sudo apt install qtbase5-dev qt6-base-dev`
+**Qt6/Qt5**:\
+`sudo apt install qt6-base-dev qtbase5-dev`
 
 **Catch2 for ROS2**:\
 `sudo apt install ros-humble-catch-ros2` or `sudo apt install ros-jazzy-catch-ros2`
@@ -140,4 +147,4 @@ The ros2_utils_tool package is licensed under [EUPLv1.2](https://interoperable-e
 ## Contribution 
 
 If you discover a new bug or wish for a new feature, feel free to open a new issue.\
-If you want to contribute another feature, please use the provided Uncrustify file for code formatting.
+If you want to contribute another feature, please use the provided Uncrustify file for code formatting. As the `main` branch is only updated for new versions or critical bugfixes, the `develop` branch is the most current one, providing the newest updates and features. So please open a merge request with `develop` as the target branch.
