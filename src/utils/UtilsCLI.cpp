@@ -67,18 +67,17 @@ drawProgressString(int progress)
 
 
 void
-runThread(QThread* thread, bool& interrupted, const bool& finished)
+runThread(QThread* thread, volatile sig_atomic_t& signalStatus)
 {
     thread->start();
 
-    // Wait until the thread is finished
+    // Look for SIGINT
     while (!thread->isFinished()) {
-        if (interrupted) {
+        if (signalStatus == SIGINT) {
             thread->requestInterruption();
             thread->wait();
             std::cout << "" << std::endl;
-            // Differentiate between an interrupted and cleanly finished thread
-            std::cout << (finished ? "Finished" : "Interrupted") << std::endl;
+            std::cout << "Interrupted" << std::endl;
         }
     }
 }

@@ -26,7 +26,7 @@ showHelp()
 }
 
 
-bool interrupted = false;
+volatile sig_atomic_t signalStatus = 0;
 
 int
 main(int argc, char* argv[])
@@ -92,7 +92,6 @@ main(int argc, char* argv[])
 
     // Create thread and connect to its informations
     auto* const publishVideoThread = new PublishVideoThread(publishParameters);
-    auto finished = false;
     QObject::connect(publishVideoThread, &PublishVideoThread::openingCVInstanceFailed, [] {
         std::cerr << "Video publishing failed. Please make sure that the video file is valid and disable the hardware acceleration, if necessary." << std::endl;
         return 0;
@@ -101,16 +100,13 @@ main(int argc, char* argv[])
         std::cout << progressString.toStdString() << "\r" << std::flush;
     });
     QObject::connect(publishVideoThread, &PublishVideoThread::finished, publishVideoThread, &QObject::deleteLater);
-    QObject::connect(publishVideoThread, &PublishVideoThread::finished, [&finished] {
-        finished = true;
-    });
 
-    signal(SIGINT, [] (int /* signal */) {
-        interrupted = true;
+    signal(SIGINT, [] (int signal) {
+        signalStatus = signal;
     });
 
     std::cout << "Publishing video..." << std::endl;
-    Utils::CLI::runThread(publishVideoThread, interrupted, finished);
+    Utils::CLI::runThread(publishVideoThread, signalStatus);
 
     rclcpp::shutdown();
     return EXIT_SUCCESS;

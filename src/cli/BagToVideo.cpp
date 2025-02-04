@@ -25,7 +25,7 @@ showHelp()
 }
 
 
-bool interrupted = false;
+volatile sig_atomic_t signalStatus = 0;
 
 int
 main(int argc, char* argv[])
@@ -139,12 +139,12 @@ main(int argc, char* argv[])
     });
     QObject::connect(encodingThread, &EncodingThread::finished, encodingThread, &QObject::deleteLater);
 
-    signal(SIGINT, [] (int /* signal */) {
-        interrupted = true;
+    signal(SIGINT, [] (int signal) {
+        signalStatus = signal;
     });
 
     std::cout << "Encoding video. Please wait..." << std::endl;
-    Utils::CLI::runThread(encodingThread, interrupted);
+    Utils::CLI::runThread(encodingThread, signalStatus);
 
     return EXIT_SUCCESS;
 }

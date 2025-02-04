@@ -24,7 +24,7 @@ showHelp()
 }
 
 
-bool interrupted = false;
+volatile sig_atomic_t signalStatus = 0;
 
 int
 main(int argc, char* argv[])
@@ -127,12 +127,12 @@ main(int argc, char* argv[])
     });
     QObject::connect(writeToBagThread, &WriteToBagThread::finished, writeToBagThread, &QObject::deleteLater);
 
-    signal(SIGINT, [] (int /* signal */) {
-        interrupted = true;
+    signal(SIGINT, [] (int signal) {
+        signalStatus = signal;
     });
 
     std::cout << "Writing video to bag. Please wait..." << std::endl;
-    Utils::CLI::runThread(writeToBagThread, interrupted);
+    Utils::CLI::runThread(writeToBagThread, signalStatus);
 
     return EXIT_SUCCESS;
 }

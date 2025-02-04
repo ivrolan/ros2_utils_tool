@@ -5,6 +5,7 @@
 #include <QThread>
 
 #include <string>
+#include <signal.h>
 
 // Util functions for the cli tools
 namespace Utils::CLI
@@ -43,8 +44,6 @@ drawProgressString(int progress);
 
 // Run the thread handling the main operation
 void
-runThread(QThread*    thread,
-          bool&       interrupted,
-          // Only for publishing
-          const bool& finished = false);
+runThread(QThread*               thread,
+          volatile sig_atomic_t& signalStatus);
 }

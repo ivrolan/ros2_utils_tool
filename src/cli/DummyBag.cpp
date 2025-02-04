@@ -23,7 +23,7 @@ showHelp()
 }
 
 
-bool interrupted = false;
+volatile sig_atomic_t signalStatus = 0;
 
 int
 main(int argc, char* argv[])
@@ -114,7 +114,7 @@ main(int argc, char* argv[])
     });
     QObject::connect(dummyBagThread, &DummyBagThread::finished, [] {
         // This signal is thrown even if SIGINT is called, but we haven't finished, only interrupted
-        if (!interrupted) {
+        if (signalStatus != SIGINT) {
             std::cout << "" << std::endl; // Extra line to stop flushing
             std::cout << "Creating bag finished!" << std::endl;
         }
@@ -122,12 +122,12 @@ main(int argc, char* argv[])
     });
     QObject::connect(dummyBagThread, &DummyBagThread::finished, dummyBagThread, &QObject::deleteLater);
 
-    signal(SIGINT, [] (int /* signal */) {
-        interrupted = true;
+    signal(SIGINT, [] (int signal) {
+        signalStatus = signal;
     });
 
     std::cout << "Creating dummy bag. Please wait..." << std::endl;
-    Utils::CLI::runThread(dummyBagThread, interrupted);
+    Utils::CLI::runThread(dummyBagThread, signalStatus);
 
     return EXIT_SUCCESS;
 }

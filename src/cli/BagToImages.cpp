@@ -28,7 +28,7 @@ showHelp()
 }
 
 
-bool interrupted = false;
+volatile sig_atomic_t signalStatus = 0;
 
 int
 main(int argc, char* argv[])
@@ -136,12 +136,12 @@ main(int argc, char* argv[])
     });
     QObject::connect(writeToImageThread, &WriteToImageThread::finished, writeToImageThread, &QObject::deleteLater);
 
-    signal(SIGINT, [] (int /* signal */) {
-        interrupted = true;
+    signal(SIGINT, [] (int signal) {
+        signalStatus = signal;
     });
 
     std::cout << "Writing images. Please wait..." << std::endl;
-    Utils::CLI::runThread(writeToImageThread, interrupted);
+    Utils::CLI::runThread(writeToImageThread, signalStatus);
 
     return EXIT_SUCCESS;
 }
