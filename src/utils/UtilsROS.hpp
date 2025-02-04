@@ -22,11 +22,11 @@ namespace Utils::ROS
 template<typename T, typename U>
 requires WriteMessageParameter<T, U>
 void
-writeMessage(T                    message,
-             const U              messageData,
-             rosbag2_cpp::Writer& writer,
-             const QString&       topicName,
-             const rclcpp::Time&  timeStamp)
+writeMessageToBag(T                    message,
+                  const U              messageData,
+                  rosbag2_cpp::Writer& writer,
+                  const QString&       topicName,
+                  const rclcpp::Time&  timeStamp)
 {
     message.data = messageData;
     writer.write(message, topicName.toStdString(), timeStamp);

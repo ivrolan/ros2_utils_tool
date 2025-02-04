@@ -31,6 +31,19 @@ TEST_CASE("Utils CLI Testing", "[utils]") {
         arguments.insert(2, "--test");
         REQUIRE(Utils::CLI::getArgumentsIndex(arguments, "-t", "--test") == 2);
     }
+    SECTION("Argument validity test") {
+        auto parameter = 42;
+
+        REQUIRE(Utils::CLI::checkArgumentValidity(arguments, "-t", "--test", parameter, 1, 100) == true);
+
+        arguments.append("-t");
+        REQUIRE(Utils::CLI::checkArgumentValidity(arguments, "-t", "--test", parameter, 1, 100) == false);
+
+        arguments.append("42");
+        REQUIRE(Utils::CLI::checkArgumentValidity(arguments, "-t", "--test", parameter, 1, 10) == false);
+        REQUIRE(Utils::CLI::checkArgumentValidity(arguments, "-t", "--test", parameter, 50, 100) == false);
+        REQUIRE(Utils::CLI::checkArgumentValidity(arguments, "-t", "--test", parameter, 1, 100) == true);
+    }
     SECTION("Progress string test") {
         auto progressString = Utils::CLI::drawProgressString(0);
         REQUIRE(progressString == "--------------------------------------------------");

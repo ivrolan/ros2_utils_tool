@@ -47,4 +47,13 @@ TEST_CASE("Utils UI Testing", "[utils]") {
         REQUIRE(comboBox->count() == 2);
         std::filesystem::remove_all(bagDirectory);
     }
+    SECTION("Checkbox test") {
+        auto* checkBox = Utils::UI::createCheckBox("This is a tooltip", true);
+        REQUIRE(checkBox->toolTip() == "This is a tooltip");
+        REQUIRE(checkBox->checkState() == Qt::Checked);
+
+        checkBox = Utils::UI::createCheckBox("Another tooltip", false);
+        REQUIRE(checkBox->toolTip() == "Another tooltip");
+        REQUIRE(checkBox->checkState() == Qt::Unchecked);
+    }
 }

@@ -43,9 +43,9 @@ DummyBagThread::run()
             const auto timeStamp = rclcpp::Clock().now();
 
             if (type == "String") {
-                Utils::ROS::writeMessage(std_msgs::msg::String(), "Message " + std::to_string(i), writer, name, timeStamp);
+                Utils::ROS::writeMessageToBag(std_msgs::msg::String(), "Message " + std::to_string(i), writer, name, timeStamp);
             } else if (type == "Integer") {
-                Utils::ROS::writeMessage(std_msgs::msg::Int32(), i, writer, name, timeStamp);
+                Utils::ROS::writeMessageToBag(std_msgs::msg::Int32(), i, writer, name, timeStamp);
             } else if (type == "Image") {
                 // Just a blue mat
                 cv::Mat mat(720, 1280, CV_8UC3, cv::Scalar(255, 0, 0));

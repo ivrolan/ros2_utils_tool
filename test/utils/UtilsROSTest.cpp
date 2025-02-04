@@ -27,9 +27,10 @@ TEST_CASE("Utils ROS Testing", "[utils]") {
         writer.write(imageMessage, "/topic_image", rclcpp::Clock().now());
     }
     for (auto i = 0; i < 3; i++) {
-        std_msgs::msg::String stringMessage;
-        stringMessage.data = "example string";
-        writer.write(stringMessage, "/topic_string", rclcpp::Clock().now());
+        Utils::ROS::writeMessageToBag(std_msgs::msg::String(), "Message " + std::to_string(i), writer, "/topic_string", rclcpp::Clock().now());
+    }
+    for (auto i = 0; i < 10; i++) {
+        Utils::ROS::writeMessageToBag(std_msgs::msg::Int32(), i, writer, "/topic_integer", rclcpp::Clock().now());
     }
     writer.close();
 
@@ -55,6 +56,23 @@ TEST_CASE("Utils ROS Testing", "[utils]") {
         messageCount = Utils::ROS::getTopicMessageCount(qString, "/topic_should_not_be_included");
         REQUIRE(messageCount == 0);
     }
+    SECTION("Get bag metadata test") {
+        const auto& metadata = Utils::ROS::getBagMetadata(qString);
+        REQUIRE(metadata.message_count == 18);
+
+        const auto& topicsWithInformation = metadata.topics_with_message_count;
+        REQUIRE(topicsWithInformation.size() == 3);
+
+        auto metaDataTopic = topicsWithInformation.at(0).topic_metadata;
+        REQUIRE(metaDataTopic.name == "/topic_integer");
+        REQUIRE(metaDataTopic.type == "std_msgs/msg/Int32");
+        metaDataTopic = topicsWithInformation.at(1).topic_metadata;
+        REQUIRE(metaDataTopic.name == "/topic_string");
+        REQUIRE(metaDataTopic.type == "std_msgs/msg/String");
+        metaDataTopic = topicsWithInformation.at(2).topic_metadata;
+        REQUIRE(metaDataTopic.name == "/topic_image");
+        REQUIRE(metaDataTopic.type == "sensor_msgs/msg/Image");
+    }
     SECTION("Topic type test") {
         auto topicType = Utils::ROS::getTopicType(qString, "/topic_image");
         REQUIRE(topicType == "sensor_msgs/msg/Image");
@@ -68,7 +86,9 @@ TEST_CASE("Utils ROS Testing", "[utils]") {
         REQUIRE(*topicName == "/topic_image");
         topicName = Utils::ROS::getFirstTopicWithCertainType(qString, "std_msgs/msg/String");
         REQUIRE(*topicName == "/topic_string");
-        topicName = Utils::ROS::getFirstTopicWithCertainType(qString, "std_msgs/msg/Int");
+        topicName = Utils::ROS::getFirstTopicWithCertainType(qString, "std_msgs/msg/Int32");
+        REQUIRE(topicName == "/topic_integer");
+        topicName = Utils::ROS::getFirstTopicWithCertainType(qString, "std_msgs/msg/Float32");
         REQUIRE(topicName == std::nullopt);
     }
     SECTION("Video topics test") {
