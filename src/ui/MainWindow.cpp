@@ -13,6 +13,7 @@
 #include "DialogSettings.hpp"
 
 #include <QCloseEvent>
+#include <QTimer>
 
 #include <csignal>
 
@@ -30,7 +31,10 @@ void
 MainWindow::setStartWidget()
 {
     auto* const startWidget = new StartWidget(m_dialogParameters);
-    resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    // Resize event is not called inside the function, so use a delay
+    QTimer::singleShot(1, [this] {
+        resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    });
     setCentralWidget(startWidget);
     connect(startWidget, &StartWidget::toolRequested, this, &MainWindow::setInputWidget);
 }
@@ -112,7 +116,10 @@ MainWindow::setProgressWidget(int mode)
                                             "Publishing Images...", m_publishParametersImages, mode);
         break;
     }
-    resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    // Resize event is not called inside the function, so use a delay
+    QTimer::singleShot(1, [this] {
+        resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    });
     setCentralWidget(progressWidget);
 
     connect(progressWidget, &ProgressWidget::progressStopped, this, [this, mode] {

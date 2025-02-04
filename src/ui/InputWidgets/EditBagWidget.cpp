@@ -188,7 +188,7 @@ EditBagWidget::createTopicTree(bool newTreeRequested)
     m_treeWidget->resizeColumnToContents(COL_MESSAGE_COUNT);
     m_treeWidget->resizeColumnToContents(COL_RENAMING);
     // Adjusting the size will for whatever reason reset the column width above
-    const auto keptWidth = width();
+    const auto keptWidth = width() + BUFFER_SPACE;
 
     m_treeWidget->blockSignals(false);
 

@@ -55,4 +55,6 @@ private:
     static constexpr int COL_TOPICS = 1;
     static constexpr int COL_MESSAGE_COUNT = 2;
     static constexpr int COL_RENAMING = 3;
+
+    static constexpr int BUFFER_SPACE = 40;
 };
