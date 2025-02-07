@@ -4,7 +4,7 @@
    ![C++ badge](https://img.shields.io/badge/C++-20-blue.svg)
    ![CI Ubuntu badge](https://github.com/MaxFleur/ros2_utils_tool/actions/workflows/humble.yml/badge.svg?event=push)
    ![CI Windows badge](https://github.com/MaxFleur/ros2_utils_tool/actions/workflows/jazzy.yml/badge.svg?event=push)
-   ![Tag badge](https://img.shields.io/badge/Release-v0.7.1-blue.svg)
+   ![Tag badge](https://img.shields.io/badge/Release-v0.7.2-blue.svg)
 
 </div>
 
@@ -19,27 +19,17 @@
 # Overview
 
 The ros2_utils_tool package provides a complete UI-based tool for the everyday-usage of ROS2 with additional CLI support. As of now, the tool provides the following functionalities:
-- Edit an existing ROS bag file, with support for renaming or dropping topics and changing the message count
-- Get information for a ROS bag
-- Encode a video out of a ROS bag video topic
-- Write a video to a ROS bag
-- Write images out of a ROS bag video topic
-- Create a dummy ROS bag file, containing either string, int or image messages
-- Publish a video as a ROS topic
-- Publish images as a ROS topic
 
-The following table will give an overview which functionalities are currently support as a user interface and/or command line interface tool:
-
-| Feature  | UI support | CLI support |
-| -------- | ---------- | ----------- |
-| ROS bag video topic to video |  X  |  X  |
-| Video file to ROS bag |  X  |  X  |
-| ROS bag video topic to images |  X  |  X  |
-| Create dummy bag ROS file |  X  |  X  |
-| Edit ROS bag file |  X  |    |
-| UI-based ROS bag file information |  X  | (X) (`ros2 bag info`) |
-| Publish Video as ROS Topic |  X  |  X  |
-| Publish Images as ROS Topic |  X  |  X  |
+| Tool  | Description | UI support | CLI support |
+| ----- | ----------- | ---------- | ----------- |
+| Bag to Video | Export a ROS bag video topic to a video |  X  |  X  |
+| Video to Bag | Port a video file to a ROS bag |  X  |  X  |
+| Bag to Images | Export a ROS bag video topic to an image sequence |  X  |  X  |
+| Dummy Bag | Create a ROS bag with dummy data |  X  |  X  |
+| Edit Bag | Rename, remove or crop topics in a ROS bag |  X  |    |
+| UI-based Bag Info | UI-supported bag info vis |  X  | (X) (`ros2 bag info`) |
+| Video as ROS Topic | Publish a video file as a ROS image_msg topic |  X  |  X  |
+| Image Sequence as ROS Topic | Publish a file with images as ROS image_msg Topic |  X  |  X  |
 
 NOTE: The package is still under active development, so more tools might be added later in the future. Additionally, already existing features might expand and change constantly.
 
@@ -57,17 +47,13 @@ The following packages are required:
 - [catch2_ROS](https://index.ros.org/p/catch_ros2/) for Catch2-based unit tests with ROS2.
 - (Optional) [uncrustify](https://github.com/uncrustify/uncrustify) for code formatting.
 
-**OpenCV**:\
-`sudo apt install libopencv-dev`
+The following command installs all additional dependencies at once:
 
-**ROS-CV-Bridge:**\
-`sudo apt install ros-humble-cv-bridge` or `sudo apt install ros-jazzy-cv-bridge`
+**Humble**:\
+`sudo apt install libopencv-dev ros-humble-cv-bridge qt6-base-dev qtbase5-dev ros-humble-catch-ros2`
 
-**Qt6/Qt5**:\
-`sudo apt install qt6-base-dev qtbase5-dev`
-
-**Catch2 for ROS2**:\
-`sudo apt install ros-humble-catch-ros2` or `sudo apt install ros-jazzy-catch-ros2`
+**Jazzy**:\
+`sudo apt install libopencv-dev ros-jazzy-cv-bridge qt6-base-dev qtbase5-dev ros-jazzy-catch-ros2`
 
 ### Build the tool
 
