@@ -122,6 +122,7 @@ ProgressWidget::ProgressWidget(const QString& headerPixmapLabelTextBlack, const 
     connect(cancelButton, &QPushButton::clicked, this, [this] {
         if (m_thread->isRunning()) {
             m_thread->requestInterruption();
+            m_thread->wait();
         }
         emit progressStopped();
     });
