@@ -42,10 +42,13 @@ EditBagThread::run()
     rosbag2_cpp::Writer writer;
     writer.open(targetDirectoryStd);
     std::atomic<int> instanceCount = 1;
+    std::mutex mutex;
 
     // Move to own lambda for multithreading
-    const auto writeTopicToBag = [this, &writer, &instanceCount, totalInstances] (const auto& topic) {
+    const auto writeTopicToBag = [this, &writer, &instanceCount, &mutex, totalInstances] (const auto& topic) {
         const auto originalTopicNameStd = topic.originalTopicName.toStdString();
+
+        mutex.lock();
         const auto& metadata = Utils::ROS::getBagMetadata(m_parameters.sourceDirectory);
         // Create a new topic using either the original or new name
         for (const auto &topicMetaData : metadata.topics_with_message_count) {
@@ -59,6 +62,7 @@ EditBagThread::run()
                 break;
             }
         }
+        mutex.unlock();
 
         rosbag2_cpp::Reader reader;
         reader.open(m_sourceDirectory);
