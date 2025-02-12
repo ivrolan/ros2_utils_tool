@@ -23,14 +23,15 @@ getArgumentsIndex(const QStringList& stringList,
                   const QString&     shortArg,
                   const QString&     longArg);
 
-// Check if an argument is correctly called
+// Check if an argument to be set with a value is correctly called
 bool
 checkArgumentValidity(const QStringList& stringList,
                       const QString&     shortArg,
                       const QString&     longArg,
                       int&               parameter,
                       int                lowerRange,
-                      int                higherRange);
+                      int                higherRange,
+                      int                argumentListOffset = 1);
 
 // Ask if the tool should continue for cases of invalidacies
 bool
